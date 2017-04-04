@@ -1,0 +1,41 @@
+html,body,ul,li,ol,dl,dd,dt,p,h1,h2,h3,h4,h5,h6,form,fieldset,legend,img { margin:0; padding:0; }
+fieldset,img{ border:none; }
+img{vertical-align:middle}
+address,caption,cite,code,dfn,th,var { font-style:normal; font-weight:normal; }
+ul,ol { list-style:none; }
+input { padding-top:0; padding-bottom:0; font-family: "Microsoft YaHei","SimSun","宋体";}
+input::-moz-focus-inner { border:none; padding:0; }
+select,input { vertical-align:middle; }
+select,input,textarea { font-size:12px; margin:0; }
+input[type="text"],input[type="password"],textarea { outline-style:none; -webkit-appearance:none; }
+textarea { resize:none; }
+table{border-collapse:collapse;border-spacing:0}
+body { color:#333;font:12px/20px "Microsoft YaHei","Arial Narrow",HELVETICA; background:#fff;}
+a { color:#666; text-decoration:none; }
+a:visited { color:#666; }
+a:hover,a:active,a:focus { color:#ff8400; text-decoration:underline; }
+.clearfix:after{content:"";display:table;clear:both}
+.clearfix{*zoom:1}
+.none{ display:none !important;}
+.show{ display:block !important;}
+
+html,body{ width:100%;height:100%;}
+body{background:#0e3a7b url(../images/bg.jpg) repeat-x; position: relative;}
+
+.login-box{width:802px;height:502px; background:url(../images/login_bg.png) no-repeat left top; position: absolute;top:50%;left:50%;margin:-251px 0 0 -401px; /*margin:170px auto 0;*/ box-shadow:2px 2px 20px rgba(0,0,0,.4);}
+.login-top{height:61px;}
+.logo{float: left;margin:20px 0 0 30px;}
+.website{float: right;margin:16px 18px 0 0;}
+.login-main h2{color:#c7c7c7;font-size:16px;line-height:20px;padding:50px 0 50px 52px;}
+.login{padding-left:156px;font-size:20px;color:#070707;width: 500px;}
+.login li{margin-bottom:14px;line-height:40px;vertical-align: middle;}
+.login li.error-msg{text-align:center;color:red;}
+.login li input{border:none 0;font-size:14px;line-height:40px;}
+.login li.username input,.login li.password input{width:328px;height:40px;background:url(../images/input_bg1.png) no-repeat;padding:0 6px;margin-right:10px;}
+.login li.username span.tip,.login li.password span.tip{color:#ff0101;font-size:20px;}
+.login li.yzm input{width:138px;height:40px;background:url(../images/input_bg2.png) no-repeat;padding:0 6px;}
+.login li.yzm .yzmimg{margin-left:24px;}
+.login li span.t{float: left;width: 82px;margin-right:8px;}
+
+.btn{margin-top:34px;padding-left:90px;}
+.btn input{width:150px;height:40px;background:url(../images/login_btn.png) no-repeat;text-align: center;line-height:40px;border:none 0;color:#fff;font-size:20px;cursor: pointer;}
