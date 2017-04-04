@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shlr.gprs.dao.ChannelResourceMapper">
+	<select id="querylist" resultType="ChannelResource">
+		select * 
+		from g_channel_resource
+	 	order by field(merchant,1,2,3),district,in_discount
+	</select>
+</mapper>
