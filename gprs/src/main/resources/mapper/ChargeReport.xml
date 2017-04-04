@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shlr.gprs.dao.ChargeReportMapper">
+	<select id="queryCurDayList" resultType="ChargeReport">
+		select account,name,resumePrice,remainPrice from 
+	          (select account,resumePrice,truncate(money,2) as remainPrice 
+	            from 
+	    				(select account,
+	    				truncate(sum(money),2) as resumePrice
+	    				from g_pay_log g
+	    				where 
+	    				option_time BETWEEN date_format(now(),'%Y-%m-%d 00:00:00') and date_format(now(),'%Y-%m-%d 23:59:59')
+	    				group by account) a,g_users b
+	    				where a.account = b.username) l,g_users g 
+	            where l.account = g.username
+	            order by l.resumePrice desc
+	</select>
+	
+	
+</mapper>
