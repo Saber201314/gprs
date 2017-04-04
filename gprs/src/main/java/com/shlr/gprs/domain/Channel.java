@@ -36,7 +36,7 @@ public class Channel implements Serializable {
 	private Integer monthLimit;
 	@Column
 	private String memo;
-	@Column(name = "month_limit")
+	@Column(name = "option_time")
 	private Date optionTime;
 	@Column
 	private String template;

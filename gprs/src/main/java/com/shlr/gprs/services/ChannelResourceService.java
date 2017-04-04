@@ -2,7 +2,12 @@ package com.shlr.gprs.services;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
+
+import com.shlr.gprs.dao.ChannelResourceMapper;
+import com.shlr.gprs.domain.ChannelResource;
 
 /**
 * @author xucong
@@ -12,9 +17,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChannelResourceService {
 	
+	@Resource
+	ChannelResourceMapper channelResourceMapper;
 	
-	public List<Object> queryList(){
-		return null;
+	public List<ChannelResource> queryList(){
+		
+		return channelResourceMapper.querylist();
 		
 	}
 

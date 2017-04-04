@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.shlr.gprs.domain.ChannelResource;
 import com.shlr.gprs.domain.ChargeReport;
 import com.shlr.gprs.domain.Users;
+import com.shlr.gprs.services.ChannelResourceService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.UserService;
 
@@ -30,6 +32,8 @@ public class QueryController {
 	UserService userService;
 	@Resource
 	ChargeReportService chargeReportService;
+	@Resource
+	ChannelResourceService channelResourceService;
 	
 	@RequestMapping(value="/layout/home.action")
 	public void home(HttpServletRequest request,HttpServletResponse response, HttpSession session) throws IOException{
@@ -51,11 +55,17 @@ public class QueryController {
 //		this.reportMapList.add(map);
 		response.getWriter().print(JSON.toJSONString(reportList));
 	}
+	@RequestMapping("/layout/getChannelResource.action")
 	public void getChannelResource(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
 		Users currentUser = userService.getCurrentUser(session);
 		if (currentUser==null|| currentUser.getType()!=1) {
 			response.sendRedirect("/index.jsp");
 			return;
 		}
+		List<ChannelResource> queryList = channelResourceService.queryList();
+		response.getWriter().println(JSON.toJSONString(queryList));
+	}
+	public void getCurrentChannelList(){
+		
 	}
 }
