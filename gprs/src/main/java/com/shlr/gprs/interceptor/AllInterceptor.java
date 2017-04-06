@@ -1,5 +1,8 @@
 package com.shlr.gprs.interceptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,17 +28,14 @@ public class AllInterceptor implements HandlerInterceptor   {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		String requestURI = request.getRequestURI();
-		switch (requestURI) {
-		case "/WEB-INF/common/404.html":
-			break;
-		default:
+		if (requestURI.startsWith("/WEB-INF/common")) {
+			return true;
+		}else if(requestURI.startsWith("/resourse")){
+			return true;
+		}else{
 			logger.info(" User-Agent  {}",request.getHeader("user-agent"));
 			logger.info(" 访问地址-----  {}         来路地址  {} ",requestURI,request.getRemoteAddr());
-			break;
 		}
-		
-		
-		
 		return true;
 	}
 

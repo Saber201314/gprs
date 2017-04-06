@@ -163,7 +163,8 @@ td{padding:3px !important}
 	});
 
 	KISSY.use("gprs/gprs-post",function(S){
-		GPRS.Post.getChannelResource();    
+		GPRS.Post.getChannelResource();  
 		GPRS.Post.loadResumeTotalDetail();
+		
 	});	
 </script>

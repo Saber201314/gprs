@@ -15,9 +15,14 @@ import com.shlr.gprs.domain.Channel;
 * 
 */
 @Service
-public class ChannelService {
+public class ChannelService implements DruidStatInterceptor{
 	@Resource
 	ChannelMapper channelMapper;
+	
+	/**
+	 * 查询所有通道
+	 * @return
+	 */
 	public List<Channel> list(){
 		return channelMapper.selectAll();
 		

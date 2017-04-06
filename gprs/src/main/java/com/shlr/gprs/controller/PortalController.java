@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ContextLoaderListener;
 
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.UserService;
@@ -35,7 +36,6 @@ import jdk.nashorn.internal.ir.annotations.Reference;
 */
 @Controller
 public class PortalController {
-
 	
 	private String securityCode;
 	private String mobile;

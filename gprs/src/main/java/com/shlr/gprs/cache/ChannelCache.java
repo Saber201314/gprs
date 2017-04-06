@@ -17,7 +17,10 @@ import com.shlr.gprs.services.ChannelService;
  */
 public class ChannelCache {
 	public static Map<Integer, Channel> idMap = new HashMap<Integer, Channel>();
-
+	
+	/**
+	 * 初始化加载所有通道
+	 */
 	public static void load() {
 		ChannelService channelService = WebApplicationContextManager.getApplicationContext().getBean(ChannelService.class);
 		List<Channel> list = channelService.list();

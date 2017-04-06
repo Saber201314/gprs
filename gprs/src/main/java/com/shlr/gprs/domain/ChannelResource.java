@@ -28,19 +28,19 @@ public class ChannelResource implements Serializable{
 	@Column
 	private String merchant;
 	@Column(name="location_type")
-	private Integer locationType;
+	private Integer location_type;
 	@Column
 	private String district;
 	@Column
 	private String standard;
 	@Column(name="channel_id")
-	private Integer channelId;
+	private Integer channel_id;
 	@Column(name="in_discount")
-	private String inDiscount;
+	private String in_discount;
 	@Column
 	private Integer status;
 	@Column(name="pay_bill")
-	private Integer payBill;
+	private Integer pay_bill;
 	@Column
 	private Integer policy;
 	@Column
@@ -65,11 +65,12 @@ public class ChannelResource implements Serializable{
 	public void setDistrict(String district) {
 		this.district = district;
 	}
-	public Integer getLocationType() {
-		return locationType;
+
+	public Integer getLocation_type() {
+		return location_type;
 	}
-	public void setLocationType(Integer locationType) {
-		this.locationType = locationType;
+	public void setLocation_type(Integer location_type) {
+		this.location_type = location_type;
 	}
 	public String getStandard() {
 		return standard;
@@ -77,15 +78,15 @@ public class ChannelResource implements Serializable{
 	public void setStandard(String standard) {
 		this.standard = standard;
 	}
-	public Integer getChannelId() {
-		return channelId;
+	public Integer getChannel_id() {
+		return channel_id;
 	}
-	public void setChannelId(Integer channelId) {
-		this.channelId = channelId;
+	public void setChannel_id(Integer channel_id) {
+		this.channel_id = channel_id;
 	}
 	public String getChannelName() {
 		Channel channel = (Channel) ChannelCache.idMap.get(Integer
-				.valueOf(this.channelId));
+				.valueOf(this.channel_id));
 		if (channel == null) {
 			return null;
 		}
@@ -95,11 +96,12 @@ public class ChannelResource implements Serializable{
 	public void setChannelName(String channelName) {
 		this.channelName = channelName;
 	}
-	public String getInDiscount() {
-		return inDiscount;
+
+	public String getIn_discount() {
+		return in_discount;
 	}
-	public void setInDiscount(String inDiscount) {
-		this.inDiscount = inDiscount;
+	public void setIn_discount(String in_discount) {
+		this.in_discount = in_discount;
 	}
 	public Integer getStatus() {
 		return status;
@@ -107,11 +109,11 @@ public class ChannelResource implements Serializable{
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	public Integer getPayBill() {
-		return payBill;
+	public Integer getPay_bill() {
+		return pay_bill;
 	}
-	public void setPayBill(Integer payBill) {
-		this.payBill = payBill;
+	public void setPay_bill(Integer pay_bill) {
+		this.pay_bill = pay_bill;
 	}
 	public Integer getPolicy() {
 		return policy;

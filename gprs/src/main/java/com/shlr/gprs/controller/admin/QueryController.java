@@ -1,6 +1,8 @@
 package com.shlr.gprs.controller.admin;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -8,11 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.shlr.gprs.cache.ChannelCache;
+import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelResource;
 import com.shlr.gprs.domain.ChargeReport;
 import com.shlr.gprs.domain.Users;
@@ -28,6 +34,9 @@ import com.shlr.gprs.services.UserService;
 @Controller
 @RequestMapping("/admin")
 public class QueryController {
+	
+	Logger logger=LoggerFactory.getLogger(QueryController.class);
+	
 	@Resource
 	UserService userService;
 	@Resource
@@ -35,18 +44,25 @@ public class QueryController {
 	@Resource
 	ChannelResourceService channelResourceService;
 	
+	/**
+	 * 主页数据
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @throws IOException
+	 */
 	@RequestMapping(value="/layout/home.action")
-	public void home(HttpServletRequest request,HttpServletResponse response, HttpSession session) throws IOException{
+	public String home(HttpServletRequest request,HttpServletResponse response, HttpSession session) throws IOException{
 		Users currentUser = userService.getCurrentUser(session);
 		if (currentUser==null) {
-			response.sendRedirect("/index.jsp");
-			return;
+//			response.sendRedirect("/index.jsp");
+			return "redirect:/index.jsp";
 		}
 		int type = currentUser.getType();
 		//如果不是系统管理员或者不是总代理
 		if (type != 1 && type != 2) {
-			response.sendRedirect("/index.jsp");
-			return;
+//			response.sendRedirect("/index.jsp");
+			return "redirect:/index.jsp";
 		}
 		List<ChargeReport> reportList  = chargeReportService
 				.queryCurDayList();	
@@ -54,18 +70,45 @@ public class QueryController {
 //		map.put("gonggao", currentUser.getGonggao());
 //		this.reportMapList.add(map);
 		response.getWriter().print(JSON.toJSONString(reportList));
+		return null;
 	}
+	/**
+	 * 获取通道资源
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @throws IOException
+	 */
 	@RequestMapping("/layout/getChannelResource.action")
-	public void getChannelResource(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
+	public String getChannelResource(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
 		Users currentUser = userService.getCurrentUser(session);
 		if (currentUser==null|| currentUser.getType()!=1) {
-			response.sendRedirect("/index.jsp");
-			return;
+			return "redirect:/index.jsp";
 		}
 		List<ChannelResource> queryList = channelResourceService.queryList();
 		response.getWriter().println(JSON.toJSONString(queryList));
+		return null;
 	}
-	public void getCurrentChannelList(){
-		
+	/**
+	 * 获取当前通道列表
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @throws IOException 
+	 */
+	@RequestMapping(value="/layout/getCurrentChannelList.action",produces="application/json;charset=utf-8")
+	public String getCurrentChannelList(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
+		response.setContentType("application/json;charset=utf-8");
+		Collection<Channel> channelList = ChannelCache.idMap.values();
+		PrintWriter writer = null;
+		try {
+			writer = response.getWriter();
+		} catch (IOException e) {
+			logger.error(" getCurrentChannelList ", e);
+		}
+		if (writer!=null) {
+			writer.println(JSON.toJSONString(channelList));
+		}
+		return null;
 	}
 }

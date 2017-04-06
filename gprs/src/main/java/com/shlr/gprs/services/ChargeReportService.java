@@ -16,11 +16,15 @@ import com.shlr.gprs.domain.ChargeReport;
 * 
 */
 @Service
-public class ChargeReportService {
+public class ChargeReportService implements DruidStatInterceptor{
 	
 	@Resource
 	ChargeReportMapper chargeReportMapper;
 	
+	/**
+	 * 查询当天充值报告
+	 * @return
+	 */
 	public List<ChargeReport> queryCurDayList(){
 		List<ChargeReport> queryCurDayList = chargeReportMapper.queryCurDayList();
 		
@@ -37,7 +41,6 @@ public class ChargeReportService {
 			queryCurDayList.add(chargeReport);
 			
 		}
-		
 		return queryCurDayList;
 		
 	}

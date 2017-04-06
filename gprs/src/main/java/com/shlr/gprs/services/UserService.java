@@ -21,7 +21,7 @@ import tk.mybatis.mapper.entity.Example;
 * 
 */
 @Service
-public class UserService {
+public class UserService implements DruidStatInterceptor{
 	@Resource
 	UserMapper userMapper;
 	

@@ -957,7 +957,7 @@
     				     		}    				     		
     				     		html.push("<td>"+merchant+"</td>");	
     				     		html.push("<td>"+data[i].district+"</td>");
-    				     		var locationType = data[i].locationType;
+    				     		var locationType = data[i].location_type;
     				     		if(locationType == 1){
     				     			locationType = "漫游";
     				     		}else if(locationType == 2){
@@ -967,7 +967,7 @@
     				     		}
     				     		html.push("<td>"+locationType+"</td>");
     				     		html.push("<td  style='color:#438eb9;'>"+data[i].standard+"</td>");
-    				     		html.push("<td>"+data[i].inDiscount+"</td>");
+    				     		html.push("<td>"+data[i].in_discount+"</td>");
     				     		var status = data[i].status;
     				     		if(status == 1){
     				     			status = "<span class='label label-success'>正常</span>";
@@ -975,7 +975,7 @@
     				     			status = "<span class='label label-danger'>维护</span>";
     				     		}
     				     		html.push("<td>"+status+"</td>");
-    				     		var payBill = data[i].payBill;
+    				     		var payBill = data[i].pay_bill;
     				     		if(payBill == 1){
     				     			payBill = "带票";
     				     		}else if(payBill == 2){

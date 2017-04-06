@@ -9,12 +9,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.shlr.gprs.cache.ChannelTemplateCache;
+
 /**
  * @author xucong
  * @version 创建时间：2017年4月4日 下午8:01:28
- * 
+ * 通道类
  */
-
 @Table(name = "g_channel")
 public class Channel implements Serializable {
 	/**
@@ -25,19 +27,21 @@ public class Channel implements Serializable {
 	@Id
 	@GeneratedValue(generator = "JDBC")
 	private Integer id;
-
+	@JSONField(name="userId")
 	@Column(name = "user_id")
-	private Integer userId;
+	private Integer user_id;
 	@Column
 	private String name;
 	@Column
 	private String alias;
+	@JSONField(name="monthLimit")
 	@Column(name = "month_limit")
-	private Integer monthLimit;
+	private Integer month_limit;
 	@Column
 	private String memo;
+	@JSONField(name="optionTime")
 	@Column(name = "option_time")
-	private Date optionTime;
+	private Date option_time;
 	@Column
 	private String template;
 	@Column
@@ -55,12 +59,12 @@ public class Channel implements Serializable {
 		this.id = id;
 	}
 
-	public Integer getUserId() {
-		return userId;
+	public Integer getUser_id() {
+		return user_id;
 	}
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setUser_id(Integer user_id) {
+		this.user_id = user_id;
 	}
 
 	public String getName() {
@@ -79,12 +83,12 @@ public class Channel implements Serializable {
 		this.alias = alias;
 	}
 
-	public Integer getMonthLimit() {
-		return monthLimit;
+	public Integer getMonth_limit() {
+		return month_limit;
 	}
 
-	public void setMonthLimit(Integer monthLimit) {
-		this.monthLimit = monthLimit;
+	public void setMonth_limit(Integer month_limit) {
+		this.month_limit = month_limit;
 	}
 
 	public String getMemo() {
@@ -95,12 +99,12 @@ public class Channel implements Serializable {
 		this.memo = memo;
 	}
 
-	public Date getOptionTime() {
-		return optionTime;
+	public Date getOption_time() {
+		return option_time;
 	}
 
-	public void setOptionTime(Date optionTime) {
-		this.optionTime = optionTime;
+	public void setOption_time(Date option_time) {
+		this.option_time = option_time;
 	}
 
 	public String getTemplate() {
@@ -128,13 +132,12 @@ public class Channel implements Serializable {
 	}
 
 	public String getTemplateName() {
-//		ChannelTemplate channelTemplate = (ChannelTemplate) ChannelTemplateCache.identityMap.get(this.template);
-//		if (channelTemplate == null) {
-//			return null;
-//		}
-//
-//		return channelTemplate.getName();
-		return this.getTemplateName();
+		ChannelTemplate channelTemplate = (ChannelTemplate) ChannelTemplateCache.identityMap.get(this.template);
+		if (channelTemplate == null) {
+			return null;
+		}
+
+		return channelTemplate.getName();
 	}
 
 	public void setTemplateName(String templateName) {

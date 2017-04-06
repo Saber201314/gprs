@@ -3,22 +3,34 @@ package com.shlr.gprs.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 /**
  * @author xucong
  * @version 创建时间：2017年4月4日 下午8:03:22
  * 
  */
+@Table(name="g_channel_template")
 public class ChannelTemplate implements Serializable{
 	
+	@Transient
 	private static final long serialVersionUID = -491099403357429565L;
+	@Column
 	private Integer id;
+	@Column
 	private String name;
+	@Column
 	private String identity;
-	private Date optionTime;
+	@Column(name="option_time")
+	private Date option_time;
+	@Column
 	private String account;
+	@Column
 	private String password;
+	@Column
 	private String sign;
-	
 	
 	public Integer getId() {
 		return id;
@@ -38,11 +50,11 @@ public class ChannelTemplate implements Serializable{
 	public void setIdentity(String identity) {
 		this.identity = identity;
 	}
-	public Date getOptionTime() {
-		return optionTime;
+	public Date getOption_time() {
+		return option_time;
 	}
-	public void setOptionTime(Date optionTime) {
-		this.optionTime = optionTime;
+	public void setOption_time(Date option_time) {
+		this.option_time = option_time;
 	}
 	public String getAccount() {
 		return account;

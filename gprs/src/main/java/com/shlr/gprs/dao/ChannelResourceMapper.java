@@ -15,5 +15,9 @@ import tk.mybatis.mapper.common.Mapper;
 */
 @MapperScan
 public interface ChannelResourceMapper extends Mapper<ChannelResource>{
+	/**
+	 * 查询所有通道资源
+	 * @return
+	 */
 	List<ChannelResource> querylist();
 }

@@ -87,8 +87,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						class="iframeurl" title=""><i class="icon-dashboard"></i><span
 							class="menu-text"> 系统首页 </span></a>
 					</li>
-
-				<c:if test="${ session.user.username} == 'admin' || ${session.user.username } == 'super'">
+				<c:if test="${ sessionScope.user.username == 'admin'|| sessionScope.user.username  == 'super'}">
 					<li><a href="#" class="dropdown-toggle"><i
 							class="icon-bold"></i><span class="menu-text"> 流量包管理 </span><b
 							class="arrow icon-angle-down"></b></a>
@@ -116,7 +115,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									class="icon-double-angle-right"></i>通道模板列表</a></li>
 						</ul></li>
 				</c:if>
-				<c:if test="${session.user.username} == 'admin' || ${session.user.username} == 'super'">
+				<c:if test="${sessionScope.user.username == 'admin' || sessionScope.user.username == 'super'}">
 						<li><a href="#" class="dropdown-toggle"><i
 								class="icon-bar-chart"></i><span class="menu-text"> 业务管理 </span><b
 								class="arrow icon-angle-down"></b></a>
@@ -156,7 +155,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							name="../query/agentChargeList.action" title="财务管理" class="iframeurl"><i
 								class="icon-double-angle-right"></i>财务管理</a></li>																															
 					</ul></li>
-					<c:if test="${session.user.username} == 'admin' || ${session.user.username} == 'super'">
+					<c:if test="${sessionScope.user.username == 'admin' || sessionScope.user.username == 'super'}">
 						<li><a href="#" class="dropdown-toggle"><i
 								class="icon-dollar"></i><span class="menu-text"> 费用管理 </span><b
 								class="arrow icon-angle-down"></b></a>
@@ -179,7 +178,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 										name="../agent/publishAgent.action" title="添加代理商" class="iframeurl"><i
 											class="icon-double-angle-right"></i>添加代理商</a></li>																							
 								</ul></li>					
-						<c:if test="${session.user.username} == 'admin' || ${session.user.username} == 'super'">					
+						<c:if test="${sessionScope.user.username == 'admin' || sessionScope.user.username== 'super'}">					
 							<li><a href="#" class="dropdown-toggle"><i
 									class="icon-list"></i><span class="menu-text"> 统计管理</span><b
 									class="arrow icon-angle-down"></b></a>
