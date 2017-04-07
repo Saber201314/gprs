@@ -503,35 +503,41 @@
 	    	        dataType:'json',
 	    	        cache:false,
 	    	        success:function(data){
-	    	        	if(data && data.length>0){
-	    	        		var html = [],graph_data=[];
-	    	        		for(var i=0;i<data.length-1;i++){
-	    	        			html.push("<tr>");
-	    	        			html.push("<td width='50'>"+(i+1)+"</td>");
-		    	        		html.push("<td>"+data[i].account+"</td>");
-		    	        		var name = data[i].name ? data[i].name:"";
-		    	        		
-		    	        		html.push("<td>"+name+"</td>");
-	    	        			html.push("<td>"+data[i].resumePrice+"</td>");
-	    	        			html.push("<td>"+data[i].remainPrice+"</td>");
-	    	        			html.push("</tr>");
-	    	        			
-	    	        			if(i != data.length-2){
-	    	        				graph_data.push(data[i]);	    	        				
-	    	        			}	    	        			
-	    	        		}
-	    	        		//$("#gonggao").append(data[data.length-1].gonggao);
-	    	        			    	        		    	        		
-        					$("#resume_detail_table tbody").append(html.join("")); 	
-        					$("#resume_detail_header").width($("#resume_detail_table tbody").width()-2);		    	        		
-	    	        		/*Morris.Line({
-	    	        			  element: 'graph',
-	    	        			  data: graph_data,
-	    	        			  xkey: 'account',
-	    	        			  ykeys: ['resumePrice', 'remainPrice'],
-	    	        			  labels: ['消费额', '余额'],
-	    	        			  parseTime: false
-	    	        			});	*/  	        		
+	    	        	if(data != null){
+	    	        		if (data.islogin>0) {
+	    	        			data = data.data;
+	    	        			var html = [],graph_data=[];
+		    	        		for(var i=0;i<data.length-1;i++){
+		    	        			html.push("<tr>");
+		    	        			html.push("<td width='50'>"+(i+1)+"</td>");
+			    	        		html.push("<td>"+data[i].account+"</td>");
+			    	        		var name = data[i].name ? data[i].name:"";
+			    	        		
+			    	        		html.push("<td>"+name+"</td>");
+		    	        			html.push("<td>"+data[i].resumePrice+"</td>");
+		    	        			html.push("<td>"+data[i].remainPrice+"</td>");
+		    	        			html.push("</tr>");
+		    	        			
+		    	        			if(i != data.length-2){
+		    	        				graph_data.push(data[i]);	    	        				
+		    	        			}	    	        			
+		    	        		}
+		    	        		//$("#gonggao").append(data[data.length-1].gonggao);
+		    	        			    	        		    	        		
+	        					$("#resume_detail_table tbody").append(html.join("")); 	
+	        					$("#resume_detail_header").width($("#resume_detail_table tbody").width()-2);		    	        		
+		    	        		/*Morris.Line({
+		    	        			  element: 'graph',
+		    	        			  data: graph_data,
+		    	        			  xkey: 'account',
+		    	        			  ykeys: ['resumePrice', 'remainPrice'],
+		    	        			  labels: ['消费额', '余额'],
+		    	        			  parseTime: false
+		    	        			});	*/  
+							}else{
+								top.location.href="/index.jsp";
+							}
+	    	        			        		
 	    	        	}	
 	    	        },
 	    	        error:function(){

@@ -12,7 +12,7 @@
 
 	<bean class="com.shlr.gprs.listenner.InitListener"></bean>
 
-	<bean
+	<!-- <bean
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<property name="messageConverters">
 			<list>
@@ -27,7 +27,7 @@
 				</bean>
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 
 	<!-- 开启SpringMVC注解模式 -->
 	<mvc:annotation-driven />

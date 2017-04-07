@@ -3,7 +3,9 @@ package com.shlr.gprs.controller.admin;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelResource;
@@ -54,22 +57,29 @@ public class QueryController {
 	@RequestMapping(value="/layout/home.action")
 	public String home(HttpServletRequest request,HttpServletResponse response, HttpSession session) throws IOException{
 		Users currentUser = userService.getCurrentUser(session);
+		Map<String, Object> result=new LinkedHashMap<String, Object>();
 		if (currentUser==null) {
 //			response.sendRedirect("/index.jsp");
-			return "redirect:/index.jsp";
+			result.put("islogin", "-1");
+			response.getWriter().print(JSON.toJSONString(result));
+			return null;
 		}
 		int type = currentUser.getType();
 		//如果不是系统管理员或者不是总代理
 		if (type != 1 && type != 2) {
 //			response.sendRedirect("/index.jsp");
-			return "redirect:/index.jsp";
+			result.put("islogin", "-1");
+			response.getWriter().print(JSON.toJSONString(result));
+			return null;
 		}
 		List<ChargeReport> reportList  = chargeReportService
 				.queryCurDayList();	
 //		Map<String,Object> map = new HashMap<String,Object>();
 //		map.put("gonggao", currentUser.getGonggao());
 //		this.reportMapList.add(map);
-		response.getWriter().print(JSON.toJSONString(reportList));
+		result.put("islogin", "1");
+		result.put("data", reportList);
+		response.getWriter().print(JSON.toJSONString(result));
 		return null;
 	}
 	/**
