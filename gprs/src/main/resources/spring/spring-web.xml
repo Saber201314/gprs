@@ -33,10 +33,10 @@
 	<mvc:annotation-driven />
 
 
-	<mvc:resources location="/assets/i/" mapping="/i/**" />
-	<mvc:resources location="/static/css/" mapping="/css/**" />
-	<mvc:resources location="/static/images/" mapping="/images/**" />
-	<mvc:resources location="/static/view/" mapping="/view/**" />
+	<mvc:resources location="/WEB-INF/assets/css/" mapping="/common/css/**" />
+	<mvc:resources location="/WEB-INF/assets/fonts" mapping="/common/fonts/**" />
+	<mvc:resources location="/WEB-INF/assets/i" mapping="/common/i/**" />
+	<mvc:resources location="/WEB-INF/assets/js" mapping="/common/js/**" />
 	<mvc:default-servlet-handler />
 
 	<!-- 配置jsp 显示ViewResolver -->

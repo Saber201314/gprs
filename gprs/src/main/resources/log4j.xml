@@ -15,7 +15,7 @@
         class="org.apache.log4j.DailyRollingFileAppender">  
         <param name="Threshold" value="error"></param>  
         <param name="ImmediateFlush" value="true"></param>  
-        <param name="File" value="G:/logs/error.log"></param>  
+        <param name="File" value="F:/logs/error.log"></param>  
         <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"></param>  
         <layout class="org.apache.log4j.PatternLayout">  
             <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss\} %-5p] [%t] {%c:%L}-%m%n"></param>  
@@ -26,7 +26,7 @@
         class="org.apache.log4j.DailyRollingFileAppender">  
         <param name="Threshold" value="debug"></param>  
         <param name="ImmediateFlush" value="true"></param>  
-        <param name="File" value="G:/logs/debug.log"></param>  
+        <param name="File" value="F:/logs/debug.log"></param>  
         <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"></param>  
         <layout class="org.apache.log4j.PatternLayout">  
             <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss\} %-5p] [%t] {%c:%L}-%m%n"></param>  
@@ -36,7 +36,7 @@
     <!-- 输出日志到文件  文件大小到达指定尺寸的时候产生一个新的文件 -->  
     <appender name="errorFile"   
         class="org.apache.log4j.RollingFileAppender">  
-        <param name="File" value="G:/logs/error.log"></param>  
+        <param name="File" value="F:/logs/error.log"></param>  
         <param name="ImmediateFlush" value="true"/>  
         <param name="Threshold" value="error"></param>  
         <param name="Append" value="true"></param>  
@@ -61,7 +61,7 @@
         如果在railyFile中定义<param name="Threshold" value="info"></param>，那么将会把info以上级别的信息输出  
      -->  
     <root>       
-        <priority value="debug" />       
+        <priority value="info" />       
         <appender-ref ref="console" />    
         <appender-ref ref="errorRollingFile" /> 
         <appender-ref ref="debugRollingFile" />    

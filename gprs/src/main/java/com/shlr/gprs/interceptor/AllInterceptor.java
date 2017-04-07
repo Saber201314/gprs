@@ -32,6 +32,8 @@ public class AllInterceptor implements HandlerInterceptor   {
 			return true;
 		}else if(requestURI.startsWith("/resourse")){
 			return true;
+		}else if (requestURI.startsWith("/common")) {
+			return true;
 		}else{
 			logger.info(" User-Agent  {}",request.getHeader("user-agent"));
 			logger.info(" 访问地址-----  {}         来路地址  {} ",requestURI,request.getRemoteAddr());
@@ -41,7 +43,6 @@ public class AllInterceptor implements HandlerInterceptor   {
 
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
 
