@@ -35,7 +35,7 @@ if(window !=top){
 <div class="login_m1">
 	<div class="login_logo"><img src="${pageContext.request.contextPath}/resourse/images/logo.png"></div>
 </div>
-	<img src="${pageContext.request.contextPath}/resourse/images/91529.jpg" id="background-img" />
+	<img src="${pageContext.request.contextPath}/resourse/images/login_bg.jpg" id="background-img" />
 <div class="login_m">
 	<div class="login_boder">
 	<form action="${pageContext.request.contextPath}/login.action" method="post">

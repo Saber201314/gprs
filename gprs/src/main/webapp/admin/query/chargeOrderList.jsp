@@ -1,4 +1,5 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%
 String path = request.getContextPath();
@@ -25,15 +26,15 @@ li{padding-top:5px !important;}
 	<div class="bar1">
 		<span style="float:right;">
 		  <span><a class="btn1 buffer-datas" href="#">缓存管理</a></span>
-		  <s:if test="#session.user.username == 'admin' || #session.user.username == 'super'">
+		  <c:if test="${sessionScope.user.username == 'admin' || sessionScope.user.username == 'super' }">
 		  	<span><a class="btn1 export-excel-datas" href="#">导出Excel</a></span>
-		  </s:if>
+		  </c:if>
 		  <span><a class="btn1 callback-order" href="#">批量回调</a></span>
 		  <span><a class="btn1 success-order" href="#">批量成功</a></span>
 		  <span><a class="btn1 fail-order" href="#">批量失败</a></span>
 		</span>
 	</div>
-	<div class="errorMsg"><s:actionerror /></div>
+	<div class="errorMsg">${error_msg }</div>
 	<div class="search">	    
 	    <div class="search_style">			   
 		      <ul class="search_content clearfix">
@@ -41,22 +42,53 @@ li{padding-top:5px !important;}
 					<select id="agent-level"></select>
 				  </li>	      		
 			      <li><label class="lf">手机号码：</label><input type="text" style="margin-left:0px;padding-bottom:3px;" id="mobile" /></li>
-			      <li><label class="lf">归属地：</label><select id="location" class="terrority-select"></select></li>
+			      <li>
+			      	<label class="lf">归属地：</label>
+			      	<select id="location" class="terrority-select"></select>
+			      </li>
 			      
 			      <li><label class="lf">开始时间：</label><input id="start" class="inline laydate-icon"/></li>
 			      <li><label class="lf">结束时间：</label><input id="end" class="inline laydate-icon"  /></li>
-			      <li><label class="lf">号码类型：</label><s:select id="type" list="#{1:'移动',2:'联通',3:'电信' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select></li>
+			      <li>
+			      	<label class="lf">号码类型：</label>
+			      	<select id="type" theme="simple">
+			      		<c:forEach var="item" items="{移动,联通,电信 }" varStatus="status">
+			      			<option value="${status.index+1 }" >${item }</option>
+			      		</c:forEach>
+			      	</select>
+			      	
+			      	
+			      	
+			      	<%-- <s:select id="type" list="#{1:'移动',2:'联通',3:'电信' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple">
+			      	</s:select> --%>
+			      </li>
 			      <li><label class="lf">流量值：</label><select id="amount" class="amount-select"></select></li>
-			      <li><label class="lf">流量类型：</label><s:select id="locationType" class="locationType-select" list="#{1:'全国流量',2:'省内流量' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select></li>
-			      <li><label class="lf">充值状态：</label><s:select id="submitStatus" list="#{0:'未提交',1:'充值中',3:'充值失败',2:'充值成功'}" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select></li>
+			      <li>
+			      	<label class="lf">流量类型：</label>
+			      	<select id="locationType" theme="simple">
+			      		<c:forEach var="item" items="{全国流量,省内流量}" varStatus="status">
+			      			<option value="${status.index+1 }" >${item }</option>
+			      		</c:forEach>
+			      	</select>
+			      	<%-- <s:select id="locationType" class="locationType-select" list="#{1:'全国流量',2:'省内流量' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>
+			      </li>
+			      <li>
+			      	<label class="lf">充值状态：</label>
+			      	<select id="locationType" theme="simple">
+			      		<c:forEach var="item" items="{未提交,充值中,充值成功,充值失败}" varStatus="status">
+			      			<option value="${status.index+1 }" >${item }</option>
+			      		</c:forEach>
+			      	</select>
+			      	<%-- <s:select id="submitStatus" list="#{0:'未提交',1:'充值中',3:'充值失败',2:'充值成功'}" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>
+			      </li>
 			      <li><label class="lf">充值通道：</label><select id="submit_channel"></select></li>
 			      <li style="width:0px;"><button type="submit" class="btn_search sub_btn1">查询</button></li>
 		      </ul>			   				   		   	   
 	      </div>
 	</div>
-	<s:if test="#session.user.username == 'admin' || #session.user.username == 'super'">
+	<c:if test="${ sessionScope.user.username == 'admin' || sessionScope.user.username == 'super'}">
 		<input type="hidden" id="adminRole" value="1"/>
-	</s:if>
+	</c:if>
 	<form action="#" method="get" id="delete-form">
 	<table id="order_table" cellpadding="0" cellspacing="0"  class="table table-striped table-bordered table-hover">
 		<tr>
@@ -72,9 +104,9 @@ li{padding-top:5px !important;}
 		    <th>回调时间</th>
 		    <th>充值方式</th>
 		    <th>充值结果</th>
-		    <s:if test="#session.user.username == 'admin' || #session.user.username == 'super'">
+		    <c:if test="${ sessionScope.user.username == 'admin' || sessionScope.user.username == 'super'}">
 		   		 <th>充值通道</th>	
-		    </s:if>	    
+		    </c:if>	    
 		    <th>接入</th>
 		    <th>外放</th>	
 		    <th>带票</th>
