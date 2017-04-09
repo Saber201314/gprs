@@ -52,7 +52,7 @@ li{padding-top:5px !important;}
 			      <li>
 			      	<label class="lf">号码类型：</label>
 			      	<select id="type" theme="simple">
-			      		<c:forEach var="item" items="{移动,联通,电信 }" varStatus="status">
+			      		<c:forEach var="item" items="移动,联通,电信 " varStatus="status">
 			      			<option value="${status.index+1 }" >${item }</option>
 			      		</c:forEach>
 			      	</select>
@@ -66,7 +66,7 @@ li{padding-top:5px !important;}
 			      <li>
 			      	<label class="lf">流量类型：</label>
 			      	<select id="locationType" theme="simple">
-			      		<c:forEach var="item" items="{全国流量,省内流量}" varStatus="status">
+			      		<c:forEach var="item" items="全国流量,省内流量" varStatus="status">
 			      			<option value="${status.index+1 }" >${item }</option>
 			      		</c:forEach>
 			      	</select>
@@ -75,7 +75,7 @@ li{padding-top:5px !important;}
 			      <li>
 			      	<label class="lf">充值状态：</label>
 			      	<select id="locationType" theme="simple">
-			      		<c:forEach var="item" items="{未提交,充值中,充值成功,充值失败}" varStatus="status">
+			      		<c:forEach var="item" items="未提交,充值中,充值成功,充值失败" varStatus="status">
 			      			<option value="${status.index+1 }" >${item }</option>
 			      		</c:forEach>
 			      	</select>

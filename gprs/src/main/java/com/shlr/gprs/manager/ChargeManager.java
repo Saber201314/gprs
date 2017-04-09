@@ -8,6 +8,9 @@ package com.shlr.gprs.manager;
 public class ChargeManager {
 	
 	
+	
+	public static Boolean moreOperValidMap = false;
+	
 	private static class ChargeManagerHolder{
 		static ChargeManager chargeManager = new ChargeManager();
 	}

@@ -557,29 +557,29 @@
         			
         			if(total==0){
         				params = [];
-        				params.push("queryChargeOrderDO.account=");
+        				params.push("account=");
         				params.push($("#agent-level").val());
         				params.push("&");
-        				params.push("queryChargeOrderDO.mobile=");
+        				params.push("mobile=");
         				var mobile = S.trim($("#mobile").val());
         				params.push(mobile);
         				params.push("&");
-        				params.push("queryChargeOrderDO.location=");
+        				params.push("location=");
         				params.push($(".terrority-select").val());
         				params.push("&");	
-        				params.push("queryChargeOrderDO.from=");
+        				params.push("from=");
         				params.push($("#start").val());
         				params.push("&");
-        				params.push("queryChargeOrderDO.to=");
+        				params.push("to=");
         				params.push($("#end").val());
         				params.push("&");        				
-        				params.push("queryChargeOrderDO.type=");
+        				params.push("type=");
         				params.push($("#type").val());
         				params.push("&");	
-        				params.push("queryChargeOrderDO.amount=");
+        				params.push("amount=");
         				params.push($(".amount-select").val());
         				params.push("&");		
-        				params.push("queryChargeOrderDO.locationType=");
+        				params.push("locationType=");
         				params.push($(".locationType-select").val());
         			}
         			var content = "";

@@ -491,21 +491,24 @@ $('.change_Password').on('click', function(){
 		 	  		data:{"newPassword":$("#Nes_pas").val(),"repeatPassword":$("#c_mew_pas").val(),"password":$("#password").val()},
 		 	  		dataType:"json",
 		 	  		success:function(data){
-		 	  		if (data.success) {
-					  layer.alert('修改成功！',{
-		               title: '提示框',				
-						icon:2,		
-					  }); 
-					  layer.close(index); 			 	  		
-		 	  		}else{
-		 	  		layer.alert(data.error,{
-		              title: '提示框',				
-						icon:0,
-					    
-					 });
+			 	  		if (data.success) {
+						  layer.alert('修改成功！',{
+			               title: '提示框',	
+							icon:1,		
+						  }); 
+						  layer.close(index); 			 	  		
+			 	  		}else{
+			 	  		layer.alert(data.error,{
+			              title: '提示框',				
+							icon:0,
+						    
+						 });
+			 	  		}
+		 	  		},
+		 	  		error:function(){
+		 	  			layer.alert('服务器连接异常！');
 		 	  		}
-	 	  	 
-				}});   
+		 	  	});   
 		  }	 
 	}
     });

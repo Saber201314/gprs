@@ -25,12 +25,18 @@ public class UserService implements DruidStatInterceptor{
 	@Resource
 	UserMapper userMapper;
 	
+	/**
+	 * 根据账号密码查找用户
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public Users findByUsernameAndPassword(String username,String password){
 		Users users=new Users();
 		users.setUsername(username);
 		users.setPassword(password);
 		Users result = userMapper.selectOne(users);
-		Example example=new Example(Users.class);
+ 		Example example=new Example(Users.class);
 		example.selectProperties(username);
 		if (result!=null) {
 			return result;
@@ -38,6 +44,10 @@ public class UserService implements DruidStatInterceptor{
 		return null;
 		
 	}
+	/**
+	 * 获取所有用户
+	 * @return
+	 */
 	public List<Users> list(){
 		return userMapper.selectAll();
 		
@@ -59,6 +69,10 @@ public class UserService implements DruidStatInterceptor{
 			return users;
 		}
 		return null;
+	}
+	public Integer updateUserByPK(Users user){
+		int updateByPrimaryKey = userMapper.updateByPrimaryKey(user);
+		return updateByPrimaryKey;
 	}
 	
 }

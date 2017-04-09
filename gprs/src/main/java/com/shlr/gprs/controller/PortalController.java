@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ContextLoaderListener;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.MobileUtil;
@@ -157,36 +159,42 @@ public class PortalController {
 	 * @param session
 	 * @return
 	 */
-	@RequestMapping("/exit.action")
+	@RequestMapping("/aexit.action")
 	public String exit(HttpSession session) {
 		session.setAttribute("user", null);
 		return "index";
 	}
-//
-//	@SuppressWarnings({ "rawtypes", "unchecked" })
-//	public String changePassword() {
-//		this.result = new ResultBaseDO();
-//		Users currentUser = UserService.getCurrentUser();
-//		if (currentUser == null) {
-//			this.result.addError("请登录");
-//			return "success";
-//		}
-//		if (!this.newPassword.equals(this.repeatPassword)) {
-//			this.result.addError("两次密码不一致");
-//			return "success";
-//		}
-//		if (!currentUser.getPassword().equals(this.password)) {
-//			this.result.addError("原密码不正确");
-//			return "success";
-//		}
-//		currentUser.setPassword(this.newPassword);
-//		this.userService.saveOrUpdate(currentUser);
-//
-//		Map session = ActionContext.getContext().getSession();
-//		session.put("user", currentUser);
-//
-//		return "success";
-//	}
+	
+	@RequestMapping(value="/admin/layout/changePassword.action")
+	public String changePassword(HttpServletResponse response, HttpSession session,
+			@RequestParam("password")String password,
+			@RequestParam("newPassword")String newPassword,
+			@RequestParam("repeatPassword")String repeatPassword) throws IOException {
+		Users currentUser = userService.getCurrentUser(session);
+		result=new ResultBaseDO<>();
+		if (currentUser == null) {
+			this.result.addError("请登录");
+			return "success";
+		}
+		if (!currentUser.getPassword().equals(password)) {
+			this.result.addError("原密码不正确");
+			return "success";
+		}
+		
+		if (!newPassword.equals(repeatPassword)) {
+			this.result.addError("两次密码不一致");
+			return "success";
+		}
+		
+		currentUser.setPassword(newPassword);
+		Integer updateUserByPK = userService.updateUserByPK(currentUser);
+		
+		if (updateUserByPK > 0) {
+			session.setAttribute("user", currentUser);
+		}
+		response.getWriter().printf(  JSON.toJSONString(result));
+		return null;
+	}
 	/**
 	 * 登录
 	 * @param username
@@ -213,11 +221,11 @@ public class PortalController {
 			return "index";
 		}
 		String code = (String) session.getAttribute(SESSION_SECURITY_CODE);
-		if ((code == null)
-				|| (!code.toLowerCase().equals(securityCode.toLowerCase()))) {
-			session.setAttribute("error_msg", "验证码不正确！");
-			return "index";
-		}
+//		if ((code == null)
+//				|| (!code.toLowerCase().equals(securityCode.toLowerCase()))) {
+//			session.setAttribute("error_msg", "验证码不正确！");
+//			return "index";
+//		}
 		Users users =userService.findByUsernameAndPassword(username, password);
 		if (users==null) {
 			session.setAttribute("error_msg", "用户名或密码错误");

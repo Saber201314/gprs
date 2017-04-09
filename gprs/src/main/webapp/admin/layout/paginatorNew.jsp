@@ -13,40 +13,40 @@
 
 </style>
 <p class="paginator" style="text-align:center margin-top:10px;">
-	<s:if test="%{page.allRecord>0}">
-		<span class="left">共有<strong id="total-record"> ${page.allRecord }</strong> 条记录</span>
+	<s:if test="%{ allRecord>0}">
+		<span class="left">共有<strong id="total-record"> ${ allRecord }</strong> 条记录</span>
 		
 		<span id="page_info">
-		   	<s:if test="%{page.pageNo!=1}">
+		   	<s:if test="%{pageNo!=1}">
 		        <a href="#" onclick="return goPage(1)">首页</a>
 		    </s:if>
-		    <s:if test="%{(page.pageNo-1)>0}">
-		        <a href="#" onclick="return goPage(${page.pageNo-1})">上一页</a>
+		    <s:if test="%{(pageNo-1)>0}">
+		        <a href="#" onclick="return goPage(${pageNo-1})">上一页</a>
 		    </s:if>			    
-		    <s:if test="%{(page.pageNo-3)>0}">
-		        <a href="#" onclick="return goPage(${page.pageNo-3})">${page.pageNo-3}</a>
+		    <s:if test="%{(pageNo-3)>0}">
+		        <a href="#" onclick="return goPage(${ pageNo-3})">${ pageNo-3}</a>
 		    </s:if>			    
-		    <s:if test="%{(page.pageNo-2)>0}">
-		        <a href="#" onclick="return goPage(${page.pageNo-2})">${page.pageNo-2}</a>
+		    <s:if test="%{(pageNo-2)>0}">
+		        <a href="#" onclick="return goPage(${ pageNo-2})">${ pageNo-2}</a>
 		    </s:if>
-		    <s:if test="%{(page.pageNo-1)>0}">
-		        <a href="#" onclick="return goPage(${page.pageNo-1})">${page.pageNo-1}</a>
+		    <s:if test="%{( pageNo-1)>0}">
+		        <a href="#" onclick="return goPage(${ pageNo-1})">${ pageNo-1}</a>
 		    </s:if>
-		    <a href="#" class="current_page" onclick="goPage(${page.pageNo})">${page.pageNo}</a>
-		    <s:if test="%{page.allPage>=(page.pageNo+1)}">
-		        <a href="#" onclick="return goPage(${page.pageNo+1})">${page.pageNo+1}</a>
+		    <a href="#" class="current_page" onclick="goPage(${ pageNo})">${ pageNo}</a>
+		    <s:if test="%{ allPage>=( pageNo+1)}">
+		        <a href="#" onclick="return goPage(${ pageNo+1})">${ pageNo+1}</a>
 		    </s:if>
-		    <s:if test="%{page.allPage>=(page.pageNo+2)}">
-		        <a href="#" onclick="return goPage(${page.pageNo+2})">${page.pageNo+2}</a>
+		    <s:if test="%{ allPage>=( pageNo+2)}">
+		        <a href="#" onclick="return goPage(${ pageNo+2})">${ pageNo+2}</a>
 		    </s:if>
-		    <s:if test="%{page.allPage>=(page.pageNo+3)}">
-		        <a href="#" onclick="return goPage(${page.pageNo+3})">${page.pageNo+3}</a>
+		    <s:if test="%{ allPage>=( pageNo+3)}">
+		        <a href="#" onclick="return goPage(${ pageNo+3})">${ pageNo+3}</a>
 		    </s:if>		
-		    <s:if test="%{page.allPage>=(page.pageNo+1)}">
-		        <a href="#" onclick="return goPage(${page.pageNo+1})">下一页</a>
+		    <s:if test="%{ allPage>=( pageNo+1)}">
+		        <a href="#" onclick="return goPage(${ pageNo+1})">下一页</a>
 		    </s:if>		    	    
-		    <s:if test="%{page.pageNo!=page.allPage}">
-		        <a href="#" onclick="return goPage(${page.allPage});">末页</a>
+		    <s:if test="%{ pageNo!= allPage}">
+		        <a href="#" onclick="return goPage(${ allPage});">末页</a>
 		    </s:if>	    
 		</span>
 	</s:if>

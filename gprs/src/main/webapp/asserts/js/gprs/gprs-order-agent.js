@@ -6,35 +6,35 @@ $(function(){
 
 function buildParams(){
 	var params = [];
-	params.push("page.pageNo=");
+	params.push("pageNo=");
 	params.push(curPage);
 	params.push("&");	
-	params.push("queryChargeOrderDO.account=");
+	params.push("account=");
 	params.push($("#agent-level").val());
 	params.push("&");
-	params.push("queryChargeOrderDO.mobile=");
+	params.push("mobile=");
 	var mobile = $.trim($("#mobile").val());
 	params.push(mobile);
 	params.push("&");
-	params.push("queryChargeOrderDO.location=");
+	params.push("location=");
 	params.push($(".terrority-select").val());
 	params.push("&");	
-	params.push("queryChargeOrderDO.from=");
+	params.push("from=");
 	params.push($("#start").val());
 	params.push("&");
-	params.push("queryChargeOrderDO.to=");
+	params.push("to=");
 	params.push($("#end").val());
 	params.push("&");	
-	params.push("queryChargeOrderDO.type=");
+	params.push("type=");
 	params.push($("#type").val());
 	params.push("&");	
-	params.push("queryChargeOrderDO.amount=");
+	params.push("amount=");
 	params.push($(".amount-select").val());
 	params.push("&");		
-	params.push("queryChargeOrderDO.locationType=");
+	params.push("locationType=");
 	params.push($(".locationType-select").val());
 	params.push("&");
-	params.push("queryChargeOrderDO.submitStatus=");
+	params.push("submitStatus=");
 	params.push($("#submitStatus").val());	
 	return params.join("");
 }

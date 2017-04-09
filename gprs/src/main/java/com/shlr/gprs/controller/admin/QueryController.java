@@ -12,22 +12,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelResource;
+import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.ChargeReport;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.ChannelResourceService;
+import com.shlr.gprs.services.ChargeOderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.UserService;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
 * @author xucong
@@ -46,6 +55,8 @@ public class QueryController {
 	ChargeReportService chargeReportService;
 	@Resource
 	ChannelResourceService channelResourceService;
+	@Resource
+	ChargeOderService chargeOderService;
 	
 	/**
 	 * 主页数据
@@ -106,7 +117,7 @@ public class QueryController {
 	 * @param session
 	 * @throws IOException 
 	 */
-	@RequestMapping(value="/layout/getCurrentChannelList.action",produces="application/json;charset=utf-8")
+	@RequestMapping(value="/query/getCurrentChannelList.action",produces="application/json;charset=utf-8")
 	public String getCurrentChannelList(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
 		response.setContentType("application/json;charset=utf-8");
 		Collection<Channel> channelList = ChannelCache.idMap.values();
@@ -120,5 +131,48 @@ public class QueryController {
 			writer.println(JSON.toJSONString(channelList));
 		}
 		return null;
+	}
+	@RequestMapping(value="/layout/getCurrentChannelList.action",produces="application/json;charset=utf-8")
+	public String getLayoutCurrentChannelList(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
+		response.setContentType("application/json;charset=utf-8");
+		Collection<Channel> channelList = ChannelCache.idMap.values();
+		PrintWriter writer = null;
+		try {
+			writer = response.getWriter();
+		} catch (IOException e) {
+			logger.error(" getCurrentChannelList ", e);
+		}
+		if (writer!=null) {
+			writer.println(JSON.toJSONString(channelList));
+		}
+		return null;
+	}
+	@RequestMapping(value="/chargeOrderList.action")
+	public String chargeOrderList(HttpServletResponse response, HttpSession session,
+			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account")String account,
+			@RequestParam(value="mobile")String mobile,@RequestParam(value="location")String location,
+			@RequestParam(value="from")String from,@RequestParam(value="to")String to,
+			@RequestParam(value="type")String type,@RequestParam(value="amount")String amount,
+			@RequestParam(value="locationType")String locationType,@RequestParam(value="submitStatus")String submitStatus,
+			@RequestParam(value="submitChannel")String submitChannel,@RequestParam(value="submitStatus",required=false)String cacheFlag) throws IOException{
+		
+		Users currentUser = userService.getCurrentUser(session);
+		if ((currentUser == null) || (currentUser.getType() != 1)) {
+			return "index";
+		}
+		PageRowBounds rowBounds=new PageRowBounds(pageNo, 10);
+		Example example = new Example(ChargeOrder.class);
+		example.setOrderByClause("  option_time desc");
+		List<ChargeOrder> listByPage = chargeOderService.listByPage(example, rowBounds);
+		Page<ChargeOrder> page=(Page<ChargeOrder>) listByPage;
+		JSONObject result=new JSONObject();
+		result.put("allRecord", page.getTotal());
+		result.put("allPage", page.getPages());
+		result.put("pageNo", page.getPageNum());
+		result.put("list", listByPage);
+		response.getWriter().print(result.toJSONString());
+		System.out.println(result.toJSONString());
+		return null;
+		
 	}
 }

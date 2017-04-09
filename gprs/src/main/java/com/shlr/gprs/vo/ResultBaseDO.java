@@ -6,7 +6,7 @@ package com.shlr.gprs.vo;
  * 
  */
 public class ResultBaseDO<T> {
-	private boolean success = true;
+	private Boolean success = true;
 	private T module;
 	private String error;
 	private String orderId;
@@ -26,11 +26,11 @@ public class ResultBaseDO<T> {
 		this.module = module;
 	}
 
-	public boolean isSuccess() {
+	public Boolean isSuccess() {
 		return this.success;
 	}
 
-	public void setSuccess(boolean success) {
+	public void setSuccess(Boolean success) {
 		this.success = success;
 	}
 

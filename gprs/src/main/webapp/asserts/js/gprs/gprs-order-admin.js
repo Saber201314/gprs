@@ -79,44 +79,44 @@ function insertAgent(agent,level){
 
 function buildParams(){
 	var params = [];
-	params.push("page.pageNo=");
+	params.push("pageNo=");
 	params.push(curPage);
 	params.push("&");	
-	params.push("queryChargeOrderDO.account=");
+	params.push("account=");
 	params.push($("#agent-level").val());
 	params.push("&");
-	params.push("queryChargeOrderDO.mobile=");
+	params.push("mobile=");
 	var mobile = $.trim($("#mobile").val());
 	params.push(mobile);
 	params.push("&");
-	params.push("queryChargeOrderDO.location=");
+	params.push("location=");
 	params.push($(".terrority-select").val());
 	params.push("&");	
-	params.push("queryChargeOrderDO.from=");
+	params.push("from=");
 	params.push($("#start").val());
 	params.push("&");
-	params.push("queryChargeOrderDO.to=");
+	params.push("to=");
 	params.push($("#end").val());
 	params.push("&");	
-	params.push("queryChargeOrderDO.type=");
+	params.push("type=");
 	params.push($("#type").val());
 	params.push("&");	
-	params.push("queryChargeOrderDO.amount=");
+	params.push("amount=");
 	params.push($(".amount-select").val());
 	params.push("&");		
-	params.push("queryChargeOrderDO.locationType=");
+	params.push("locationType=");
 	params.push($(".locationType-select").val());
 	params.push("&");
-	params.push("queryChargeOrderDO.submitStatus=");
+	params.push("submitStatus=");
 	params.push($("#submitStatus").val());
 	params.push("&");
-	params.push("queryChargeOrderDO.submitChannel=");
+	params.push("submitChannel=");
 	params.push($("#submit_channel").val());
 	
 	var len = $("#cacheFlag").length;
 	if(len>0){
 		params.push("&");
-		params.push("queryChargeOrderDO.cacheFlag=");
+		params.push("cacheFlag=");
 		params.push($("#cacheFlag").val());		
 	}
 	return params.join("");
@@ -217,17 +217,23 @@ function initChargeOrderData(){
         			} 			
         			html.push('<td>'+discountMoney+'</td>');
         			
-        			var optionTime = data.list[i].optionTime;  
-        			optionTime = optionTime.replace("T"," "); 
+        			var optionTime = data.list[i].optionTime; 
+        			optionTime = new Date(optionTime);
+        			optionTime = optionTime.getFullYear()+"-"+(optionTime.getMonth()+1)+"-"+optionTime.getDate()+" "+optionTime.getHours()+":"+optionTime.getMinutes()+":"+optionTime.getSeconds();
+//        			optionTime = optionTime.replace("T"," "); 
         			
         			html.push('<td>'+optionTime+'</td>');
         			
-        			var reportDate = data.list[i].reportDate;
-        			if(!reportDate || reportDate == ""){reportDate = "";}else{
-        				reportDate = reportDate.replace("T"," ");   
+        			var reportTime = data.list[i].reportTime;
+        			if(!reportTime || reportTime == ""){
+        				reportTime = "";
+        			}else{
+        				reportTime=new Date(reportTime);
+        				reportTime=reportTime.getFullYear()+"-"+(reportTime.getMonth()+1)+"-"+reportTime.getDate()+" "+reportTime.getHours()+":"+reportTime.getMinutes()+":"+reportTime.getSeconds()
+//        				reportDate = reportDate.replace("T"," ");   
 
         			}
-        			html.push('<td>'+reportDate+'</td>');
+        			html.push('<td>'+reportTime+'</td>');
         			var submitType = data.list[i].submitType;
         			if(submitType == 1){
         				submitType = "代理商直充";
@@ -342,7 +348,7 @@ function initChargeOrderData(){
         			html.push("</tr>");   	    	        				    	        			
         		}  
         		$("#order_table tbody tr:eq(0)").after(html.join("")); 
-        		initPageInfo(data.page);
+        		initPageInfo(data);
         		
         		$(".label #hide-option").each(function(){
     				$(this).tooltip({
@@ -356,7 +362,7 @@ function initChargeOrderData(){
         },
         error:function(){
         	layer.alert("服务器连接失败，请重试！");
-        	location.href="/exit.action";        	
+//        	location.href="/exit.action";        	
     }});   		
 }
 
