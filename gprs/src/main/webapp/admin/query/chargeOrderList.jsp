@@ -52,8 +52,8 @@ li{padding-top:5px !important;}
 			      <li>
 			      	<label class="lf">号码类型：</label>
 			      	<select id="type" theme="simple">
-			      		<c:forEach var="item" items="移动,联通,电信 " varStatus="status">
-			      			<option value="${status.index+1 }" >${item }</option>
+			      		<c:forEach var="item" items="请选择,移动,联通,电信 " varStatus="status">
+			      			<option value="${status.index }" >${item }</option>
 			      		</c:forEach>
 			      	</select>
 			      	
@@ -66,17 +66,17 @@ li{padding-top:5px !important;}
 			      <li>
 			      	<label class="lf">流量类型：</label>
 			      	<select id="locationType" theme="simple">
-			      		<c:forEach var="item" items="全国流量,省内流量" varStatus="status">
-			      			<option value="${status.index+1 }" >${item }</option>
+			      		<c:forEach var="item" items="请选择,全国流量,省内流量" varStatus="status">
+			      			<option value="${status.index }" >${item }</option>
 			      		</c:forEach>
 			      	</select>
 			      	<%-- <s:select id="locationType" class="locationType-select" list="#{1:'全国流量',2:'省内流量' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>
 			      </li>
 			      <li>
 			      	<label class="lf">充值状态：</label>
-			      	<select id="locationType" theme="simple">
-			      		<c:forEach var="item" items="未提交,充值中,充值成功,充值失败" varStatus="status">
-			      			<option value="${status.index+1 }" >${item }</option>
+			      	<select id="submitStatus" theme="simple">
+			      		<c:forEach var="item" items="请选择,未提交,充值中,充值成功,充值失败" varStatus="status">
+			      			<option    value="${status.index}" >${item }</option>
 			      		</c:forEach>
 			      	</select>
 			      	<%-- <s:select id="submitStatus" list="#{0:'未提交',1:'充值中',3:'充值失败',2:'充值成功'}" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>

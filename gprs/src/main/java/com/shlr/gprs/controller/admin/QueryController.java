@@ -17,6 +17,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,7 +37,9 @@ import com.shlr.gprs.services.ChargeOderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.UserService;
 
+import junit.framework.Assert;
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
 * @author xucong
@@ -149,19 +152,47 @@ public class QueryController {
 	}
 	@RequestMapping(value="/chargeOrderList.action")
 	public String chargeOrderList(HttpServletResponse response, HttpSession session,
-			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account")String account,
-			@RequestParam(value="mobile")String mobile,@RequestParam(value="location")String location,
-			@RequestParam(value="from")String from,@RequestParam(value="to")String to,
-			@RequestParam(value="type")String type,@RequestParam(value="amount")String amount,
-			@RequestParam(value="locationType")String locationType,@RequestParam(value="submitStatus")String submitStatus,
-			@RequestParam(value="submitChannel")String submitChannel,@RequestParam(value="submitStatus",required=false)String cacheFlag) throws IOException{
+			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
+			@RequestParam(value="mobile",required=false)String mobile,@RequestParam(value="location",required=false)String location,
+			@RequestParam(value="from",required=false)String from,@RequestParam(value="to",required=false)String to,
+			@RequestParam(value="type",required=false)Integer type,@RequestParam(value="amount",required=false)String amount,
+			@RequestParam(value="locationType",required=false)String locationType,@RequestParam(value="submitStatus",required=false)String submitStatus,
+			@RequestParam(value="submitChannel",required=false)String submitChannel,@RequestParam(value="submitStatus",required=false)String cacheFlag) throws IOException{
 		
 		Users currentUser = userService.getCurrentUser(session);
 		if ((currentUser == null) || (currentUser.getType() != 1)) {
 			return "index";
 		}
-		PageRowBounds rowBounds=new PageRowBounds(pageNo, 10);
-		Example example = new Example(ChargeOrder.class);
+		PageRowBounds rowBounds=new PageRowBounds((pageNo-1)*30, 30);
+		Example example = new Example(ChargeOrder.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		if (!StringUtils.isEmpty(account)) {
+			createCriteria.andEqualTo("account", account);
+		}
+		if (!StringUtils.isEmpty(mobile)) {
+			createCriteria.andEqualTo("mobile", mobile);
+		}
+		if (!StringUtils.isEmpty(location)) {
+			createCriteria.andEqualTo("location", location);
+		}
+		if (!StringUtils.isEmpty(from)&&!StringUtils.isEmpty(to)) {
+			createCriteria.andBetween("optionTime", from, to);
+		}
+		if (!StringUtils.isEmpty(type)&& 0 != type) {
+			createCriteria.andEqualTo("type", type);
+		}
+		if (!StringUtils.isEmpty(locationType)) {
+			createCriteria.andEqualTo("locationType", locationType);
+		}
+		if (!StringUtils.isEmpty(submitStatus)) {
+			createCriteria.andEqualTo("submitStatus", submitStatus);
+		}
+		if (!StringUtils.isEmpty(submitChannel)) {
+			createCriteria.andEqualTo("submitChannel", submitChannel);
+		}
+		if (!StringUtils.isEmpty(cacheFlag)) {
+			createCriteria.andEqualTo("cacheFlag", cacheFlag);
+		}
 		example.setOrderByClause("  option_time desc");
 		List<ChargeOrder> listByPage = chargeOderService.listByPage(example, rowBounds);
 		Page<ChargeOrder> page=(Page<ChargeOrder>) listByPage;

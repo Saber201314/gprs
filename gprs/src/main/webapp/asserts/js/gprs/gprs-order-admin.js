@@ -108,7 +108,8 @@ function buildParams(){
 	params.push($(".locationType-select").val());
 	params.push("&");
 	params.push("submitStatus=");
-	params.push($("#submitStatus").val());
+	var a=$("#submitStatus");
+	params.push(a.val());
 	params.push("&");
 	params.push("submitChannel=");
 	params.push($("#submit_channel").val());
@@ -362,7 +363,7 @@ function initChargeOrderData(){
         },
         error:function(){
         	layer.alert("服务器连接失败，请重试！");
-//        	location.href="/exit.action";        	
+//        	location.href="/index.jsp";        	
     }});   		
 }
 
