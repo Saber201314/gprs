@@ -5,16 +5,16 @@ package com.shlr.gprs.vo;
  * @version 创建时间：2017年4月2日 下午6:43:00
  * 
  */
-public class ResultBaseDO<T> {
+public class ResultBaseVO<T> {
 	private Boolean success = true;
 	private T module;
 	private String error;
 	private String orderId;
 
-	public ResultBaseDO() {
+	public ResultBaseVO() {
 	}
 
-	public ResultBaseDO(T module) {
+	public ResultBaseVO(T module) {
 		this.module = module;
 	}
 

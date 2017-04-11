@@ -15,7 +15,7 @@
         class="org.apache.log4j.DailyRollingFileAppender">  
         <param name="Threshold" value="error"></param>  
         <param name="ImmediateFlush" value="true"></param>  
-        <param name="File" value="F:/logs/error.log"></param>  
+        <param name="File" value="logs/error.log"></param>  
         <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"></param>  
         <layout class="org.apache.log4j.PatternLayout">  
             <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss\} %-5p] [%t] {%c:%L}-%m%n"></param>  
@@ -26,7 +26,7 @@
         class="org.apache.log4j.DailyRollingFileAppender">  
         <param name="Threshold" value="debug"></param>  
         <param name="ImmediateFlush" value="true"></param>  
-        <param name="File" value="F:/logs/debug.log"></param>  
+        <param name="File" value="logs/debug.log"></param>  
         <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"></param>  
         <layout class="org.apache.log4j.PatternLayout">  
             <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss\} %-5p] [%t] {%c:%L}-%m%n"></param>  

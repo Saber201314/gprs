@@ -220,7 +220,7 @@ function initChargeOrderData(){
         			
         			var optionTime = data.list[i].optionTime; 
         			optionTime = new Date(optionTime);
-        			optionTime = optionTime.getFullYear()+"-"+(optionTime.getMonth()+1)+"-"+optionTime.getDate()+" "+optionTime.getHours()+":"+optionTime.getMinutes()+":"+optionTime.getSeconds();
+        			optionTime = optionTime.getFullYear()+"-"+Appendzero( (optionTime.getMonth()+1))+"-"+Appendzero(optionTime.getDate())+" "+Appendzero(optionTime.getHours())+":"+Appendzero(optionTime.getMinutes())+":"+Appendzero(optionTime.getSeconds());
 //        			optionTime = optionTime.replace("T"," "); 
         			
         			html.push('<td>'+optionTime+'</td>');
@@ -230,7 +230,7 @@ function initChargeOrderData(){
         				reportTime = "";
         			}else{
         				reportTime=new Date(reportTime);
-        				reportTime=reportTime.getFullYear()+"-"+(reportTime.getMonth()+1)+"-"+reportTime.getDate()+" "+reportTime.getHours()+":"+reportTime.getMinutes()+":"+reportTime.getSeconds()
+        				reportTime=reportTime.getFullYear()+"-"+Appendzero( (reportTime.getMonth()+1))+"-"+Appendzero(reportTime.getDate())+" "+Appendzero(reportTime.getHours())+":"+Appendzero(reportTime.getMinutes())+":"+Appendzero(reportTime.getSeconds())
 //        				reportDate = reportDate.replace("T"," ");   
 
         			}
@@ -371,6 +371,10 @@ $(".btn_search").on("click",function(){
 	curPage = 1;
 	initChargeOrderData();		
 });    
+function Appendzero(obj) {  
+    if(obj<10) return "0" +""+ obj;  
+    else return obj;  
+}
 
 function initPageInfo(data){	
     var allRecord = data.allRecord;
@@ -456,7 +460,7 @@ function forceBackOrderStatus(id){
   	        error:function(){
   	        	layer.close(index);
   	        	layer.alert("服务器连接失败，请重试！");
-  	        	location.href="/exit.action";
+//  	        	location.href="/exit.action";
   	        }
   	    });	    				
 	}); 		

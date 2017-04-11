@@ -2,6 +2,7 @@ package com.shlr.gprs.controller.admin;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +37,8 @@ import com.shlr.gprs.services.ChannelResourceService;
 import com.shlr.gprs.services.ChargeOderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.UserService;
+import com.shlr.gprs.vo.ResultBaseVO;
+import com.shlr.gprs.vo.UsersVO;
 
 import junit.framework.Assert;
 import tk.mybatis.mapper.entity.Example;
@@ -155,9 +158,9 @@ public class QueryController {
 			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
 			@RequestParam(value="mobile",required=false)String mobile,@RequestParam(value="location",required=false)String location,
 			@RequestParam(value="from",required=false)String from,@RequestParam(value="to",required=false)String to,
-			@RequestParam(value="type",required=false)Integer type,@RequestParam(value="amount",required=false)String amount,
+			@RequestParam(value="type",required=false)Integer type,@RequestParam(value="amount",required=false)Integer amount,
 			@RequestParam(value="locationType",required=false)String locationType,@RequestParam(value="submitStatus",required=false)String submitStatus,
-			@RequestParam(value="submitChannel",required=false)String submitChannel,@RequestParam(value="submitStatus",required=false)String cacheFlag) throws IOException{
+			@RequestParam(value="submitChannel",required=false)String submitChannel,@RequestParam(value="cacheFlag",required=false)String cacheFlag) throws IOException{
 		
 		Users currentUser = userService.getCurrentUser(session);
 		if ((currentUser == null) || (currentUser.getType() != 1)) {
@@ -172,7 +175,7 @@ public class QueryController {
 		if (!StringUtils.isEmpty(mobile)) {
 			createCriteria.andEqualTo("mobile", mobile);
 		}
-		if (!StringUtils.isEmpty(location)) {
+		if (!StringUtils.isEmpty(location)&&!"请选择".equals(location)) {
 			createCriteria.andEqualTo("location", location);
 		}
 		if (!StringUtils.isEmpty(from)&&!StringUtils.isEmpty(to)) {
@@ -181,16 +184,32 @@ public class QueryController {
 		if (!StringUtils.isEmpty(type)&& 0 != type) {
 			createCriteria.andEqualTo("type", type);
 		}
-		if (!StringUtils.isEmpty(locationType)) {
+		if (!StringUtils.isEmpty(amount)&& 0 != amount) {
+			createCriteria.andEqualTo("amount", amount);
+		}
+		if (!StringUtils.isEmpty(locationType)&&!"0".equals(locationType)) {
 			createCriteria.andEqualTo("locationType", locationType);
 		}
-		if (!StringUtils.isEmpty(submitStatus)) {
-			createCriteria.andEqualTo("submitStatus", submitStatus);
+		if (!StringUtils.isEmpty(submitStatus)&&!"-1".equals(submitStatus)) {
+			if ("0".equals(submitStatus)) {
+				createCriteria.andEqualTo("submitStatus", 0);
+			}else if ("1".equals(submitStatus)) {
+				createCriteria.andEqualTo("submitStatus", 1);
+				createCriteria.andEqualTo("chargeStatus", 0);
+			}else if ("2".equals(submitStatus)) {
+				createCriteria.andEqualTo("submitStatus", 1);
+				createCriteria.andEqualTo("chargeStatus", 1);
+			}else if ("3".equals(submitStatus)) {
+				createCriteria.andEqualTo("submitStatus", 1);
+				createCriteria.andEqualTo("chargeStatus", -1);
+			}
 		}
 		if (!StringUtils.isEmpty(submitChannel)) {
 			createCriteria.andEqualTo("submitChannel", submitChannel);
 		}
-		if (!StringUtils.isEmpty(cacheFlag)) {
+		if (StringUtils.isEmpty(cacheFlag)) {
+			createCriteria.andEqualTo("cacheFlag", 0);
+		}else{
 			createCriteria.andEqualTo("cacheFlag", cacheFlag);
 		}
 		example.setOrderByClause("  option_time desc");
@@ -202,7 +221,25 @@ public class QueryController {
 		result.put("pageNo", page.getPageNum());
 		result.put("list", listByPage);
 		response.getWriter().print(result.toJSONString());
-		System.out.println(result.toJSONString());
+		return null;
+	}
+	@ResponseBody
+	@RequestMapping(value="/query/userListByLevel.action")
+	public String userListByLevel(HttpSession session){
+		ResultBaseVO<String> result=new ResultBaseVO<String>();
+		Users currentUser = userService.getCurrentUser(session);
+		if (currentUser == null) {
+			result.addError("请登录");
+			return JSON.toJSONString(result);
+		}
+		List<Users> userList=new ArrayList<Users>();
+		if (currentUser.getType() == 1) {
+			UsersVO userVO = new UsersVO();
+			userVO.setAgent("admin");
+			userList = userService.listByCondition(userVO);
+		} else {
+			userList.add(currentUser);
+		}
 		return null;
 		
 	}

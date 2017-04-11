@@ -26,10 +26,9 @@ import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.MobileUtil;
 import com.shlr.gprs.utils.SecurityCode;
 import com.shlr.gprs.utils.SecurityImageUtil;
-import com.shlr.gprs.vo.ResultBaseDO;
+import com.shlr.gprs.vo.ResultBaseVO;
 import com.suwoit.json.util.StringUtils;
 
-import jdk.nashorn.internal.ir.annotations.Reference;
 
 /**
 * @author xucong
@@ -39,9 +38,8 @@ import jdk.nashorn.internal.ir.annotations.Reference;
 @Controller
 public class PortalController {
 	
-	private String securityCode;
 	private String mobile;
-	private ResultBaseDO<Object> result;
+	private ResultBaseVO<Object> result;
 	private ByteArrayInputStream imageStream;
 	
 	@Resource
@@ -91,7 +89,7 @@ public class PortalController {
 	@RequestMapping(value="/getMobileInfo.action",produces="application/json")
 	@ResponseBody
 	public String getMobileInfo() {
-		this.result = new ResultBaseDO();
+		this.result = new ResultBaseVO();
 		if (MobileUtil.isNotMobileNO(this.mobile)) {
 			this.result.addError("号码为空。");
 			return "success";
@@ -171,7 +169,7 @@ public class PortalController {
 			@RequestParam("newPassword")String newPassword,
 			@RequestParam("repeatPassword")String repeatPassword) throws IOException {
 		Users currentUser = userService.getCurrentUser(session);
-		result=new ResultBaseDO<>();
+		result=new ResultBaseVO<>();
 		if (currentUser == null) {
 			this.result.addError("请登录");
 			return "success";

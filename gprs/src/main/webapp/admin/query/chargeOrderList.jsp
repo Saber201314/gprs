@@ -65,7 +65,7 @@ li{padding-top:5px !important;}
 			      <li><label class="lf">流量值：</label><select id="amount" class="amount-select"></select></li>
 			      <li>
 			      	<label class="lf">流量类型：</label>
-			      	<select id="locationType" theme="simple">
+			      	<select id="locationType" class="locationType-select" theme="simple">
 			      		<c:forEach var="item" items="请选择,全国流量,省内流量" varStatus="status">
 			      			<option value="${status.index }" >${item }</option>
 			      		</c:forEach>
@@ -75,7 +75,8 @@ li{padding-top:5px !important;}
 			      <li>
 			      	<label class="lf">充值状态：</label>
 			      	<select id="submitStatus" theme="simple">
-			      		<c:forEach var="item" items="请选择,未提交,充值中,充值成功,充值失败" varStatus="status">
+			      		<option value="-1" >请选择</option>
+			      		<c:forEach var="item" items="未提交,充值中,充值成功,充值失败" varStatus="status">
 			      			<option    value="${status.index}" >${item }</option>
 			      		</c:forEach>
 			      	</select>

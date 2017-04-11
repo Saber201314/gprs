@@ -1,6 +1,5 @@
 package com.shlr.gprs.utils;
 
-import com.sun.image.codec.jpeg.ImageFormatException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -77,9 +76,7 @@ public class SecurityImageUtil
       ImageOutputStream imOut = ImageIO.createImageOutputStream(bs);
       ImageIO.write(image, "jpg", imOut);
       inputStream = new ByteArrayInputStream(bs.toByteArray());
-    } catch (ImageFormatException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
+    }  catch (IOException e) {
       e.printStackTrace();
     }
     return inputStream;

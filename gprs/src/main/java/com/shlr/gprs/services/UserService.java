@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
@@ -51,6 +52,13 @@ public class UserService implements DruidStatInterceptor{
 	public List<Users> list(){
 		return userMapper.selectAll();
 		
+	}
+	/**
+	 * 根据条件查询
+	 * @return
+	 */
+	public List<Users> listByCondition(Users record){
+		return userMapper.select(record);
 	}
 	/**
 	 * 获取当前用户

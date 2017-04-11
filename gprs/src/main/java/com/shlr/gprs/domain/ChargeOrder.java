@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.shlr.gprs.cache.ChannelCache;
+
 /**
 * @author xucong
 * @version 创建时间：2017年4月9日 下午2:53:32
@@ -467,7 +469,13 @@ public class ChargeOrder {
 	 * @return the channelName
 	 */
 	public String getChannelName() {
-		return channelName;
+		Channel channel = (Channel) ChannelCache.idMap.get(Integer
+				.valueOf(this.submitChannel));
+		if (channel == null) {
+			return null;
+		}
+
+		return channel.getName();
 	}
 
 	/**
