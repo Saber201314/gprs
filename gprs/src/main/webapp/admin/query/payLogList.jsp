@@ -1,4 +1,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%
 String path = request.getContextPath();
@@ -25,12 +27,22 @@ li {padding-top:5px !important;}
 	    <form id="ydForm" action="payLogList.action" method="post">
 	    <div class="search_style">
 	      <ul class="search_content clearfix">	
-	      	  <input type="hidden" id="agent_account" value="${queryPayLogDO.account }"/>		  
-			  <li><label class="lf">代理商：</label><select id="agent-level" name="queryPayLogDO.account"></select></li>	
-			  <li><label class="lf">手机号码：</label><input type="text" name="queryPayLogDO.mobile" value="<s:property value='queryPayLogDO.mobile' />" /></li>  		
-		      <li><label class="lf">开始时间：</label><input type="text" name="queryPayLogDO.from" value="<s:date name="queryPayLogDO.from"></s:date>" id="start" class="inline laydate-icon"  /></li>
-		      <li><label class="lf">结束时间：</label><input type="text" name="queryPayLogDO.to" value="<s:date name="queryPayLogDO.to"></s:date>" id="end" class="inline laydate-icon" /></li>
-		      <li><label class="lf">操作状态：</label><s:select name="queryPayLogDO.status" list="#{1:'充值成功',0:'充值中',-1:'已退款',-2:'充值失败' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select></li>
+	      	  <input type="hidden" id="agent_account" value="${account }"/>		  
+			  <li><label class="lf">代理商：</label><select id="agent-level" name="account"></select></li>	
+			  <li><label class="lf">手机号码：</label><input type="text" name="mobile" value="${ mobile } " /></li>  		
+		      <li><label class="lf">开始时间：</label><input type="text" name="from" value='<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${from}"/>' id="start" class="inline laydate-icon"  /></li>
+		      <li><label class="lf">结束时间：</label><input type="text" name="to" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${to}"/>" id="end" class="inline laydate-icon" /></li>
+		      <li>
+		      	<label class="lf">操作状态：</label>
+		      	<select name="status">
+		      		<option>请选择</option>
+		      		<c:forEach var="item" items="充值失败,已退款,充值中,充值成功" varStatus="status">
+		      			<option value="${status.index-2 }">${item }</option>
+		      		</c:forEach>
+		      	
+		      	</select>
+		      	<%-- <s:select name="queryPayLogDO.status" list="#{1:'充值成功',0:'充值中',-1:'已退款',-2:'充值失败' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>
+		      </li>
 		      <li style="width:20px;"><button type="submit" class="btn_search sub_btn1">查询</button></li>
 	      </ul>
 	      </div>
@@ -51,67 +63,88 @@ li {padding-top:5px !important;}
 		    <th>扣费时间</th>
 		    <th width='130'>操作状态</th>
 		</tr>
-		<s:iterator value="payLogList">
+		<c:forEach var="item" items="${payLogList}">
 			<tr>
-				<td>${account}</td>
+				<td>${item.account}</td>
 				<td>
-					<s:if test="type==1">流量充值</s:if>
-					<s:elseif test="type==2">流量池费用</s:elseif>
+					<c:choose>
+						<c:when test="${item.type == 1 }">
+							流量充值
+						</c:when>
+						<c:when test="${item.type == 2 }">
+							流量池费用
+						</c:when>
+					</c:choose>
 				</td>
-				<td>${orderId}</td>
-				<td>${discount}</td>				
+				<td>${item.orderId}</td>
+				<td>${item.discount}</td>				
 				<td>
-					<s:if test="status==1">
-					<span class="label label-success arrowed-in arrowed-in-right">-${money }元</span>
-					</s:if>
-					<s:elseif test="status==0">
-					<span class="label label-info arrowed-right arrowed-in">-${money }元</span>
-					</s:elseif>
-					<s:elseif test="status==-1">
-					<span class="label label-danger arrowed">+${0-money }元</span>
-					</s:elseif>						
-					<s:else>
-					<span class="label arrowed">-${money }元</span>
-					</s:else>
+					<c:choose>
+						<c:when test="${item.status == 1}">
+							<span class="label label-success arrowed-in arrowed-in-right">-${item.money }元</span>
+						</c:when>
+						<c:when test="${item.status == 0}">
+							<span class="label label-info arrowed-right arrowed-in">-${item.money }元</span>
+						</c:when>
+						<c:when test="${item.status == -1}">
+							<span class="label label-danger arrowed">+${0-money }元</span>
+						</c:when>		
+						<c:otherwise>
+							<span class="label arrowed">-${money }元</span>
+						</c:otherwise>
+					</c:choose>
 				</td>
 				<td>
-				<s:if test="status==1">
-					<span class="label label-success arrowed-in arrowed-in-right">${balance }元</span>
-				</s:if>
-				<s:elseif test="status==0">
-					<span class="label label-info arrowed-right arrowed-in">${balance }元</span>
-				</s:elseif>
-				<s:elseif test="status==-1">
-					<span class="label label-danger arrowed">${balance }元</span>
-				</s:elseif>
-				<s:else>
-					<span class="label arrowed">${balance }元</span>
-				</s:else>
+					<c:choose>
+						<c:when test="${item.status==1 }">
+							<span class="label label-success arrowed-in arrowed-in-right">${item.balance }元</span>
+						</c:when>
+						<c:when test="${item.status==0 }">
+							<span class="label label-info arrowed-right arrowed-in">${item.balance }元</span>
+						</c:when>
+						<c:when test="${item.status== -1 }">
+							<span class="label label-danger arrowed">${item.balance }元</span>
+						</c:when>
+						<c:otherwise>
+							<span class="label arrowed">${item.balance }元</span>
+						</c:otherwise>
+					</c:choose>
+				
 				</td> 
-				<td>${profit}元</td>	
-				<td>${agentOrderId}</td>														
-				<td>${memo}</td>
-				<td><s:date format="yyyy-MM-dd HH:mm:ss" name="optionTime" /></td>
+				<td>${item.profit}元</td>	
+				<td>${item.agentOrderId}</td>														
+				<td>${item.memo}</td>
+				<td><fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${item.optionTime }"/></td>
 				<td>
-					<s:if test="status==1"><span class="label label-success arrowed-in arrowed-in-right">充值成功</span></s:if>
-					<s:elseif test="status==0"><span class="label label-info arrowed-right arrowed-in">充值中</span></s:elseif>
-					<s:elseif test="status==-2"><span class="label arrowed">充值失败</span></s:elseif>
-					<s:else><span class="label label-danger arrowed">已退款</span></s:else>
+					<c:choose>
+						<c:when test="${item.status==1 }">
+							<span class="label label-success arrowed-in arrowed-in-right">充值成功</span>
+						</c:when>
+						<c:when test="${item.status== 0  }">
+							<span class="label label-info arrowed-right arrowed-in">充值中</span>
+						</c:when>
+						<c:when test="${item.status== -1 }">
+							<span class="label arrowed">充值失败</span>
+						</c:when>
+						<c:otherwise>
+							<span class="label label-danger arrowed">已退款</span>
+						</c:otherwise>
+					</c:choose>
 				</td>
 			</tr>
-		</s:iterator>
+		</c:forEach>
 		<tr>
 			<td colspan="11"><div align="left"><jsp:include page="../layout/paginator.jsp"></jsp:include></div></td>
 	   </tr>
 	</table>
 </div>
 <form id="pageForm" action="payLogList.action" method="post" >
-	<input type="hidden" id="page.pageNo" name="page.pageNo" value="" />
-	<input type="hidden" name="queryPayLogDO.account" value="<s:property value='queryPayLogDO.account' />"/>
-	<input type="hidden" name="queryPayLogDO.mobile" value="<s:property value='queryPayLogDO.mobile' />"/>
-	<input type="hidden" name="queryPayLogDO.from" value="<s:date name="queryPayLogDO.from"></s:date>"/>
-	<input type="hidden" name="queryPayLogDO.to" value="<s:date name="queryPayLogDO.to"></s:date>"/>
-	<input type="hidden" name="queryPayLogDO.status" value="<s:property value='queryPayLogDO.status' />"/>
+	<input type="hidden" id="pageNo" name="pageNo" value="" />
+	<input type="hidden" name="account" value="${account } "/>
+	<input type="hidden" name="mobile" value="${mobile }   "/>
+	<input type="hidden" name="from" value="${from }   "/>
+	<input type="hidden" name="to" value="${to }    "/>
+	<input type="hidden" name="status" value="${status } "/>
 </form>
 <script src="${pageContext.request.contextPath}/asserts/js/gprs/gprs-utils.js" type="text/javascript"></script>
 
@@ -271,7 +304,7 @@ li {padding-top:5px !important;}
 
 	function goPage(pageNo){
 		var form=document.getElementById("pageForm");
-		var page=document.getElementById("page.pageNo");
+		var page=document.getElementById("pageNo");
 		page.value=pageNo;
 		form.submit();
 		return false;

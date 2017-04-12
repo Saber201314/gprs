@@ -3,8 +3,11 @@ package com.shlr.gprs.controller.admin;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +21,13 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.stat.TableStat.Mode;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
@@ -32,11 +37,14 @@ import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelResource;
 import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.ChargeReport;
+import com.shlr.gprs.domain.PayLog;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.ChannelResourceService;
 import com.shlr.gprs.services.ChargeOderService;
 import com.shlr.gprs.services.ChargeReportService;
+import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.UserService;
+import com.shlr.gprs.vo.PageResultVO;
 import com.shlr.gprs.vo.ResultBaseVO;
 import com.shlr.gprs.vo.UsersVO;
 
@@ -63,6 +71,8 @@ public class QueryController {
 	ChannelResourceService channelResourceService;
 	@Resource
 	ChargeOderService chargeOderService;
+	@Resource
+	PayLogService payLogService;
 	
 	/**
 	 * 主页数据
@@ -218,7 +228,7 @@ public class QueryController {
 		return null;
 	}
 	@ResponseBody
-	@RequestMapping(value="/query/userListByLevel.action",produces="application/json;charset=utf-8")
+	@RequestMapping(value="/query/userListByLevel.action")
 	public String userListByLevel(HttpSession session){
 		ResultBaseVO<Object> result=new ResultBaseVO<Object>();
 		Users currentUser = userService.getCurrentUser(session);
@@ -237,6 +247,65 @@ public class QueryController {
 		}
 		result.setModule(userList);
 		return JSON.toJSONString(result);
+	}
+	@RequestMapping(value="/query/payLogList.action")
+	public String payLogList(HttpSession session,
+			@RequestParam(value="pageNo",required=false,defaultValue="1")Integer pageNo,
+			@RequestParam(value="mobile",required=false)String mobile,
+			@RequestParam(value="account",required=false)String account,
+			@RequestParam(value="from",required=false)Date from,
+			@RequestParam(value="to",required=false)Date to,
+			@RequestParam(value="status",required=false)Integer status,
+			Model model){
+		Users currentUser = userService.getCurrentUser(session);
+		if(currentUser == null){
+			return "index";		
+		}
+		int type = currentUser.getType();
+		//如果不是系统管理员或者不是总代理
+		if (type != 1 && type != 2) {
+			return "index";			
+		}
+		Example example=new Example(PayLog.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		Calendar calendar=Calendar.getInstance();
+		if (StringUtils.isEmpty(from)) {
+			calendar.setTime(new Date());
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			from = calendar.getTime();
+		}
+		if (StringUtils.isEmpty(to)) {
+			calendar.setTime(new Date());
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.add(Calendar.DAY_OF_MONTH, 1);
+			calendar.set(Calendar.SECOND, -1);
+			to=calendar.getTime();
+		}
+		createCriteria.andBetween("optionTime", from, to);
+		if (StringUtils.isEmpty(account) && type != 1) {
+			createCriteria.andEqualTo("account", currentUser.getUsername());
+		}
+		if (status != null) {
+			createCriteria.andEqualTo("status", status);
+		}
+		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, pageNo);
+		Page<PayLog> page=(Page<PayLog>) listByExampleAndPage;
+		LinkedList<PayLog> arrayList = new LinkedList<PayLog>();
+		for (PayLog item : listByExampleAndPage) {
+			arrayList.add(item);
+		}
+		model.addAttribute("from", from);
+		model.addAttribute("to", to);
+		model.addAttribute("payLogList",arrayList);
+		model.addAttribute("pageNo", page.getPageNum());
+		model.addAttribute("allRecord", page.getTotal());
+		model.addAttribute("allPage", page.getPages());
+		
+		return "admin/query/payLogList";
 		
 	}
 }

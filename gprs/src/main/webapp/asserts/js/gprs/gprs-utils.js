@@ -7,9 +7,6 @@ $(function(){
 	    dataType:'json',
 	    cache:false,
 	    success:function(data){
-			if (!data) {
-				return;
-			}
 			if (data.success) {				
 				var list=data.module;
 				$.each(list,function(i,parent){
