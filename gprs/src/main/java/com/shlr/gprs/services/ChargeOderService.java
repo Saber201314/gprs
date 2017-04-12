@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.dao.ChargeOrderMapper;
 import com.shlr.gprs.domain.ChargeOrder;
 
@@ -23,8 +24,8 @@ public class ChargeOderService implements DruidStatInterceptor{
 	@Resource
 	ChargeOrderMapper chargeOrderMapper;
 	
-	public List<ChargeOrder> listByPage(Example example,RowBounds rowBounds){
-		return chargeOrderMapper.selectByExampleAndRowBounds(example, rowBounds);
+	public List<ChargeOrder> listByExampleAndPage(Example example,Integer pageNo){
+		return chargeOrderMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
 		
 	}
 

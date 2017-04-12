@@ -173,13 +173,14 @@ function initChargeOrderData(){
 	$.ajax({
         url:url,
         data:params,
+        type:"post",
         dataType:'json',
         cache:false,
         success:function(data){
         	layer.close(index);  
         	if(data && data.list.length>0){
         		var html = [];
-        		html.push("<tr>");
+        		html	.push("<tr>");
         		for(var i = 0;i<data.list.length;i++){
         			html.push('<td><input type="checkbox" class="check-item" name="queryChargeOrderDO.idList" value="'+data.list[i].id+'" /></td>');
         			html.push('<td>'+data.list[i].account+'</td>');

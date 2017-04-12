@@ -76,7 +76,6 @@ public class QueryController {
 		Users currentUser = userService.getCurrentUser(session);
 		Map<String, Object> result=new LinkedHashMap<String, Object>();
 		if (currentUser==null) {
-//			response.sendRedirect("/index.jsp");
 			result.put("islogin", "-1");
 			response.getWriter().print(JSON.toJSONString(result));
 			return null;
@@ -84,16 +83,11 @@ public class QueryController {
 		int type = currentUser.getType();
 		//如果不是系统管理员或者不是总代理
 		if (type != 1 && type != 2) {
-//			response.sendRedirect("/index.jsp");
 			result.put("islogin", "-1");
 			response.getWriter().print(JSON.toJSONString(result));
 			return null;
 		}
-		List<ChargeReport> reportList  = chargeReportService
-				.queryCurDayList();	
-//		Map<String,Object> map = new HashMap<String,Object>();
-//		map.put("gonggao", currentUser.getGonggao());
-//		this.reportMapList.add(map);
+		List<ChargeReport> reportList  = chargeReportService.queryCurDayList();
 		result.put("islogin", "1");
 		result.put("data", reportList);
 		response.getWriter().print(JSON.toJSONString(result));
@@ -154,7 +148,7 @@ public class QueryController {
 		return null;
 	}
 	@RequestMapping(value="/chargeOrderList.action")
-	public String chargeOrderList(HttpServletResponse response, HttpSession session,
+	public String chargeOrderList(HttpServletRequest request, HttpServletResponse response, HttpSession session,
 			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
 			@RequestParam(value="mobile",required=false)String mobile,@RequestParam(value="location",required=false)String location,
 			@RequestParam(value="from",required=false)String from,@RequestParam(value="to",required=false)String to,
@@ -166,7 +160,7 @@ public class QueryController {
 		if ((currentUser == null) || (currentUser.getType() != 1)) {
 			return "index";
 		}
-		PageRowBounds rowBounds=new PageRowBounds((pageNo-1)*30, 30);
+		
 		Example example = new Example(ChargeOrder.class,true,false);
 		Criteria createCriteria = example.createCriteria();
 		if (!StringUtils.isEmpty(account)) {
@@ -213,7 +207,7 @@ public class QueryController {
 			createCriteria.andEqualTo("cacheFlag", cacheFlag);
 		}
 		example.setOrderByClause("  option_time desc");
-		List<ChargeOrder> listByPage = chargeOderService.listByPage(example, rowBounds);
+		List<ChargeOrder> listByPage = chargeOderService.listByExampleAndPage(example, pageNo);
 		Page<ChargeOrder> page=(Page<ChargeOrder>) listByPage;
 		JSONObject result=new JSONObject();
 		result.put("allRecord", page.getTotal());
@@ -224,23 +218,25 @@ public class QueryController {
 		return null;
 	}
 	@ResponseBody
-	@RequestMapping(value="/query/userListByLevel.action")
+	@RequestMapping(value="/query/userListByLevel.action",produces="application/json;charset=utf-8")
 	public String userListByLevel(HttpSession session){
-		ResultBaseVO<String> result=new ResultBaseVO<String>();
+		ResultBaseVO<Object> result=new ResultBaseVO<Object>();
 		Users currentUser = userService.getCurrentUser(session);
 		if (currentUser == null) {
 			result.addError("请登录");
 			return JSON.toJSONString(result);
 		}
+		
 		List<Users> userList=new ArrayList<Users>();
 		if (currentUser.getType() == 1) {
 			UsersVO userVO = new UsersVO();
-			userVO.setAgent("admin");
 			userList = userService.listByCondition(userVO);
+			
 		} else {
 			userList.add(currentUser);
 		}
-		return null;
+		result.setModule(userList);
+		return JSON.toJSONString(result);
 		
 	}
 }
