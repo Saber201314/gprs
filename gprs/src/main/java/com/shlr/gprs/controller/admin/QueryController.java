@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +45,7 @@ import com.shlr.gprs.services.ChargeOderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.UserService;
+import com.shlr.gprs.utils.TimeUtls;
 import com.shlr.gprs.vo.PageResultVO;
 import com.shlr.gprs.vo.ResultBaseVO;
 import com.shlr.gprs.vo.UsersVO;
@@ -250,12 +252,12 @@ public class QueryController {
 	}
 	@RequestMapping(value="/query/payLogList.action")
 	public String payLogList(HttpSession session,
-			@RequestParam(value="pageNo",required=false,defaultValue="1")Integer pageNo,
+			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
 			@RequestParam(value="mobile",required=false)String mobile,
 			@RequestParam(value="account",required=false)String account,
-			@RequestParam(value="from",required=false)Date from,
-			@RequestParam(value="to",required=false)Date to,
-			@RequestParam(value="status",required=false)Integer status,
+			@RequestParam(value="from",required=false)String from,
+			@RequestParam(value="to",required=false)String to,
+			@RequestParam(value="status",required=false)String status,
 			Model model){
 		Users currentUser = userService.getCurrentUser(session);
 		if(currentUser == null){
@@ -269,12 +271,16 @@ public class QueryController {
 		Example example=new Example(PayLog.class,true,false);
 		Criteria createCriteria = example.createCriteria();
 		Calendar calendar=Calendar.getInstance();
+		Date dfrom = new Date();
+		Date dto = new Date();
 		if (StringUtils.isEmpty(from)) {
 			calendar.setTime(new Date());
 			calendar.set(Calendar.HOUR_OF_DAY, 0);
 			calendar.set(Calendar.MINUTE, 0);
 			calendar.set(Calendar.SECOND, 0);
-			from = calendar.getTime();
+			dfrom = calendar.getTime();
+		}else{
+			dfrom=TimeUtls.timeStr2DateByDefault(from);
 		}
 		if (StringUtils.isEmpty(to)) {
 			calendar.setTime(new Date());
@@ -283,23 +289,28 @@ public class QueryController {
 			calendar.set(Calendar.SECOND, 0);
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
 			calendar.set(Calendar.SECOND, -1);
-			to=calendar.getTime();
+			dto=calendar.getTime();
+		}else{
+			dto=TimeUtls.timeStr2DateByDefault(to);
 		}
-		createCriteria.andBetween("optionTime", from, to);
+		createCriteria.andBetween("optionTime", dfrom, dto);
 		if (StringUtils.isEmpty(account) && type != 1) {
 			createCriteria.andEqualTo("account", currentUser.getUsername());
 		}
-		if (status != null) {
+		if (!StringUtils.isEmpty(status)&&!"请选择".equals(status)) {
 			createCriteria.andEqualTo("status", status);
 		}
-		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, pageNo);
+		if (!StringUtils.isEmpty(mobile)) {
+			createCriteria.andLike("mobile", mobile+"%");
+		}
+		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
 		Page<PayLog> page=(Page<PayLog>) listByExampleAndPage;
 		LinkedList<PayLog> arrayList = new LinkedList<PayLog>();
 		for (PayLog item : listByExampleAndPage) {
 			arrayList.add(item);
 		}
-		model.addAttribute("from", from);
-		model.addAttribute("to", to);
+		model.addAttribute("from", dfrom);
+		model.addAttribute("to", dto);
 		model.addAttribute("payLogList",arrayList);
 		model.addAttribute("pageNo", page.getPageNum());
 		model.addAttribute("allRecord", page.getTotal());

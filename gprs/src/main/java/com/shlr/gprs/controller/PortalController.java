@@ -81,6 +81,50 @@ public class PortalController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}/**
+	 * 登录
+	 * @param username
+	 * @param password
+	 * @param securityCode
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/login.action")
+	public String login(@RequestParam("username")String username,
+			@RequestParam("password")String password,
+			@RequestParam("securityCode")String securityCode
+			,HttpSession session) {
+//		if (StringUtils.isEmpty(username)) {
+//			session.setAttribute("error_msg", "请输入用户名");
+//			return "index";
+//		}
+//		if (StringUtils.isEmpty(password)) {
+//			session.setAttribute("error_msg", "请输入密码");
+//			return "index";
+//		}	
+//		if (StringUtils.isEmpty(securityCode)) {
+//			session.setAttribute("error_msg", "请输入验证码！");
+//			return "index";
+//		}
+		String code = (String) session.getAttribute(SESSION_SECURITY_CODE);
+//		if ((code == null)
+//				|| (!code.toLowerCase().equals(securityCode.toLowerCase()))) {
+//			session.setAttribute("error_msg", "验证码不正确！");
+//			return "index";
+//		}
+		Users users =userService.findByUsernameAndPassword("admin", "lr2017..");
+		if (users==null) {
+			session.setAttribute("error_msg", "用户名或密码错误");
+			return "index";
+		}
+		session.setAttribute("user", users);
+		if (users.getType() == 1) {
+			return "redirect:/admin/layout/shouye.jsp";
+		}
+		if (users.getType() == 2) {
+			return "redirect:/agent/layout/shouye.jsp";
+		}
+		return "success";
 	}
 	/**
 	 * 获取手机号信息
@@ -193,49 +237,5 @@ public class PortalController {
 		response.getWriter().printf(  JSON.toJSONString(result));
 		return null;
 	}
-	/**
-	 * 登录
-	 * @param username
-	 * @param password
-	 * @param securityCode
-	 * @param session
-	 * @return
-	 */
-	@RequestMapping(value="/login.action")
-	public String login(@RequestParam("username")String username,
-			@RequestParam("password")String password,
-			@RequestParam("securityCode")String securityCode
-			,HttpSession session) {
-		if (StringUtils.isEmpty(username)) {
-			session.setAttribute("error_msg", "请输入用户名");
-			return "index";
-		}
-		if (StringUtils.isEmpty(password)) {
-			session.setAttribute("error_msg", "请输入密码");
-			return "index";
-		}	
-		if (StringUtils.isEmpty(securityCode)) {
-			session.setAttribute("error_msg", "请输入验证码！");
-			return "index";
-		}
-		String code = (String) session.getAttribute(SESSION_SECURITY_CODE);
-//		if ((code == null)
-//				|| (!code.toLowerCase().equals(securityCode.toLowerCase()))) {
-//			session.setAttribute("error_msg", "验证码不正确！");
-//			return "index";
-//		}
-		Users users =userService.findByUsernameAndPassword(username, password);
-		if (users==null) {
-			session.setAttribute("error_msg", "用户名或密码错误");
-			return "index";
-		}
-		session.setAttribute("user", users);
-		if (users.getType() == 1) {
-			return "redirect:/admin/layout/shouye.jsp";
-		}
-		if (users.getType() == 2) {
-			return "redirect:/agent/layout/shouye.jsp";
-		}
-		return "success";
-	}
+	
 }

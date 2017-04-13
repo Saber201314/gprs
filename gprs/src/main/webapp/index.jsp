@@ -23,6 +23,9 @@
 	
 <script
 	src="${pageContext.request.contextPath}/resourse/js/jquery-1.9.1.min.js"></script>
+	<script src="${pageContext.request.contextPath}/asserts/js/canvas.js"></script>
+	
+
 </head>
 
 <script>
@@ -35,7 +38,8 @@ if(window !=top){
 <div class="login_m1">
 	<div class="login_logo"><img src="${pageContext.request.contextPath}/resourse/images/logo.png"></div>
 </div>
-	<img src="${pageContext.request.contextPath}/resourse/images/login_bg.jpg" id="background-img" />
+	<%-- <img src="${pageContext.request.contextPath}/resourse/images/login_bg.jpg" id="background-img" /> --%>
+<canvas id="root" style="position:absolute;display: block;" width="1900" height="1010"  ></canvas>
 <div class="login_m">
 	<div class="login_boder">
 	<form action="${pageContext.request.contextPath}/login.action" method="post">
@@ -72,6 +76,13 @@ if(window !=top){
 
 <script>
 $(".login_logo").css("margin-top",$(".login_boder").offset().top-60);
+
+
+
+var root = document.querySelector("#root")
+var a = new CanvasAnimate(root,{length:150,clicked:true,moveon:true})
+    a.Run()
+
 </script>
 </body>
 </html>

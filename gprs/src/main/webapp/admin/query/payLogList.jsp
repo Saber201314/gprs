@@ -24,12 +24,12 @@ li {padding-top:5px !important;}
 	</div>	
 	<%-- <div class="errorMsg"><s:actionerror /></div> --%>
 	<div class="search">
-	    <form id="ydForm" action="payLogList.action" method="post">
+	    <form id="ydForm" action="../query/payLogList.action" method="post">
 	    <div class="search_style">
 	      <ul class="search_content clearfix">	
-	      	  <input type="hidden" id="agent_account" value="${account }"/>		  
+	      	  <input type="hidden" id="agent_account" value="${account}"/>		  
 			  <li><label class="lf">代理商：</label><select id="agent-level" name="account"></select></li>	
-			  <li><label class="lf">手机号码：</label><input type="text" name="mobile" value="${ mobile } " /></li>  		
+			  <li><label class="lf">手机号码：</label><input type="text" name="mobile" value="${mobile}" /></li>  		
 		      <li><label class="lf">开始时间：</label><input type="text" name="from" value='<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${from}"/>' id="start" class="inline laydate-icon"  /></li>
 		      <li><label class="lf">结束时间：</label><input type="text" name="to" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${to}"/>" id="end" class="inline laydate-icon" /></li>
 		      <li>
@@ -142,8 +142,8 @@ li {padding-top:5px !important;}
 	<input type="hidden" id="pageNo" name="pageNo" value="" />
 	<input type="hidden" name="account" value="${account } "/>
 	<input type="hidden" name="mobile" value="${mobile }   "/>
-	<input type="hidden" name="from" value="${from }   "/>
-	<input type="hidden" name="to" value="${to }    "/>
+	<input type="hidden" name="from" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${from}"/> "/>
+	<input type="hidden" name="to" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${to}"/>   "/>
 	<input type="hidden" name="status" value="${status } "/>
 </form>
 <script src="${pageContext.request.contextPath}/asserts/js/gprs/gprs-utils.js" type="text/javascript"></script>
