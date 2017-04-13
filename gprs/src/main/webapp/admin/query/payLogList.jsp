@@ -28,16 +28,16 @@ li {padding-top:5px !important;}
 	    <div class="search_style">
 	      <ul class="search_content clearfix">	
 	      	  <input type="hidden" id="agent_account" value="${account}"/>		  
-			  <li><label class="lf">代理商：</label><select id="agent-level" name="account"></select></li>	
+			  <li><label class="lf">代理商：</label><select id="agent-level" name="account" value="${account }"></select></li>	
 			  <li><label class="lf">手机号码：</label><input type="text" name="mobile" value="${mobile}" /></li>  		
 		      <li><label class="lf">开始时间：</label><input type="text" name="from" value='<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${from}"/>' id="start" class="inline laydate-icon"  /></li>
 		      <li><label class="lf">结束时间：</label><input type="text" name="to" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${to}"/>" id="end" class="inline laydate-icon" /></li>
 		      <li>
 		      	<label class="lf">操作状态：</label>
 		      	<select name="status">
-		      		<option>请选择</option>
-		      		<c:forEach var="item" items="充值失败,已退款,充值中,充值成功" varStatus="status">
-		      			<option value="${status.index-2 }">${item }</option>
+		      		<c:forEach var="item" items="请选择,充值失败,已退款,充值中,充值成功" varStatus="varstatus">
+		      			
+		      			<option  <c:if test="${status == (varstatus.index-3) }">selected="selected" </c:if> value="${varstatus.index-3 }">${item }</option>
 		      		</c:forEach>
 		      	
 		      	</select>
@@ -87,10 +87,10 @@ li {padding-top:5px !important;}
 							<span class="label label-info arrowed-right arrowed-in">-${item.money }元</span>
 						</c:when>
 						<c:when test="${item.status == -1}">
-							<span class="label label-danger arrowed">+${0-money }元</span>
+							<span class="label label-danger arrowed">+${0-item.money }元</span>
 						</c:when>		
 						<c:otherwise>
-							<span class="label arrowed">-${money }元</span>
+							<span class="label arrowed">-${item.money }元</span>
 						</c:otherwise>
 					</c:choose>
 				</td>
@@ -124,10 +124,10 @@ li {padding-top:5px !important;}
 							<span class="label label-info arrowed-right arrowed-in">充值中</span>
 						</c:when>
 						<c:when test="${item.status== -1 }">
-							<span class="label arrowed">充值失败</span>
+							<span class="label label-danger arrowed">已退款</span>
 						</c:when>
 						<c:otherwise>
-							<span class="label label-danger arrowed">已退款</span>
+							<span class="label arrowed">充值失败</span>
 						</c:otherwise>
 					</c:choose>
 				</td>

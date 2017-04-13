@@ -296,12 +296,14 @@ public class QueryController {
 		createCriteria.andBetween("optionTime", dfrom, dto);
 		if (StringUtils.isEmpty(account) && type != 1) {
 			createCriteria.andEqualTo("account", currentUser.getUsername());
+		}else if(!StringUtils.isEmpty(account) && type == 1){
+			createCriteria.andEqualTo("account", account);
 		}
-		if (!StringUtils.isEmpty(status)&&!"请选择".equals(status)) {
+		if (!StringUtils.isEmpty(status)&&!"-3".equals(status)) {
 			createCriteria.andEqualTo("status", status);
 		}
 		if (!StringUtils.isEmpty(mobile)) {
-			createCriteria.andLike("mobile", mobile+"%");
+			createCriteria.andLike("memo", mobile+"%");
 		}
 		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
 		Page<PayLog> page=(Page<PayLog>) listByExampleAndPage;
@@ -311,6 +313,9 @@ public class QueryController {
 		}
 		model.addAttribute("from", dfrom);
 		model.addAttribute("to", dto);
+		model.addAttribute("status", status);
+		model.addAttribute("account", account);
+		model.addAttribute("mobile", mobile);
 		model.addAttribute("payLogList",arrayList);
 		model.addAttribute("pageNo", page.getPageNum());
 		model.addAttribute("allRecord", page.getTotal());
