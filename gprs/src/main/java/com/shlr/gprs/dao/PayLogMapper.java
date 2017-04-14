@@ -23,6 +23,6 @@ public interface PayLogMapper extends Mapper<PayLog>{
 	Map selectRemittanceAndConsumeAndRefundByCondition(@Param("account")String account,@Param("from")String from,@Param("to")String to);
 
 
-	Map selectNoPayBillMoneyByCondition(@Param("account")String account,@Param("from")String from,@Param("to")String to);
+	List<Map> selectNoPayBillMoneyByCondition(@Param("account")String account,@Param("from")String from,@Param("to")String to);
 
 }

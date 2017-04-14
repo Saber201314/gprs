@@ -29,8 +29,8 @@ public class PayLogService implements DruidStatInterceptor{
 	 * @param example
 	 * @return
 	 */
-	public List<PayLog> listByExample(Example example){
-		return payLogMapper.selectByExample(example);
+	public List<PayLog> listByExample(Example example,Integer pageNo,Integer pageSize){
+		return payLogMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*pageSize, pageSize));
 	}
 	
 	/**
@@ -71,7 +71,7 @@ public class PayLogService implements DruidStatInterceptor{
 	 * @param to
 	 * @return
 	 */
-	public Map selectNoPayBillMoneyByCondition(String account,String from,String to){
+	public List<Map> selectNoPayBillMoneyByCondition(String account,String from,String to){
 		return payLogMapper.selectNoPayBillMoneyByCondition(account, from, to);
 	}
 }

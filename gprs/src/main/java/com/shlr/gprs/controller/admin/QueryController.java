@@ -2,10 +2,13 @@ package com.shlr.gprs.controller.admin;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -24,9 +27,20 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
-import net.sf.jxls.transformer.XLSTransformer;  
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;  
-import org.apache.poi.ss.usermodel.Workbook; 
+import net.sf.jxls.transformer.XLSTransformer;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -58,6 +72,7 @@ import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.DecimalUtils;
 import com.shlr.gprs.utils.TimeUtls;
 import com.shlr.gprs.vo.PageResultVO;
+import com.shlr.gprs.vo.PayLogFmt;
 import com.shlr.gprs.vo.ResultBaseVO;
 import com.shlr.gprs.vo.UsersVO;
 
@@ -420,27 +435,30 @@ public class QueryController {
 		}else{
 			payBillMap.put("status", 0);
 		}
-		Map NoPayBillMoneyMap = payLogService.selectNoPayBillMoneyByCondition(account, from, to);
+		List<Map> NoPayBillMoneyMap = payLogService.selectNoPayBillMoneyByCondition(account, from, to);
 		Double factMoney = 0.0D;
 		if (!CollectionUtils.isEmpty(NoPayBillMoneyMap)) {
-			int payBill = Integer.valueOf(String.valueOf(NoPayBillMoneyMap.get("pay_bill")));
-			Double money = (Double) NoPayBillMoneyMap.get("money");
-			if (money != null) {
-				factMoney += money;
-			}
-			payBillMap.put("factMoney", factMoney);
-			if (payBill == 1) {
-				payBillMap.put("payBill", money);
-				Double refund = (Double) payBillMap.get("refund");
-				if (refund != null) {
-					money = Math.round((money - refund) * 100) / 100.0;
-					payBillMap.put("factPayBill", money);
-				} else {
-					payBillMap.put("factPayBill", money);
+			for(int i = 0;i<NoPayBillMoneyMap.size();i++){
+				int payBill = Integer.valueOf(String.valueOf(NoPayBillMoneyMap.get(i).get("pay_bill")));
+				Double money = (Double) NoPayBillMoneyMap.get(i).get("money");
+				if (money != null) {
+					factMoney += money;
 				}
-			} else {
-				payBillMap.put("unPayBill", money);
+				payBillMap.put("factMoney", factMoney);
+				if (payBill == 1) {
+					payBillMap.put("payBill", money);
+					Double refund = (Double) payBillMap.get("refund");
+					if (refund != null) {
+						money = Math.round((money - refund) * 100) / 100.0;
+						payBillMap.put("factPayBill", money);
+					} else {
+						payBillMap.put("factPayBill", money);
+					}
+				} else {
+					payBillMap.put("unPayBill", money);
+				}
 			}
+			
 		}
 		payBillMap.put("account", account);
 		payBillMap.put("name", UsersCache.usernameMap.get(account).getName());		
@@ -451,7 +469,7 @@ public class QueryController {
 			HttpServletResponse response, HttpSession session,
 			@RequestParam(value = "account", required = false) String account,
 			@RequestParam(value = "from", required = false) String from,
-			@RequestParam(value = "to", required = false) String to){
+			@RequestParam(value = "to", required = false) String to) throws UnsupportedEncodingException{
 		Users currentUser = userService.getCurrentUser(session);
 		if(currentUser == null){
 			return;
@@ -473,34 +491,168 @@ public class QueryController {
 			createCriteria.andEqualTo("account", account);
 		}
 		createCriteria.andBetween("optionTime", from, to);
-		List<PayLog> listByExample = payLogService.listByExample(example);
-		Map<String, Object> bean=new HashMap<String, Object>();
-		bean.put("bean", listByExample);
-		XLSTransformer transformer = new XLSTransformer();  
-        InputStream in=null;  
-        OutputStream out=null;  
-        String templetePath = request.getServletContext().getRealPath("/")+"/templete/paylog_templete.xlsx";
-        String destFileName= "aaaa.xlsx";  
-        //设置响应  
-        response.setHeader("Content-Disposition", "attachment;filename=" + destFileName);  
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");  
-        response.setBufferSize(2048);
-        try {  
-            in=new BufferedInputStream(new FileInputStream(templetePath));  
-            Workbook workbook=transformer.transformXLS(in, bean);  
-            out=response.getOutputStream();  
-            //将内容写入输出流并把缓存的内容全部发出去  
-            workbook.write(out);  
-            out.flush();  
-        } catch (InvalidFormatException e) {  
-            e.printStackTrace();  
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        } finally {  
-            if (in!=null){try {in.close();} catch (IOException e) {}}  
-            if (out!=null){try {out.close();} catch (IOException e) {}}  
-        }  
+		int pageNo=0;
+		int allPages=0;
+		long start=System.currentTimeMillis();
+		SXSSFWorkbook wb = new SXSSFWorkbook(100); 
+		Sheet sheet = wb.createSheet();     //工作表对象  
+	    Row nRow = sheet.createRow(0);      //行对象  
+	    CellStyle style=wb.createCellStyle();
+	    
+	    Cell r0 = nRow.createCell(0);   
+	    initPoiRowStyle(wb, sheet, style, nRow, r0);
+	     
+	    r0.setCellValue("代理商");
+	    r0 = nRow.createCell(1);  
+	    r0.setCellStyle(style);
+	    r0.setCellValue("类别");
+	    r0 = nRow.createCell(2);   
+	    r0.setCellStyle(style);
+	    r0.setCellValue("流水号");
+	    r0 = nRow.createCell(3);   
+	    r0.setCellStyle(style);
+	    r0.setCellValue("扣费金额（元）");
+	    r0 = nRow.createCell(4);   
+	    r0.setCellStyle(style);
+	    r0.setCellValue("当前余额（元）");
+	    r0 = nRow.createCell(5);  
+	    r0.setCellStyle(style);
+	    r0.setCellValue("折扣");
+	    r0 = nRow.createCell(6);
+	    r0.setCellStyle(style);
+	    r0.setCellValue("代理商订单号");
+	    r0 = nRow.createCell(7);    
+	    r0.setCellStyle(style);
+	    r0.setCellValue("手机号");
+	    r0 = nRow.createCell(8);   
+	    r0.setCellStyle(style);
+	    r0.setCellValue("流量值");
+	    r0 = nRow.createCell(9); 
+	    r0.setCellStyle(style);
+	    r0.setCellValue("扣费时间");
+	    r0 = nRow.createCell(10); 
+	    r0.setCellStyle(style);
+	    r0.setCellValue("操作状态");
+		List<PayLog> bufferList=new ArrayList<PayLog>();
+		PayLogFmt fmt=new PayLogFmt();
+		boolean flag=true;
+		do {
+			pageNo++;
+			List<PayLog> listByExample = payLogService.listByExample(example,pageNo,10000);
+			allPages=((Page<PayLog>)listByExample).getPages();
+			bufferList.addAll(listByExample);
+			int size = bufferList.size();
+			for (int i = 0; i < size ; i++) {
+				PayLog item = bufferList.get(i);
+				Row row = sheet.createRow((pageNo-1)*10000+i+1);        //行对象  
+			    Cell cc0 = row.createCell(0);    
+			    cc0.setCellValue(item.getAccount());
+			    Cell cc1 = row.createCell(1);   
+			    cc1.setCellValue(fmt.typefmt(item.getType()));
+			    Cell cc2 = row.createCell(2);   
+			    cc2.setCellValue(item.getOrderId());
+			    Cell cc3 = row.createCell(3);   
+			    cc3.setCellValue(item.getMoney());
+			    Cell cc4 = row.createCell(4);   
+			    cc4.setCellValue(item.getBalance());
+			    Cell cc5 = row.createCell(5);   
+			    cc5.setCellValue(item.getDiscount());
+			    Cell cc6 = row.createCell(6);
+			    cc6.setCellValue(item.getAgentOrderId());
+			    Cell cc7 = row.createCell(7);  
+			    String[] split = item.getMemo().split("，");
+			    cc7.setCellValue(split[0]);
+			    Cell cc8 = row.createCell(8);   
+			    cc8.setCellValue(split[1]);
+			    Cell cc9 = row.createCell(9); 
+			    cc9.setCellValue(TimeUtls.date2StrByDefault(item.getOptionTime()));
+			    Cell cc10 = row.createCell(10); 
+			    cc10.setCellValue(fmt.statusfmt(item.getStatus()));
+			}
+			bufferList.clear();
+			if (pageNo==allPages) {
+				flag=false;
+			}
+		} while (flag);
+		System.out.println(System.currentTimeMillis()-start);
+		String filename="消费明细记录.xlsx";
+		try {
+	        response.setHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes(),"iso-8859-1")  );  
+	        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charest=UTF-8");  
+	        response.setBufferSize(2048);
+			OutputStream os=response.getOutputStream();
+			wb.write(os);
+			wb.close();
+			os.flush();
+			os.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+//		Map<String, Object> bean=new HashMap<String, Object>();
+//		bean.put("bean", listByExample);
+//		bean.put("fmt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+//		bean.put("paylogfmt", new PayLogFmt());
+//		XLSTransformer transformer = new XLSTransformer();  
+//        InputStream in=null;  
+//        OutputStream out=null;  
+//        String templetePath = request.getServletContext().getRealPath("/")+"/templete/paylog_templete.xlsx";
+//        String destFileName= "流量充值记录.xlsx";  
+//        //设置响应  
+//        response.setHeader("Content-Disposition", "attachment;filename=" + new String(destFileName.getBytes(),"iso-8859-1")  );  
+//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charest=UTF-8");  
+//        response.setBufferSize(2048);
+//        try {  
+//            in=new BufferedInputStream(new FileInputStream(templetePath));  
+//            long start=System.currentTimeMillis();
+//            Workbook workbook=transformer.transformXLS(in, bean); 
+//            long end=System.currentTimeMillis();
+//            System.out.println((end-start));
+//            out=response.getOutputStream();  
+//            //将内容写入输出流并把缓存的内容全部发出去  
+//            workbook.write(out);  
+//            out.flush();  
+//        } catch (InvalidFormatException e) {  
+//            e.printStackTrace();  
+//        } catch (Exception e) {  
+//            e.printStackTrace();  
+//        } finally {  
+//            if (in!=null){try {in.close();} catch (IOException e) {}}  
+//            if (out!=null){try {out.close();} catch (IOException e) {}}  
+//        }  
+		
+		
+	}
+	private void initPoiRowStyle(SXSSFWorkbook wb,Sheet sheet,CellStyle style,
+			Row row,Cell cell ){		
+		style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式	
+		Font font = wb.createFont();
+		font.setColor(HSSFFont.COLOR_NORMAL);
+		font.setFontName("黑体"); //字体
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD); //宽度		
+
+		style.setFont(font);
+		cell.setCellStyle(style);
+		cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+		style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		style.setFillForegroundColor(HSSFColor.YELLOW.index);
 		
 	}
 }
