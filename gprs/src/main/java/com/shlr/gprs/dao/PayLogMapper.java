@@ -1,5 +1,9 @@
 package com.shlr.gprs.dao;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.annotation.MapperScan;
 
 import com.shlr.gprs.domain.PayLog;
@@ -13,5 +17,12 @@ import tk.mybatis.mapper.common.Mapper;
 */
 @MapperScan
 public interface PayLogMapper extends Mapper<PayLog>{
+	List<PayLog> selectFirstAndLastPayLogByFrom2To(@Param("account")String account,@Param("from")String from,@Param("to")String to);
+	
+	
+	Map selectRemittanceAndConsumeAndRefundByCondition(@Param("account")String account,@Param("from")String from,@Param("to")String to);
+
+
+	Map selectNoPayBillMoneyByCondition(@Param("account")String account,@Param("from")String from,@Param("to")String to);
 
 }

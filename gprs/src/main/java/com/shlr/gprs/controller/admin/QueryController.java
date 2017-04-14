@@ -1,11 +1,16 @@
 package com.shlr.gprs.controller.admin;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,10 +24,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
+import net.sf.jxls.transformer.XLSTransformer;  
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;  
+import org.apache.poi.ss.usermodel.Workbook; 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +43,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.ChannelCache;
+import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelResource;
 import com.shlr.gprs.domain.ChargeOrder;
@@ -45,12 +55,14 @@ import com.shlr.gprs.services.ChargeOderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.UserService;
+import com.shlr.gprs.utils.DecimalUtils;
 import com.shlr.gprs.utils.TimeUtls;
 import com.shlr.gprs.vo.PageResultVO;
 import com.shlr.gprs.vo.ResultBaseVO;
 import com.shlr.gprs.vo.UsersVO;
 
 import junit.framework.Assert;
+import net.sf.jxls.transformer.XLSTransformer;
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
@@ -257,7 +269,7 @@ public class QueryController {
 			@RequestParam(value="account",required=false)String account,
 			@RequestParam(value="from",required=false)String from,
 			@RequestParam(value="to",required=false)String to,
-			@RequestParam(value="status",required=false)String status,
+			@RequestParam(value="status",required=false,defaultValue="-3")String status,
 			Model model){
 		Users currentUser = userService.getCurrentUser(session);
 		if(currentUser == null){
@@ -305,6 +317,7 @@ public class QueryController {
 		if (!StringUtils.isEmpty(mobile)) {
 			createCriteria.andLike("memo", mobile+"%");
 		}
+		example.setOrderByClause(" option_time desc");
 		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
 		Page<PayLog> page=(Page<PayLog>) listByExampleAndPage;
 		LinkedList<PayLog> arrayList = new LinkedList<PayLog>();
@@ -313,7 +326,7 @@ public class QueryController {
 		}
 		model.addAttribute("from", dfrom);
 		model.addAttribute("to", dto);
-		model.addAttribute("status", status);
+		model.addAttribute("status", Integer.valueOf(status));
 		model.addAttribute("account", account);
 		model.addAttribute("mobile", mobile);
 		model.addAttribute("payLogList",arrayList);
@@ -322,6 +335,172 @@ public class QueryController {
 		model.addAttribute("allPage", page.getPages());
 		
 		return "admin/query/payLogList";
+	}
+	@ResponseBody
+	@RequestMapping(value="/query/showPayBillInfo.action")
+	public String showPayBillInfo(HttpSession session,
+			@RequestParam(value = "account", required = false) String account,
+			@RequestParam(value = "from", required = false) String from,
+			@RequestParam(value = "to", required = false) String to) {
+		Users currentUser = userService.getCurrentUser(session);
+		if (currentUser == null) {
+			return "index";
+		}
+		int type = currentUser.getType();
+		// 如果不是系统管理员或者不是总代理
+		if (type != 1 && type != 2) {
+			return "index";
+		}
+		if (StringUtils.isEmpty(account) || from == null || to == null) {
+			return "success";
+		}
+		List<PayLog> selectFirstAndLastPayLogByFrom2To = payLogService.selectFirstAndLastPayLogByFrom2To(account, from,
+				to);
+		Map<String, Object> payBillMap=new LinkedHashMap<String, Object>();
+		
+		if (!CollectionUtils.isEmpty(selectFirstAndLastPayLogByFrom2To)) {
+			for (int i= 0; i < selectFirstAndLastPayLogByFrom2To.size(); i++) {
+				if (i == 0) {
+					payBillMap.put("startBalance", selectFirstAndLastPayLogByFrom2To.get(i).getBalance());
+					payBillMap.put("startDate", TimeUtls.date2StrByDefault(selectFirstAndLastPayLogByFrom2To.get(i).getOptionTime()));
+				} 
+				if (i == 1) {
+					payBillMap.put("endBalance", selectFirstAndLastPayLogByFrom2To.get(i).getBalance());
+					payBillMap.put("endDate",TimeUtls.date2StrByDefault(selectFirstAndLastPayLogByFrom2To.get(i).getOptionTime()));
+				} 
+			}
+		}
+		Map RemittanceAndConsumeAndRefundMap = payLogService.selectRemittanceAndConsumeAndRefundByCondition(account, from,to);
+		if (!CollectionUtils.isEmpty(RemittanceAndConsumeAndRefundMap)) {
+			payBillMap.put("remittance", RemittanceAndConsumeAndRefundMap.get("remittance"));//充值
+			  payBillMap.put("consume", RemittanceAndConsumeAndRefundMap.get("consume"));//消费
+			  payBillMap.put("refund", RemittanceAndConsumeAndRefundMap.get("refund"));//退款
+		}
+		Double remittance = (Double)payBillMap.get("remittance");
+		Double startBalance = (Double)payBillMap.get("startBalance");
+		Double consume = (Double)payBillMap.get("consume");
+		Double endBalance = (Double)payBillMap.get("endBalance");
+		
+		
+		StringBuffer buff = new StringBuffer();
+		if (remittance == null) {
+			remittance = 0.0D;
+		}
+		buff.append("￥" + remittance).append(" + ");
+
+		if (startBalance == null) {
+			startBalance = 0.0D;
+		}
+		buff.append("￥" + startBalance).append(" - ");
+
+		if (consume == null) {
+			consume = 0.0D;
+		}
+		buff.append("￥" + consume).append(" - ");
+
+		if (endBalance == null) {
+			endBalance = 0.0D;
+		}
+		Double realbalance= (remittance + startBalance  - consume);
+		realbalance=DecimalUtils.round(realbalance, 2);
+		
+		buff.append("￥" + realbalance+"(实际余额)  "); 
+		Double finalresult=remittance + startBalance  - consume -   realbalance  ;
+		Double diff = remittance + startBalance  - consume -   endBalance        ;
+		
+		finalresult=DecimalUtils.round(finalresult, 2);
+		diff=DecimalUtils.round(diff, 2);
+		
+		buff.append(" =   ￥ ").append(finalresult +" \n").append("差异 = ￥" + diff+"   \n系统余额  = "+endBalance   );
+		
+		payBillMap.put("diff", buff.toString());
+		
+		if(diff == 0.0D){
+			payBillMap.put("status", 1);
+		}else{
+			payBillMap.put("status", 0);
+		}
+		Map NoPayBillMoneyMap = payLogService.selectNoPayBillMoneyByCondition(account, from, to);
+		Double factMoney = 0.0D;
+		if (!CollectionUtils.isEmpty(NoPayBillMoneyMap)) {
+			int payBill = Integer.valueOf(String.valueOf(NoPayBillMoneyMap.get("pay_bill")));
+			Double money = (Double) NoPayBillMoneyMap.get("money");
+			if (money != null) {
+				factMoney += money;
+			}
+			payBillMap.put("factMoney", factMoney);
+			if (payBill == 1) {
+				payBillMap.put("payBill", money);
+				Double refund = (Double) payBillMap.get("refund");
+				if (refund != null) {
+					money = Math.round((money - refund) * 100) / 100.0;
+					payBillMap.put("factPayBill", money);
+				} else {
+					payBillMap.put("factPayBill", money);
+				}
+			} else {
+				payBillMap.put("unPayBill", money);
+			}
+		}
+		payBillMap.put("account", account);
+		payBillMap.put("name", UsersCache.usernameMap.get(account).getName());		
+		return JSON.toJSONString(payBillMap);
+	}
+	@RequestMapping(value="/query/exportExcelChargeLogDatas.action")
+	public void exportExcelChargeLogDatas(HttpServletRequest request,
+			HttpServletResponse response, HttpSession session,
+			@RequestParam(value = "account", required = false) String account,
+			@RequestParam(value = "from", required = false) String from,
+			@RequestParam(value = "to", required = false) String to){
+		Users currentUser = userService.getCurrentUser(session);
+		if(currentUser == null){
+			return;
+		}
+		int type = currentUser.getType();
+		String currentAccount = currentUser.getUsername();
+		if(type != 1 && type != 2){
+			return;
+		}
+		if(StringUtils.isEmpty(account) || from == null || to == null){
+			return;
+		}
+		Example example=new Example(PayLog.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		if (type != 1 && StringUtils.isEmpty(account)) {
+//			queryChargeOrderDO.setAccount(currentUser.getUsername());
+			createCriteria.andEqualTo("account", currentAccount);
+		}else{
+			createCriteria.andEqualTo("account", account);
+		}
+		createCriteria.andBetween("optionTime", from, to);
+		List<PayLog> listByExample = payLogService.listByExample(example);
+		Map<String, Object> bean=new HashMap<String, Object>();
+		bean.put("bean", listByExample);
+		XLSTransformer transformer = new XLSTransformer();  
+        InputStream in=null;  
+        OutputStream out=null;  
+        String templetePath = request.getServletContext().getRealPath("/")+"/templete/paylog_templete.xlsx";
+        String destFileName= "aaaa.xlsx";  
+        //设置响应  
+        response.setHeader("Content-Disposition", "attachment;filename=" + destFileName);  
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");  
+        response.setBufferSize(2048);
+        try {  
+            in=new BufferedInputStream(new FileInputStream(templetePath));  
+            Workbook workbook=transformer.transformXLS(in, bean);  
+            out=response.getOutputStream();  
+            //将内容写入输出流并把缓存的内容全部发出去  
+            workbook.write(out);  
+            out.flush();  
+        } catch (InvalidFormatException e) {  
+            e.printStackTrace();  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        } finally {  
+            if (in!=null){try {in.close();} catch (IOException e) {}}  
+            if (out!=null){try {out.close();} catch (IOException e) {}}  
+        }  
+		
 		
 	}
 }

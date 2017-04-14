@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shlr.gprs.dao.PayLogMapper">
+
+	<resultMap type="PayLog" id="paylogResult">
+		<result property="optionTime" column="option_time"/>
+	</resultMap>
+	
+	<select id="selectFirstAndLastPayLogByFrom2To" resultMap="paylogResult">
+		select truncate(sum(balance + money),2) as balance,option_time 
+			from g_pay_log force index(time_index) 
+		where id =  
+			(select min(id) 
+			 from g_pay_log force index(time_index) 
+			 where account=#{account} and option_time between #{from} and #{to})
+		union 
+		select truncate(sum(balance),2) as balance,option_time 
+			from g_pay_log force index(time_index) 
+		where id =  
+			(select max(id) from g_pay_log force index(time_index) 
+			where account=#{account} and option_time between #{from} and #{to})	
+	</select>
+	
+	<select id="selectRemittanceAndConsumeAndRefundByCondition" resultType="java.util.Map">
+		select 
+			(select truncate(sum(money),2) 
+			 from g_agent_charge_log 
+			 where account=#{account} and option_time between #{from} and #{to}) as remittance,
+			(select truncate(sum(money),2) 
+			 from g_pay_log force index(time_index) 
+			 where account=#{account} and option_time between #{from} and #{to}) as consume,
+			(select truncate(sum(money),2) 
+			 from g_agent_charge_log 
+			 where account=#{account} and pay_type =7 and option_time between #{from} and #{to}) as refund
+	</select>
+	<select id="selectNoPayBillMoneyByCondition" resultType="java.util.Map" >
+		select truncate(sum(discount_money),2) money,pay_bill 
+		from g_charge_order force index(optine_time_index) 
+		where account=#{account} and charge_status = 1 and option_time between #{from} and #{to}
+		group by pay_bill
+	
+	</select>
+	
+</mapper>

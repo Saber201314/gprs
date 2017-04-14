@@ -114,7 +114,7 @@ li {padding-top:5px !important;}
 				<td>${item.profit}元</td>	
 				<td>${item.agentOrderId}</td>														
 				<td>${item.memo}</td>
-				<td><fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${item.optionTime }"/></td>
+				<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${item.optionTime }"/></td>
 				<td>
 					<c:choose>
 						<c:when test="${item.status==1 }">
@@ -140,11 +140,11 @@ li {padding-top:5px !important;}
 </div>
 <form id="pageForm" action="payLogList.action" method="post" >
 	<input type="hidden" id="pageNo" name="pageNo" value="" />
-	<input type="hidden" name="account" value="${account } "/>
-	<input type="hidden" name="mobile" value="${mobile }   "/>
-	<input type="hidden" name="from" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${from}"/> "/>
-	<input type="hidden" name="to" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"   value="${to}"/>   "/>
-	<input type="hidden" name="status" value="${status } "/>
+	<input type="hidden" name="account" value="${account}"/>
+	<input type="hidden" name="mobile" value="${mobile}"/>
+	<input type="hidden" name="from" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${from}"/>"/>
+	<input type="hidden" name="to" value="<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${to}"/>"/>
+	<input type="hidden" name="status" value="${status}"/>
 </form>
 <script src="${pageContext.request.contextPath}/asserts/js/gprs/gprs-utils.js" type="text/javascript"></script>
 
@@ -164,17 +164,17 @@ li {padding-top:5px !important;}
 	 	$("#factPayBill").text("￥0.0");
 	 	$("#factPrice").text("￥0.0");
 	 	
-		var account = $("[name='queryPayLogDO.account']").val();
+		var account = $("[name='account']").val();
 		if(account == null || account == ""){
 			layer.msg("生成核算数据需要选择代理商");
 			return;
 		}
-		var from = $("[name='queryPayLogDO.from']").val();
+		var from = $("[name='from']").val();
 		if(from == null){
 			layer.msg("生成核算数据需要选择一个时间段");
 			return;		
 		}
-		var to = $("[name='queryPayLogDO.to']").val();
+		var to = $("[name='to']").val();
 		if(to == null){
 			layer.msg("生成核算数据需要选择一个时间段");
 			return;		
@@ -194,13 +194,13 @@ li {padding-top:5px !important;}
 		 });		
 		 
 		  var params = [];
-		  params.push("queryPayLogDO.account=");
+		  params.push("account=");
 		  params.push(account);
 		  params.push("&");
-		  params.push("queryPayLogDO.from=");
+		  params.push("from=");
 		  params.push(from);
 		  params.push("&");  
-		  params.push("queryPayLogDO.to=");
+		  params.push("to=");
 		  params.push(to);
 		  
 		  index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
@@ -263,7 +263,7 @@ li {padding-top:5px !important;}
 		 		 	
 		 		 	if(data.factPayBill == null){
 		 		 		data.factPayBill = "0.0";
-		 		 	}	 		 	
+		 		 	}	 		 	payBill
 		 		 	$("#factPayBill").text("￥"+ data.factPayBill);	
 		 		 	
 		 		 	if(data.factPayBill == null){
