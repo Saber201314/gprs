@@ -57,19 +57,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.ChannelCache;
+import com.shlr.gprs.cache.ChannelTemplateCache;
 import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.domain.Channel;
+import com.shlr.gprs.domain.ChannelLog;
 import com.shlr.gprs.domain.ChannelResource;
+import com.shlr.gprs.domain.ChannelTemplate;
 import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.ChargeReport;
 import com.shlr.gprs.domain.PayLog;
 import com.shlr.gprs.domain.Users;
+import com.shlr.gprs.services.ChannelLogService;
 import com.shlr.gprs.services.ChannelResourceService;
 import com.shlr.gprs.services.ChargeOderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.DecimalUtils;
+import com.shlr.gprs.utils.StrUtils;
 import com.shlr.gprs.utils.TimeUtls;
 import com.shlr.gprs.vo.PageResultVO;
 import com.shlr.gprs.vo.PayLogFmt;
@@ -102,6 +107,8 @@ public class QueryController {
 	ChargeOderService chargeOderService;
 	@Resource
 	PayLogService payLogService;
+	@Resource
+	ChannelLogService channelLogService ;
 	
 	/**
 	 * 主页数据
@@ -132,6 +139,7 @@ public class QueryController {
 		response.getWriter().print(JSON.toJSONString(result));
 		return null;
 	}
+	
 	/**
 	 * 获取通道资源
 	 * @param request
@@ -149,6 +157,7 @@ public class QueryController {
 		response.getWriter().println(JSON.toJSONString(queryList));
 		return null;
 	}
+	
 	/**
 	 * 获取当前通道列表
 	 * @param request
@@ -171,6 +180,10 @@ public class QueryController {
 		}
 		return null;
 	}
+	
+	
+	
+	
 	@RequestMapping(value="/layout/getCurrentChannelList.action",produces="application/json;charset=utf-8")
 	public String getLayoutCurrentChannelList(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
 		response.setContentType("application/json;charset=utf-8");
@@ -186,6 +199,28 @@ public class QueryController {
 		}
 		return null;
 	}
+	
+	
+	/**
+	 * 充值记录
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @param pageNo
+	 * @param account
+	 * @param mobile
+	 * @param location
+	 * @param from
+	 * @param to
+	 * @param type
+	 * @param amount
+	 * @param locationType
+	 * @param submitStatus
+	 * @param submitChannel
+	 * @param cacheFlag
+	 * @return
+	 * @throws IOException
+	 */
 	@RequestMapping(value="/chargeOrderList.action")
 	public String chargeOrderList(HttpServletRequest request, HttpServletResponse response, HttpSession session,
 			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
@@ -256,6 +291,12 @@ public class QueryController {
 		response.getWriter().print(result.toJSONString());
 		return null;
 	}
+	
+	/**
+	 * 根据用户级别获取用户列表
+	 * @param session
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value="/query/userListByLevel.action")
 	public String userListByLevel(HttpSession session){
@@ -277,6 +318,19 @@ public class QueryController {
 		result.setModule(userList);
 		return JSON.toJSONString(result);
 	}
+	
+	/**
+	 * 消费记录
+	 * @param session
+	 * @param pageNo
+	 * @param mobile
+	 * @param account
+	 * @param from
+	 * @param to
+	 * @param status
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value="/query/payLogList.action")
 	public String payLogList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
@@ -351,6 +405,16 @@ public class QueryController {
 		
 		return "admin/query/payLogList";
 	}
+	
+	
+	/**
+	 * 显示账单信息
+	 * @param session
+	 * @param account
+	 * @param from
+	 * @param to
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value="/query/showPayBillInfo.action")
 	public String showPayBillInfo(HttpSession session,
@@ -464,6 +528,17 @@ public class QueryController {
 		payBillMap.put("name", UsersCache.usernameMap.get(account).getName());		
 		return JSON.toJSONString(payBillMap);
 	}
+	
+	/**
+	 * 导出消费明细Excel
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @param account
+	 * @param from
+	 * @param to
+	 * @throws UnsupportedEncodingException
+	 */
 	@RequestMapping(value="/query/exportExcelChargeLogDatas.action")
 	public void exportExcelChargeLogDatas(HttpServletRequest request,
 			HttpServletResponse response, HttpSession session,
@@ -479,13 +554,12 @@ public class QueryController {
 		if(type != 1 && type != 2){
 			return;
 		}
-		if(StringUtils.isEmpty(account) || from == null || to == null){
+		if(from == null || to == null){
 			return;
 		}
 		Example example=new Example(PayLog.class,true,false);
 		Criteria createCriteria = example.createCriteria();
 		if (type != 1 && StringUtils.isEmpty(account)) {
-//			queryChargeOrderDO.setAccount(currentUser.getUsername());
 			createCriteria.andEqualTo("account", currentAccount);
 		}else{
 			createCriteria.andEqualTo("account", account);
@@ -498,41 +572,16 @@ public class QueryController {
 		Sheet sheet = wb.createSheet();     //工作表对象  
 	    Row nRow = sheet.createRow(0);      //行对象  
 	    CellStyle style=wb.createCellStyle();
+	       
+	    initPoiRowStyle(wb, sheet, style);
 	    
-	    Cell r0 = nRow.createCell(0);   
-	    initPoiRowStyle(wb, sheet, style, nRow, r0);
-	     
-	    r0.setCellValue("代理商");
-	    r0 = nRow.createCell(1);  
-	    r0.setCellStyle(style);
-	    r0.setCellValue("类别");
-	    r0 = nRow.createCell(2);   
-	    r0.setCellStyle(style);
-	    r0.setCellValue("流水号");
-	    r0 = nRow.createCell(3);   
-	    r0.setCellStyle(style);
-	    r0.setCellValue("扣费金额（元）");
-	    r0 = nRow.createCell(4);   
-	    r0.setCellStyle(style);
-	    r0.setCellValue("当前余额（元）");
-	    r0 = nRow.createCell(5);  
-	    r0.setCellStyle(style);
-	    r0.setCellValue("折扣");
-	    r0 = nRow.createCell(6);
-	    r0.setCellStyle(style);
-	    r0.setCellValue("代理商订单号");
-	    r0 = nRow.createCell(7);    
-	    r0.setCellStyle(style);
-	    r0.setCellValue("手机号");
-	    r0 = nRow.createCell(8);   
-	    r0.setCellStyle(style);
-	    r0.setCellValue("流量值");
-	    r0 = nRow.createCell(9); 
-	    r0.setCellStyle(style);
-	    r0.setCellValue("扣费时间");
-	    r0 = nRow.createCell(10); 
-	    r0.setCellStyle(style);
-	    r0.setCellValue("操作状态");
+	    String[] titles=new String[]{"代理商","类别","流水号","扣费金额（元）","当前余额（元）","折扣","代理商订单号","手机号","流量值","扣费时间","操作状态"};
+	    for (int i = 0; i < titles.length; i++) {
+	    	Cell c = nRow.createCell(i);
+	    	c.setCellValue(titles[i]);
+	    	c.setCellStyle(style);
+		}
+	    
 		List<PayLog> bufferList=new ArrayList<PayLog>();
 		PayLogFmt fmt=new PayLogFmt();
 		boolean flag=true;
@@ -640,19 +689,79 @@ public class QueryController {
 		
 		
 	}
-	private void initPoiRowStyle(SXSSFWorkbook wb,Sheet sheet,CellStyle style,
-			Row row,Cell cell ){		
+	
+	
+	
+	@RequestMapping(value="/query/channelLogList.action")
+	public String channelLogList(HttpSession session,
+			@RequestParam(value="mobile",required=false)String mobile,
+			@RequestParam(value="pageNo",required=false,defaultValue = "1")String pageNo,
+			@RequestParam(value="from",required=false)String from,
+			@RequestParam(value="to",required=false)String to,
+			@RequestParam(value="templateId",required=false)String templateId,
+			Model model) throws UnsupportedEncodingException{
+		Users currentUser = userService.getCurrentUser(session);
+		if ((currentUser == null) || (currentUser.getType() != 1)) {
+			return "login";
+		}
+		Example example=new Example(ChannelLog.class, true, false);
+		Criteria createCriteria = example.createCriteria();
+		if (!StringUtils.isEmpty(mobile)) {
+			createCriteria.andEqualTo("mobile", mobile);
+		}
+		Date dfrom = null;
+		Date dto = null;
+		if (!StringUtils.isEmpty(from)) {
+			dfrom =TimeUtls.timeStr2Date(from,"yyyy-MM-dd");
+			createCriteria.andGreaterThanOrEqualTo("optionTime", dfrom);
+		}
+		if (!StringUtils.isEmpty(to)) {
+			dto=TimeUtls.timeStr2Date(to,"yyyy-MM-dd");
+			createCriteria.andLessThanOrEqualTo("optionTime", dto);
+		}
+		if (!StringUtils.isEmpty(templateId)&&!"请选择".equals(templateId)) {
+			createCriteria.andEqualTo("templateId", templateId);
+		}
+		List<ChannelLog> listByExampleAndPage = channelLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
+		Page<ChannelLog> page=(Page<ChannelLog>) listByExampleAndPage;
+		Collection<ChannelTemplate> values = ChannelTemplateCache.identityMap.values();
+		model.addAttribute("mobile", mobile);
+		model.addAttribute("templateId", templateId);
+		model.addAttribute("from", dfrom == null ? "" : dfrom);
+		model.addAttribute("to", dto == null ? "" : dto);
+		model.addAttribute("channelLogList", listByExampleAndPage);
+		model.addAttribute("templateList", values);
+		
+		model.addAttribute("util", new StrUtils());
+		
+		model.addAttribute("allRecord", page.getTotal());
+		model.addAttribute("pageNo", page.getPageNum());
+		model.addAttribute("allPage", page.getPages());
+		return "admin/query/channelLogList";
+	}
+	
+	
+	
+	
+	/**
+	 * 初始化Excel单元格样式
+	 * @param wb
+	 * @param sheet
+	 * @param style
+	 */
+	private void initPoiRowStyle(SXSSFWorkbook wb,Sheet sheet,CellStyle style){		
 		style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式	
 		Font font = wb.createFont();
 		font.setColor(HSSFFont.COLOR_NORMAL);
 		font.setFontName("黑体"); //字体
 		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD); //宽度		
-
 		style.setFont(font);
-		cell.setCellStyle(style);
-		cell.setCellType(HSSFCell.CELL_TYPE_STRING);
 		style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 		style.setFillForegroundColor(HSSFColor.YELLOW.index);
 		
 	}
+
+
+
+
 }
