@@ -16,6 +16,7 @@ function CanvasAnimate(Dom,options){
     this.list = []
 };
 
+
 CanvasAnimate.prototype.Run = function(){
     if( this.clicked ){
         this.Element.addEventListener( "click",this.Clicked.bind(this) )

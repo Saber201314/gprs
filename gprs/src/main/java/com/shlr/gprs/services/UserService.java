@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.define.util.DefineCollectionUtil;
+import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.dao.UserMapper;
 import com.shlr.gprs.domain.Users;
@@ -65,6 +66,11 @@ public class UserService implements DruidStatInterceptor{
 	public List<Users> listByCondition(Users record){
 		return userMapper.select(record);
 	}
+	
+	public List<Users> listByExampleAndPage(Example example,Integer pageNo){
+		return userMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+	}
+	
 	
 	private List<Users> enrichAgentList(List<Users> parentAgentList) {
 		if (DefineCollectionUtil.isEmpty(parentAgentList)) {

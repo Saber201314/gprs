@@ -59,6 +59,7 @@ import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.cache.ChannelTemplateCache;
 import com.shlr.gprs.cache.UsersCache;
+import com.shlr.gprs.domain.Callback;
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelLog;
 import com.shlr.gprs.domain.ChannelResource;
@@ -67,6 +68,7 @@ import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.ChargeReport;
 import com.shlr.gprs.domain.PayLog;
 import com.shlr.gprs.domain.Users;
+import com.shlr.gprs.services.CallbackService;
 import com.shlr.gprs.services.ChannelLogService;
 import com.shlr.gprs.services.ChannelResourceService;
 import com.shlr.gprs.services.ChargeOderService;
@@ -109,6 +111,8 @@ public class QueryController {
 	PayLogService payLogService;
 	@Resource
 	ChannelLogService channelLogService ;
+	@Resource
+	CallbackService callbackService;
 	
 	/**
 	 * 主页数据
@@ -691,7 +695,18 @@ public class QueryController {
 	}
 	
 	
-	
+	/**
+	 * 通知提交日志
+	 * @param session
+	 * @param mobile
+	 * @param pageNo
+	 * @param from
+	 * @param to
+	 * @param templateId
+	 * @param model
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	@RequestMapping(value="/query/channelLogList.action")
 	public String channelLogList(HttpSession session,
 			@RequestParam(value="mobile",required=false)String mobile,
@@ -702,7 +717,7 @@ public class QueryController {
 			Model model) throws UnsupportedEncodingException{
 		Users currentUser = userService.getCurrentUser(session);
 		if ((currentUser == null) || (currentUser.getType() != 1)) {
-			return "login";
+			return "index";
 		}
 		Example example=new Example(ChannelLog.class, true, false);
 		Criteria createCriteria = example.createCriteria();
@@ -722,6 +737,7 @@ public class QueryController {
 		if (!StringUtils.isEmpty(templateId)&&!"请选择".equals(templateId)) {
 			createCriteria.andEqualTo("templateId", templateId);
 		}
+		example.setOrderByClause(" id desc ");
 		List<ChannelLog> listByExampleAndPage = channelLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
 		Page<ChannelLog> page=(Page<ChannelLog>) listByExampleAndPage;
 		Collection<ChannelTemplate> values = ChannelTemplateCache.identityMap.values();
@@ -741,6 +757,36 @@ public class QueryController {
 	}
 	
 	
+	@RequestMapping(value="/query/callbackList.action")
+	public String callbackList(HttpSession session,
+			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
+			@RequestParam(value="account",required=false)String account,
+			@RequestParam(value="mobile",required=false)String mobile,
+			Model model){
+		Users currentUser = userService.getCurrentUser(session);
+		if ((currentUser == null) || (currentUser.getType() != 1)) {
+			return "index";
+		}
+		
+		Example example=new Example(Callback.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		if (!StringUtils.isEmpty(mobile)) {
+			createCriteria.andEqualTo("mobile", mobile);
+			model.addAttribute("mobile", mobile);
+		}
+		if (!StringUtils.isEmpty(account)) {
+			createCriteria.andEqualTo("account", account);
+			model.addAttribute("account", account);
+		}
+		example.setOrderByClause(" id desc");
+		List<Callback> listByExampleAndPage = callbackService.listByExampleAndPage(example, Integer.valueOf(pageNo));
+		Page<Callback> page= (Page<Callback>) listByExampleAndPage;
+		model.addAttribute("callbackList", listByExampleAndPage.toArray());
+		model.addAttribute("allRecord", page.getTotal());
+		model.addAttribute("pageNo", page.getPageNum());
+		model.addAttribute("allPage", page.getPages());
+		return "admin/query/callbackList";
+	}
 	
 	
 	/**

@@ -24,7 +24,7 @@ $(function(){
 
 			    if($("#agent-levels").length>0){
 					$("#agent-levels").append(options.join(""));
-				    $("#agent-levels").chosen({search_contains:true});			    			    	
+				    $("#agent-levels").chosen({search_contains:true});		    			    	
 			    }
 			}
 			else{
