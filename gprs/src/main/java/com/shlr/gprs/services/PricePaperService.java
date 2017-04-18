@@ -1,0 +1,22 @@
+package com.shlr.gprs.services;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.shlr.gprs.dao.PricePaperMapper;
+import com.shlr.gprs.domain.PricePaper;
+
+/**
+ * @author Administrator
+ */
+@Service
+public class PricePaperService {
+	
+	@Resource
+	PricePaperMapper pricePaperMapper;
+	
+	public PricePaper selectOneByPK(Object pk){
+		return pricePaperMapper.selectByPrimaryKey(pk);
+	}
+}

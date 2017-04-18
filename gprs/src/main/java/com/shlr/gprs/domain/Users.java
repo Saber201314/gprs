@@ -1,9 +1,12 @@
 package com.shlr.gprs.domain;
 
+import com.shlr.gprs.cache.SuiteOrderCache;
+import com.shlr.gprs.manager.PayManager;
 import com.suwoit.json.util.StringUtils;
 import java.io.Serializable;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,7 +39,7 @@ public class Users implements Serializable {
 	@Column
 	private String phone;//电话
 	@Column(name="paper_id")
-	private Integer paperId;
+	private Integer paperId;//报价单ID
 	@Column
 	private Double money;
 	@Column(name="pre_money")
@@ -172,14 +175,14 @@ public class Users implements Serializable {
 		this.paperId = paperId;
 	}
 
-//	public double getMoney() {
-//		return PayManager.getUserMoney(this.id);
-//	}
-//
-//	public String getMoneyString() {
-//		DecimalFormat decimalFormat = new DecimalFormat("#0.00");
-//		return decimalFormat.format(PayManager.getUserMoney(this.id));
-//	}
+	public double getMoney() {
+		return PayManager.getInstance().getUserMoney(this.id);
+	}
+
+	public String getMoneyString() {
+		DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+		return decimalFormat.format(PayManager.getInstance().getUserMoney(this.id));
+	}
 
 	public void setMoney(Double money) {
 		this.money = money;
@@ -469,15 +472,15 @@ public class Users implements Serializable {
 		this.backUrl = backUrl;
 	}
 
-//	public Integer getSuiteSize() {
-//		List orderList = (List) SuiteOrderCache.orderMapByAccount
-//				.get(this.username);
-//		if (orderList == null) {
-//			return 0;
-//		}
-//
-//		return orderList.size();
-//	}
+	public Integer getSuiteSize() {
+		List orderList = (List) SuiteOrderCache.getInstance().orderMapByAccount
+				.get(this.username);
+		if (orderList == null) {
+			return 0;
+		}
+
+		return orderList.size();
+	}
 
 	public static abstract interface FEATURE_MAP_KEY {
 		public static final String LAST_CARD_ID = "last_card_id";

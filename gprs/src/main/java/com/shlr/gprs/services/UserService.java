@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.catalina.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.define.util.DefineCollectionUtil;
@@ -21,6 +22,7 @@ import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.vo.UsersVO;
 
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
 * @author xucong
@@ -42,11 +44,16 @@ public class UserService implements DruidStatInterceptor{
 		Users users=new Users();
 		users.setUsername(username);
 		users.setPassword(password);
-		Users result = userMapper.selectOne(users);
- 		Example example=new Example(Users.class);
-		example.selectProperties(username);
-		if (result!=null) {
-			return result;
+		
+		Example example=new Example(Users.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		
+		createCriteria.andEqualTo("username", username);
+		createCriteria.andEqualTo("password", password);
+		
+		List<Users> selectByExample = userMapper.selectByExample(example);
+		if (!CollectionUtils.isEmpty(selectByExample)&&selectByExample.size()>0) {
+				return selectByExample.get(0);
 		}
 		return null;
 		

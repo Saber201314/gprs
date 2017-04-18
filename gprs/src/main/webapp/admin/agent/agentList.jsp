@@ -1,4 +1,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%
 	String path = request.getContextPath();
@@ -28,18 +30,18 @@ li{padding-top:5px !important;}
 		</span>
 	</div>
 	<div class="errorMsg">
-		<s:actionerror />
+		<%-- <s:actionerror /> --%>
 	</div>
 	<div class="search">
 		<form id="ydForm" action="agentList.action" method="post">
 		<div class="search_style">
-			<input type="hidden" id="username" name="queryUserDO.agent" value="${queryUserDO.agent}"/>
+			<input type="hidden" id="username" name="agent" value="${agent}"/>
 			<ul class="search_content clearfix">
 				<%-- <li><label class="lf">代理商：</label><select id="agent-level" name="queryUserDO.agent"></select></li> --%>
-				<li><label class="lf">用户名：</label><input type="text" name="queryUserDO.username"
-					value="<s:property value='queryUserDO.username' />" /></li>
-				<li><label class="lf">名称：</label><input type="text" name="queryUserDO.name"
-					value="<s:property value='queryUserDO.name' />" /></li>
+				<li><label class="lf">用户名：</label><input type="text" name="username"
+					value="${username }" /></li>
+				<li><label class="lf">名称：</label><input type="text" name="name"
+					value="${name }" /></li>
 				<li style="width:20px;"><button type="submit" class="btn_search sub_btn1">查询</button></li>
 			</ul>
 		</div>
@@ -63,30 +65,30 @@ li{padding-top:5px !important;}
 				<th>添加时间</th>
 				<th width="10%" colspan="2">操作</th>
 			</tr>
-			<s:iterator value="usersList">
+			<c:forEach var="item" items="${usersList}">
 				<tr>
-					<td><input type="checkbox" name="queryUserDO.idList"
-						class="check-item" value="<s:property value='id' />" /></td>
-					<td><s:property value="username" /></td>
-					<td><s:property value="password" /></td>
-					<td><s:property value="agent" /></td>
-					<td>${name}</td>
-					<td>${phone}</td>
-					<td><s:property value="moneyString" /></td>
-					<td>${preMoney}</td>
-					<td><s:date format="yyyy-MM-dd" name="validateTime" /></td>
-					<td>${paperName}</td>
+					<td><input type="checkbox" name="idList"
+						class="check-item" value="${item.id}" /></td>
+					<td>${item.username}</td>
+					<td>${item.password}</td>
+					<td>${item.agent}</td>
+					<td>${item.name}</td>
+					<td>${item.phone}</td>
+					<td>${item.moneyString}</td>
+					<td>${item.preMoney}</td>
+					<td><fmt:formatDate pattern="yyyy-MM-dd" value="${item.validateTime }"/></td>
+					<td>${item.paperName}</td>
 					<td><a
-						href="../suiteOrder/userSuiteOrderList.action?userId=${id }">${suiteSize }</a></td>
-					<td><s:date format="yyyy-MM-dd" name="optionTime" /></td>
+						href="../suiteOrder/userSuiteOrderList.action?userId=${item.id }">${item.suiteSize }</a></td>
+					<td><fmt:formatDate pattern="yyyy-MM-dd" value="${item.optionTime }"/></td>
 					<td><a
-						href="../agent/chargeForAgent.action?id=<s:property value='id' />">充值</a>
+						href="../agent/chargeForAgent.action?id=${item.id }">充值</a>
 					</td> 
 					<td><a
-						href="../agent/publishAgent.action?id=<s:property value='id' />">编辑</a>
+						href="../agent/publishAgent.action?id=${item.id }">编辑</a>
 					</td>
 				</tr>
-			</s:iterator>
+			</c:forEach>
 			<tr>
 				<td colspan="14"><div align="left"><jsp:include
 							page="../layout/paginator.jsp"></jsp:include></div></td>
@@ -95,19 +97,19 @@ li{padding-top:5px !important;}
 	</form>
 </div>
 <form id="pageForm" action="agentList.action" method="post">
-	<input type="hidden" id="page.pageNo" name="page.pageNo" value="" /> <input
-		type="hidden" name="queryUserDO.name"
-		value="<s:property value='queryUserDO.name' />" /> <input
-		type="hidden" name="queryUserDO.username"
-		value="<s:property value='queryUserDO.username' />" /> <input
-		type="hidden" name="queryUserDO.agent"
-		value="<s:property value='queryUserDO.agent' />" />
+	<input type="hidden" id="page.pageNum" name="page.pageNum" value="" /> <input
+		type="hidden" name="name"
+		value="${name}" /> <input
+		type="hidden" name="username"
+		value="${username}" /> <input
+		type="hidden" name="agent"
+		value="${agent}" />
 </form>
 
 <script>
 	function goPage(pageNo) {
 		var form = document.getElementById("pageForm");
-		var page = document.getElementById("page.pageNo");
+		var page = document.getElementById("page.pageNum");
 		page.value = pageNo;
 		form.submit();
 		return false;

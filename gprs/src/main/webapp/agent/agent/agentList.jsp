@@ -103,9 +103,6 @@ label {
 				</tr>
 			
 			</c:forEach>
-			<s:iterator value="usersList">
-				
-			</s:iterator>
 			<tr>
 				<td colspan="14"><div align="left"><jsp:include
 							page="../layout/paginator.jsp"></jsp:include></div></td>

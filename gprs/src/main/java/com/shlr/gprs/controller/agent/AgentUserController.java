@@ -6,11 +6,15 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.github.pagehelper.Page;
+import com.shlr.gprs.domain.PricePaper;
 import com.shlr.gprs.domain.Users;
+import com.shlr.gprs.services.PricePaperService;
 import com.shlr.gprs.services.UserService;
 
 import tk.mybatis.mapper.entity.Example;
@@ -22,14 +26,17 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 
 @Controller
 @RequestMapping("/agent")
-public class UserController {
+public class AgentUserController {
 	@Resource
 	UserService userService;
+	@Resource
+	PricePaperService pricePaperService;
 	
-	@RequestMapping(value="")
+	@RequestMapping(value="agent/agentList.action")
 	public String agentList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
-			@RequestParam(value="agent",required=false)String agent){
+			@RequestParam(value="agent",required=false)String agent,
+			Model model){
 		Users currentUser = userService.getCurrentUser(session);
 		if(currentUser == null){
 			return "/index.jsp";		
@@ -45,9 +52,16 @@ public class UserController {
 			createCriteria.andEqualTo("agent", currentUser.getUsername());
 		}
 		List<Users> listByExampleAndPage = userService.listByExampleAndPage(example, Integer.valueOf(pageNo));
+		Page<Users> page=(Page<Users>) listByExampleAndPage;
 		
-		
-		
-		return null;
+		for (Users users : listByExampleAndPage) {
+			PricePaper selectOneByPK = pricePaperService.selectOneByPK(users.getPaperId());
+			if (selectOneByPK != null) {
+				users.setPaperName(selectOneByPK.getName());
+			}
+		}
+		model.addAttribute("usersList", listByExampleAndPage);
+		model.addAttribute("page", page);
+		return "agent/agent/agentList";
 	}
 }
