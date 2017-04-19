@@ -10,12 +10,7 @@
 </head>
 <body>
 	success
-
-	<select id="merchant">
-		<c:forEach var="item" items="移动,联通,电信"
-			varStatus="status">
-			<option value="${status.index+1 }">${item }</option>
-		</c:forEach>
-	</select>
+	
+	${page.total}
 </body>
 </html>

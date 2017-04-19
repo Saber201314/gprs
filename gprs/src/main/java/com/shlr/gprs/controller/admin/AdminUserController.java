@@ -36,6 +36,8 @@ public class AdminUserController {
 	public String agentList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
 			@RequestParam(value="agent",required=false)String agent,
+			@RequestParam(value="username",required=false)String username,
+			@RequestParam(value="name",required=false)String name,
 			Model model){
 		Users currentUser = userService.getCurrentUser(session);
 		if(currentUser == null){
@@ -51,6 +53,13 @@ public class AdminUserController {
 		if (StringUtils.isEmpty(agent) && type != 1) {
 			createCriteria.andEqualTo("agent", currentUser.getUsername());
 		}
+		if (!StringUtils.isEmpty(username)) {
+			createCriteria.andLike("username", "%"+username+"%");
+		}
+		if (!StringUtils.isEmpty(name)) {
+			createCriteria.andLike("name", "%"+name+"%");
+		}
+		example.setOrderByClause(" option_time desc");
 		List<Users> listByExampleAndPage = userService.listByExampleAndPage(example, Integer.valueOf(pageNo));
 		Page<Users> page=(Page<Users>) listByExampleAndPage;
 		
@@ -61,6 +70,8 @@ public class AdminUserController {
 			}
 		}
 		model.addAttribute("usersList", listByExampleAndPage);
+		model.addAttribute("username", username);
+		model.addAttribute("name", name);
 		model.addAttribute("page", page);
 		return "admin/agent/agentList";
 	}

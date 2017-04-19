@@ -313,8 +313,7 @@ public class QueryController {
 		
 		List<Users> userList=new ArrayList<Users>();
 		if (currentUser.getType() == 1) {
-			UsersVO userVO = new UsersVO();
-			userList = userService.listByCondition(userVO);
+			userList = userService.listByCondition(new Example(Users.class));
 			
 		} else {
 			userList.add(currentUser);
@@ -403,9 +402,7 @@ public class QueryController {
 		model.addAttribute("account", account);
 		model.addAttribute("mobile", mobile);
 		model.addAttribute("payLogList",arrayList);
-		model.addAttribute("pageNo", page.getPageNum());
-		model.addAttribute("allRecord", page.getTotal());
-		model.addAttribute("allPage", page.getPages());
+		model.addAttribute("page", page);
 		
 		return "admin/query/payLogList";
 	}
@@ -750,9 +747,7 @@ public class QueryController {
 		
 		model.addAttribute("util", new StrUtils());
 		
-		model.addAttribute("allRecord", page.getTotal());
-		model.addAttribute("pageNo", page.getPageNum());
-		model.addAttribute("allPage", page.getPages());
+		model.addAttribute("page", page);
 		return "admin/query/channelLogList";
 	}
 	
@@ -782,9 +777,7 @@ public class QueryController {
 		List<Callback> listByExampleAndPage = callbackService.listByExampleAndPage(example, Integer.valueOf(pageNo));
 		Page<Callback> page= (Page<Callback>) listByExampleAndPage;
 		model.addAttribute("callbackList", listByExampleAndPage.toArray());
-		model.addAttribute("allRecord", page.getTotal());
-		model.addAttribute("pageNo", page.getPageNum());
-		model.addAttribute("allPage", page.getPages());
+		model.addAttribute("page", page);
 		return "admin/query/callbackList";
 	}
 	

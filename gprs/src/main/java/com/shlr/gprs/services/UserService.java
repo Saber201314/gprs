@@ -70,8 +70,9 @@ public class UserService implements DruidStatInterceptor{
 	 * 根据条件查询
 	 * @return
 	 */
-	public List<Users> listByCondition(Users record){
-		return userMapper.select(record);
+	public List<Users> listByCondition(Example example){
+		
+		return userMapper.selectByExample(example);
 	}
 	
 	public List<Users> listByExampleAndPage(Example example,Integer pageNo){

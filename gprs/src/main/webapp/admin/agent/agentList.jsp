@@ -97,7 +97,7 @@ li{padding-top:5px !important;}
 	</form>
 </div>
 <form id="pageForm" action="agentList.action" method="post">
-	<input type="hidden" id="page.pageNum" name="page.pageNum" value="" /> <input
+	<input type="hidden" id="pageNo" name="pageNo" value="" /> <input
 		type="hidden" name="name"
 		value="${name}" /> <input
 		type="hidden" name="username"
@@ -109,7 +109,7 @@ li{padding-top:5px !important;}
 <script>
 	function goPage(pageNo) {
 		var form = document.getElementById("pageForm");
-		var page = document.getElementById("page.pageNum");
+		var page = document.getElementById("pageNo");
 		page.value = pageNo;
 		form.submit();
 		return false;
