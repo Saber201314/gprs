@@ -52,7 +52,7 @@
 
 		<!-- 验证连接有效与否的SQL，不同的数据配置不同 -->
 		<property name="validationQuery" value="select 1 " />
-		<property name="filters" value="stat,config" />
+		<property name="filters" value="stat,config,wall" />
 		<property name="proxyFilters">
 			<list>
 				<ref bean="logFilter" />

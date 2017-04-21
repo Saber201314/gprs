@@ -94,25 +94,25 @@ public class PortalController {
 			@RequestParam("password")String password,
 			@RequestParam("securityCode")String securityCode
 			,HttpSession session) {
-//		if (StringUtils.isEmpty(username)) {
-//			session.setAttribute("error_msg", "请输入用户名");
-//			return "index";
-//		}
-//		if (StringUtils.isEmpty(password)) {
-//			session.setAttribute("error_msg", "请输入密码");
-//			return "index";
-//		}	
-//		if (StringUtils.isEmpty(securityCode)) {
-//			session.setAttribute("error_msg", "请输入验证码！");
-//			return "index";
-//		}
+		if (StringUtils.isEmpty(username)) {
+			session.setAttribute("error_msg", "请输入用户名");
+			return "index";
+		}
+		if (StringUtils.isEmpty(password)) {
+			session.setAttribute("error_msg", "请输入密码");
+			return "index";
+		}	
+		if (StringUtils.isEmpty(securityCode)) {
+			session.setAttribute("error_msg", "请输入验证码！");
+			return "index";
+		}
 		String code = (String) session.getAttribute(SESSION_SECURITY_CODE);
-//		if ((code == null)
-//				|| (!code.toLowerCase().equals(securityCode.toLowerCase()))) {
-//			session.setAttribute("error_msg", "验证码不正确！");
-//			return "index";
-//		}
-		Users users =userService.findByUsernameAndPassword("admin", "lr2017..");
+		if ((code == null)
+				|| (!code.toLowerCase().equals(securityCode.toLowerCase()))) {
+			session.setAttribute("error_msg", "验证码不正确！");
+			return "index";
+		}
+		Users users =userService.findByUsernameAndPassword(username, password);
 		if (users==null) {
 			session.setAttribute("error_msg", "用户名或密码错误");
 			return "index";
@@ -201,7 +201,7 @@ public class PortalController {
 	 * @param session
 	 * @return
 	 */
-	@RequestMapping("/aexit.action")
+	@RequestMapping("/exit.action")
 	public String exit(HttpSession session) {
 		session.setAttribute("user", null);
 		return "index";

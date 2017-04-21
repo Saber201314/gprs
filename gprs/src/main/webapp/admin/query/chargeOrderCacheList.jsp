@@ -1,12 +1,12 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
-<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%
 String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
 
 <jsp:include page="../../cssAndJs.jsp"></jsp:include>
-<jsp:include page="cacheManager.jsp"></jsp:include>
+<%-- <jsp:include page="cacheManager.jsp"></jsp:include> --%>
 
 <style>
 label{width:80px;}
@@ -31,19 +31,53 @@ li{padding-top:5px !important;}
 		  <span><a class="btn1 export-excel-datas" href="#">导出Excel</a></span>
 		</span>
 	</div>
-	<div class="errorMsg"><s:actionerror /></div>	
+	<div class="errorMsg"></div>	
 	<div class="search">
 	    <div class="search_style">
 		      <ul class="search_content clearfix">
-				  <li><label class="lf">代理商：</label><select id="agent-level"></select></li>	      		
-			      <li><label class="lf">手机号码：</label><input type="text" style="margin-left:0px;padding-bottom:3px;" id="mobile" /></li>
-			      <li><label class="lf">归属地：</label><select id="location" class="terrority-select"></select></li>
+				  <li>
+				  	<label class="lf">代理商：</label>
+				  	<select id="agent-level"></select>
+				  </li>	      		
+			      <li>
+			      	<label class="lf">手机号码：</label>
+			      	<input type="text" style="margin-left:0px;padding-bottom:3px;" id="mobile" />
+			      </li>
+			      <li>
+			      	<label class="lf">归属地：</label>
+			      	<select id="location" class="terrority-select"></select>
+			      </li>
 			      
-			      <li><label class="lf">开始时间：</label><input id="start" class="inline laydate-icon"/></li>
-			      <li><label class="lf">结束时间：</label><input id="end" class="inline laydate-icon"  /></li>
-			      <li><label class="lf">号码类型：</label><s:select id="type" list="#{1:'移动',2:'联通',3:'电信' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select></li>
-			      <li><label class="lf">流量值：</label><select id="amount" class="amount-select"></select></li>
-			      <li><label class="lf">流量类型：</label><s:select id="locationType" class="locationType-select" list="#{1:'全国流量',2:'省内流量' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select></li>
+			      <li>
+			      	<label class="lf">开始时间：</label>
+			      	<input id="start" class="inline laydate-icon"/>
+			      </li>
+			      <li>
+			      	<label class="lf">结束时间：</label>
+			      	<input id="end" class="inline laydate-icon"  />
+			      </li>
+			      <li>
+			      	<label class="lf">号码类型：</label>
+			      	<select id="type">
+			      		<c:forEach var="item" items="请选择,移动,联通,电信" varStatus="status">
+			      			<option value="${status.index }">${item}</option>
+			      		</c:forEach>
+			      	</select>
+			      	<%-- <s:select id="type" list="#{1:'移动',2:'联通',3:'电信' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>
+			      </li>
+			      <li>
+			      	<label class="lf">流量值：</label>
+			      	<select id="amount" class="amount-select"></select>
+			      </li>
+			      <li>
+			      	<label class="lf">流量类型：</label>
+			      	<select id="locationType">
+			      		<c:forEach var="item" items="请选择,全国流量,省内流量" varStatus="status">
+			      			<option value="${status.index }">${item}</option>
+			      		</c:forEach>
+			      	</select>
+			      	<%-- <s:select id="locationType" class="locationType-select" list="#{1:'全国流量',2:'省内流量' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>
+			      </li>
 			      <li style="width:90px;"><button type="submit" class="btn_search sub_btn1">查询</button></li>
 		      </ul>
 	      </div>
@@ -164,14 +198,15 @@ li{padding-top:5px !important;}
 	});
 		
 	KISSY.use("gprs/gprs-post,gprs/gprs-terrority",function(S){
-		GPRS.Post.loadAgentLevel();
+		//GPRS.Post.loadAgentLevel();
 		//GPRS.Post.exportChargeOrderExcel();
 		GPRS.Post.simplePost();
 		GPRS.Post.submitCacheData();
 		GPRS.Post.stopSubmitCacheData();	
 		GPRS.Post.bulkFailCacheOrder();	
+		GPRS.Post.deleteAll();
 		GPRS.Terrority.initTerrority();
 		GPRS.Terrority.initAmount();
-		GPRS.Post.deleteAll();
+		
 	});
 </script>

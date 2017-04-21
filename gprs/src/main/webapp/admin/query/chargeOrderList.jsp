@@ -99,7 +99,7 @@ li{padding-top:5px !important;}
 		    <th>号码类型</th>
 		    <th>流量类型</th>
 		    <th>流量值</th>
-		    <th>基础价格</th>		    
+		    <th>基础价格</th>	
 		    <th>扣费金额</th>	    
 		    <th>充值时间</th>
 		    <th>回调时间</th>

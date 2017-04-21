@@ -13,7 +13,7 @@ import com.shlr.gprs.domain.SuiteOrder;
  * @author Administrator
  */
 @Service
-public class SuiteOrderService {
+public class SuiteOrderService implements DruidStatInterceptor{
 	@Resource
 	SuiteOrderMapper suiteOrderMapper;
 	

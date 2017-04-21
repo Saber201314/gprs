@@ -17,9 +17,11 @@ import tk.mybatis.mapper.entity.Example;
  */
 
 @Service
-public class CallbackService {
+public class CallbackService implements DruidStatInterceptor{
+	
 	@Resource
 	CallBackMapper callBackMapper;
+	
 	public List<Callback> listByExampleAndPage(Example example,Integer pageNo){
 		return callBackMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
 	}

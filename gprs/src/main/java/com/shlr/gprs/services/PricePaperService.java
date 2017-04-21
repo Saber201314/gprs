@@ -11,7 +11,7 @@ import com.shlr.gprs.domain.PricePaper;
  * @author Administrator
  */
 @Service
-public class PricePaperService {
+public class PricePaperService implements DruidStatInterceptor{
 	
 	@Resource
 	PricePaperMapper pricePaperMapper;

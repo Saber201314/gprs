@@ -17,7 +17,7 @@ import tk.mybatis.mapper.entity.Example;
  */
 
 @Service
-public class ChannelLogService {
+public class ChannelLogService implements DruidStatInterceptor{
 	@Resource
 	ChannelLogMapper channelLogMapper;
 	

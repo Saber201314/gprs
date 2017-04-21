@@ -73,7 +73,7 @@
         </init-param>
         <init-param>
             <param-name>principalSessionName</param-name>
-            <param-value>sessionInfo</param-value>
+            <param-value>user</param-value>
         </init-param>
         <init-param>
             <param-name>profileEnable</param-name>

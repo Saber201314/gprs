@@ -295,7 +295,47 @@ public class QueryController {
 		response.getWriter().print(result.toJSONString());
 		return null;
 	}
-	
+	@RequestMapping(value="/query/chargeOrderCacheList.action")
+	public String chargeOrderCacheList(HttpServletResponse response,HttpSession session,
+			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
+			@RequestParam(value="mobile",required=false)String mobile,@RequestParam(value="location",required=false)String location,
+			@RequestParam(value="from",required=false)String from,@RequestParam(value="to",required=false)String to,
+			@RequestParam(value="type",required=false)Integer type,@RequestParam(value="amount",required=false)Integer amount,
+			@RequestParam(value="locationType",required=false)String locationType,@RequestParam(value="submitStatus",required=false)String submitStatus,
+			@RequestParam(value="submitChannel",required=false)String submitChannel,@RequestParam(value="cacheFlag",required=false)String cacheFlag) throws IOException{
+		Users currentUser = userService.getCurrentUser(session);
+		if ((currentUser == null) || (currentUser.getType() != 1)) {
+			return "redirect:/index.jsp";
+		}
+		Example example = new Example(ChargeOrder.class,true,false);
+		
+		Criteria createCriteria = example.createCriteria();
+		if (!StringUtils.isEmpty(mobile)) {
+			createCriteria.andEqualTo("mobile", mobile);
+		}
+		if (!StringUtils.isEmpty(location)&&!"请选择".equals(location)) {
+			createCriteria.andEqualTo("location", location);
+		}
+		if (!StringUtils.isEmpty(from)&&!StringUtils.isEmpty(to)) {
+			createCriteria.andBetween("optionTime", from, to);
+		}
+		if (!StringUtils.isEmpty(type)&& 0 != type) {
+			createCriteria.andEqualTo("type", type);
+		}
+		if (!StringUtils.isEmpty(amount)&& 0 != amount) {
+			createCriteria.andEqualTo("amount", amount);
+		}
+		if (!StringUtils.isEmpty(locationType)&&!"0".equals(locationType)) {
+			createCriteria.andEqualTo("locationType", locationType);
+		}
+		createCriteria.andEqualTo("cacheFlag", 1);
+		example.setOrderByClause("  id desc");
+		List<ChargeOrder> listByExampleAndPage = chargeOderService.listByExampleAndPage(example, 1);
+		JSONObject result=new JSONObject();
+		result.put("list", listByExampleAndPage);
+		response.getWriter().print(result.toJSONString());
+		return null;
+	}
 	/**
 	 * 根据用户级别获取用户列表
 	 * @param session

@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context.xsd
     http://www.springframework.org/schema/mvc
-    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
-    
-    
-    
+    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+
+
 	<!-- 配置SpringMVC -->
 
 
@@ -68,12 +70,16 @@
 		<!-- 制定扫包规则 ,只扫描使用@Controller注解的JAVA类 -->
 		<!-- <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/> -->
 	</context:component-scan>
-	
-	<!-- druid 监控拦截器 -->
+
+	<!-- mvc 请求 拦截器 -->
+	<mvc:interceptors>
+		<bean class="com.shlr.gprs.interceptor.AllInterceptor" />
+	</mvc:interceptors>
+
 	<bean id="druid-stat-interceptor"
 		class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
 	</bean>
-	<!-- Spring 注入Bean代理 -->
+
 	<bean id="druid-type-proxyCreator"
 		class="com.alibaba.druid.support.spring.stat.BeanTypeAutoProxyCreator">
 		<!-- 所有ABCInterface的派生类被拦截监控 -->
@@ -84,9 +90,6 @@
 			</list>
 		</property>
 	</bean>
-	<!-- mvc 请求 拦截器 -->
-	<mvc:interceptors>
-		<bean class="com.shlr.gprs.interceptor.AllInterceptor" />
-	</mvc:interceptors>
+
 
 </beans>

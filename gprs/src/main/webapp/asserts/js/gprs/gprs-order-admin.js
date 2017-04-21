@@ -210,6 +210,7 @@ function initChargeOrderData(){
         				money = data.list[i].money + "元";
         			}
         			html.push('<td>'+money+'</td>');
+        			
         			     			
         			var discountMoney = data.list[i].discountMoney;
         			if(!discountMoney || discountMoney == null){
@@ -362,7 +363,11 @@ function initChargeOrderData(){
         		});       		
         	}	
         },
-        error:function(){
+        error:function(XMLHttpRequest, textStatus, errorThrown){
+        	console.log(XMLHttpRequest.status);
+        	console.log(XMLHttpRequest.readyState);
+        	console.log(textStatus);
+        	console.log(errorThrown);
         	layer.alert("服务器连接失败，请重试！");
 //        	location.href="/index.jsp";        	
     }});   		

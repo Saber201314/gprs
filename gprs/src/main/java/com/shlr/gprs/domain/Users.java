@@ -548,5 +548,9 @@ public class Users implements Serializable {
 	public void setOrderId(Integer orderId) {
 		this.orderId = orderId;
 	}
-		
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "UserName = "+this.username;
+	}
 }
