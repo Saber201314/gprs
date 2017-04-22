@@ -91,33 +91,36 @@ li{padding-top:5px !important;}
 		<input type="hidden" id="adminRole" value="1"/>
 	</c:if>
 	<form action="#" method="get" id="delete-form">
-	<table id="order_table" cellpadding="0" cellspacing="0"  class="table table-striped table-bordered table-hover">
-		<tr>
-			<th width="16"><input type="checkbox" class="select-all select-all_1" /></th>
-			<th>代理商</th>
-			<th>手机号码</th>
-		    <th>号码类型</th>
-		    <th>流量类型</th>
-		    <th>流量值</th>
-		    <th>基础价格</th>	
-		    <th>扣费金额</th>	    
-		    <th>充值时间</th>
-		    <th>回调时间</th>
-		    <th>充值方式</th>
-		    <th>充值结果</th>
-		    <c:if test="${ sessionScope.user.username == 'admin' || sessionScope.user.username == 'super'}">
-		   		 <th>充值通道</th>	
-		    </c:if>	    
-		    <th>接入</th>
-		    <th>外放</th>	
-		    <th>带票</th>
-		    <th>盈利</th>		    
-		    <th>操作</th>
-		</tr>
-		<tr id="pageTr" style="display:none;">
-			<td colspan="18"><div align="left"><jsp:include page="../layout/paginatorNew1.jsp"></jsp:include></div></td>
-	   </tr>
-	</table>
+	<div class="table-responsive">
+	
+		<table id="order_table" cellpadding="0" cellspacing="0"  class="table table-striped table-bordered table-hover">
+			<tr>
+				<th ><input type="checkbox" class="select-all select-all_1" /></th>
+				<th>代理商</th>
+				<th>手机号码</th>
+			    <th>号码类型</th>
+			    <th>流量类型</th>
+			    <th>流量值</th>
+			    <th>基础价格</th>	
+			    <th>扣费金额</th>	    
+			    <th>充值时间</th>
+			    <th>回调时间</th>
+			    <th>充值方式</th>
+			    <th>充值结果</th>
+			    <c:if test="${ sessionScope.user.username == 'admin' || sessionScope.user.username == 'super'}">
+			   		 <th>充值通道</th>	
+			    </c:if>	    
+			    <th>接入</th>
+			    <th>外放</th>	
+			    <th>带票</th>
+			    <th>盈利</th>		    
+			    <th>操作</th>
+			</tr>
+			<tr id="pageTr" style="display:none;">
+				<td colspan="18"><div align="left"><jsp:include page="../layout/paginatorNew1.jsp"></jsp:include></div></td>
+		   </tr>
+		</table>
+	</div>
 	</form>
 </div>
 

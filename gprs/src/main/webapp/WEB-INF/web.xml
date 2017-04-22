@@ -47,7 +47,7 @@
         <init-param>
 			<!-- 允许清空统计数据 -->
 			<param-name>resetEnable</param-name>
-			<param-value>true</param-value>
+			<param-value>false</param-value>
 		</init-param>
 		<init-param>
 			<!-- 用户名 -->
@@ -64,6 +64,7 @@
         <servlet-name>DruidStatView</servlet-name>
         <url-pattern>/druid/*</url-pattern>
     </servlet-mapping>
+    <!-- Druid 过滤 -->
     <filter>
         <filter-name>druidWebStatFilter</filter-name>
         <filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
