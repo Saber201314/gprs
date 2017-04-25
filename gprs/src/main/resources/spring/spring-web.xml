@@ -75,11 +75,12 @@
 	<mvc:interceptors>
 		<bean class="com.shlr.gprs.interceptor.AllInterceptor" />
 	</mvc:interceptors>
-
+	
+	<!-- Druid spring 拦截  -->
 	<bean id="druid-stat-interceptor"
 		class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
 	</bean>
-
+	<!-- Druid spring Bean 监测  -->
 	<bean id="druid-type-proxyCreator"
 		class="com.alibaba.druid.support.spring.stat.BeanTypeAutoProxyCreator">
 		<!-- 所有ABCInterface的派生类被拦截监控 -->
