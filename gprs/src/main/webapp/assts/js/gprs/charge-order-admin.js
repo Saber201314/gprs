@@ -45,58 +45,57 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
 	$('#end').val(laydate.now(0, 'YYYY-MM-DD 23:59:59'));
 	
 	/*
-	 * 初始化options
-	 */
-	var options=[];
-	/*
 	 * 初始化数据
 	 */
 	$(function(){
+		var channelOption=[];
+		var agentOption=[];
 		/*
 		 * 初始化代理商
 		 */
 		$.ajax({
 		    url:"/admin/query/userListByLevel.action",
 		    type:"post",
+		    async: false,
 		    dataType:'json',
 		    cache:false,
 		    success:function(data){
-		    	if(data || data.success){
+		    	if(data && data.success){
 		    		var list=data.module;
-		    		var options=[];
 		    		$.each(list,function(i,item){
-		    			options.push('<option value="'+item.username+'">'+item.name+'</option>');
+		    			agentOption.push('<option value="'+item.username+'">'+item.name+'</option>');
 		    		})
-		    		$('#agent').append(options);
-		    		
-		    		form.render('select(agent)');
+		    		$('#agent').append(agentOption);
+		    		form.render('select');
 		    	}else{
-		    		layer.msg(data.error);
+		    		top.window.location = "/login.jsp";
 		    	}
 		    },
 		    error:function(){
 		    }
-		});	
+		});
 		/*
 		 * 初始化通道
 		 */
 		$.ajax({
 	        url:"/admin/query/getCurrentChannelList.action",
 	        type : 'post',
+	        async: false,
 	        dataType:'json',
 	        cache:false,
 	        success:function(data){
 	        	if(data && data.length >0){
-	        		var options=[];
 	        		for(var i =0;i<data.length;i++){
-	        			options.push("<option value="+data[i].id+">"+data[i].name+"</option>");
+	        			channelOption.push("<option value="+data[i].id+">"+data[i].name+"</option>");
 	        		}
-	    			$("#submitChannel").append(options);
-	    			form.render('select(submitChannel)');
+	        		$("#submitChannel").append(channelOption);
+	        		form.render('select');
 	        	}
-	        	
 	        }
 		});
+		
+		
+		
 	});
 
 	

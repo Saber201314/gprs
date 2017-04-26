@@ -7,7 +7,7 @@
 </head>
 <body>
 <jsp:include page="cssjs.jsp"></jsp:include>
-<canvas width="1366" height="768"></canvas>
+<canvas width="300" height="300"></canvas>
 <div class="login-content">
 		<div class="login_panel">
 			<img alt=""  src="${pageContext.request.contextPath}/res/images/logo.png">
@@ -57,11 +57,11 @@
 
 <style>
 html, body { background: #000; margin: 0; padding:0;}
-canvas { width: 100%; height: 100%; position: absolute; }
+canvas {  position: absolute; }
 
 
 .login-content{
-	padding-top: 250;
+	padding-top: 150px;
 }
 
 .login_panel{
@@ -262,6 +262,23 @@ layui.use(['jquery','layer','form'],function(){
 
 		  createDots();
 		  requestAnimationFrame(animateDots);
+		  
+		  
+		  $(window).resize(resizeCanvas);  
+		   
+		  function resizeCanvas() {  
+		    
+		         canvas.attr("width", document.body.clientWidth);  
+		    
+		         canvas.attr("height", document.body.clientHeight);  
+		    
+		         context.fillRect(0, 0, canvas.width(), canvas.height());  
+		    
+		  };  
+		    
+		  resizeCanvas();
+		  
+		  
 		});
 })
 
