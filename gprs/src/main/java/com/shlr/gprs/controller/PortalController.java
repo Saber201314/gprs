@@ -90,41 +90,54 @@ public class PortalController {
 	 * @return
 	 */
 	@RequestMapping(value="/login.action")
+	@ResponseBody
 	public String login(@RequestParam("username")String username,
 			@RequestParam("password")String password,
 			@RequestParam("securityCode")String securityCode
 			,HttpSession session) {
+		JSONObject result=new JSONObject();
 		if (StringUtils.isEmpty(username)) {
-			session.setAttribute("error_msg", "请输入用户名");
-			return "index";
+			
+			result.put("success", false);
+			result.put("error_msg", "请输入用户名");
+			return result.toJSONString();
 		}
 		if (StringUtils.isEmpty(password)) {
-			session.setAttribute("error_msg", "请输入密码");
-			return "index";
+			result.put("success", false);
+			result.put("error_msg", "请输入密码");
+			return result.toJSONString();
 		}	
 		if (StringUtils.isEmpty(securityCode)) {
-			session.setAttribute("error_msg", "请输入验证码！");
-			return "index";
+			result.put("success", false);
+			result.put("error_msg", "请输入验证码");
+			return result.toJSONString();
 		}
 		String code = (String) session.getAttribute(SESSION_SECURITY_CODE);
 		if ((code == null)
 				|| (!code.toLowerCase().equals(securityCode.toLowerCase()))) {
-			session.setAttribute("error_msg", "验证码不正确！");
-			return "index";
+			result.put("success", false);
+			result.put("error_msg", "验证码不正确");
+			return result.toJSONString();
 		}
 		Users users =userService.findByUsernameAndPassword(username, password);
 		if (users==null) {
-			session.setAttribute("error_msg", "用户名或密码错误");
-			return "index";
+			result.put("success", false);
+			result.put("error_msg", "用户名或密码错误");
+			return result.toJSONString();
 		}
 		session.setAttribute("user", users);
+		
 		if (users.getType() == 1) {
-			return "redirect:/admin/layout/shouye.jsp";
+			result.put("success", true);
+			result.put("url", "n_index.jsp");
+			return result.toJSONString();
 		}
 		if (users.getType() == 2) {
-			return "redirect:/agent/layout/shouye.jsp";
+			result.put("success", true);
+			result.put("url", "n_index.jsp");
+			return result.toJSONString();
 		}
-		return "success";
+		return result.toJSONString();
 	}
 	/**
 	 * 获取手机号信息
@@ -202,9 +215,12 @@ public class PortalController {
 	 * @return
 	 */
 	@RequestMapping("/exit.action")
+	@ResponseBody
 	public String exit(HttpSession session) {
 		session.setAttribute("user", null);
-		return "index";
+		JSONObject result=new JSONObject();
+		result.put("url", "login.jsp");
+		return result.toJSONString();
 	}
 	
 	@RequestMapping(value="/admin/layout/changePassword.action")

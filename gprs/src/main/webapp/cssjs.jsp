@@ -1,0 +1,13 @@
+<%@ page language="java" 
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<link href="${pageContext.request.contextPath}/res/css/layui.css" rel="stylesheet"/>
+<script src="${pageContext.request.contextPath}/res/layui.js"></script>
+<style>
+.layui-table th,td{
+	text-align: center;
+}
+
+</style>

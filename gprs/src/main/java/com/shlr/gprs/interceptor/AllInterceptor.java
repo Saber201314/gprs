@@ -41,9 +41,9 @@ public class AllInterceptor implements HandlerInterceptor   {
 		String requestURI = request.getRequestURI();
 		if (requestURI.startsWith("/WEB-INF/common")) {
 			return true;
-		}else if(requestURI.startsWith("/resourse")){
+		}else if(requestURI.startsWith("/res")){
 			return true;
-		}else if(requestURI.startsWith("/asserts")){
+		}else if(requestURI.startsWith("/assts")){
 			return true;
 		}else if (requestURI.startsWith("/common")) {
 			return true;

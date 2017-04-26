@@ -26,5 +26,23 @@
 
 	<!-- 配置基于注解的声明式事务 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!-- Druid spring 拦截 -->
+	<!-- <bean id="druid-stat-interceptor"
+		class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
+	</bean> -->
+	<!-- Druid spring Bean 监测 -->
+	<!-- <bean id="druid-type-proxyCreator"
+		class="com.alibaba.druid.support.spring.stat.BeanTypeAutoProxyCreator">
+		所有ABCInterface的派生类被拦截监控
+		<property name="targetBeanType" value="com.shlr.gprs.services.DruidStatInterceptor" />
+		<property name="interceptorNames">
+			<list>
+				<value>druid-stat-interceptor</value>
+			</list>
+		</property>
+	</bean> -->
+	
+	
 
 </beans>
