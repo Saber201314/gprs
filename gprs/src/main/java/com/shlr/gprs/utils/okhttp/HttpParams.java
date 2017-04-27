@@ -41,15 +41,15 @@ public class HttpParams implements Serializable {
 		}
 	}
 
-	public void put(Map<String, String> params, boolean... isReplace) {
+	public void put(Map<String, Object> params, boolean... isReplace) {
 		if (params == null || params.isEmpty())
 			return;
-		for (Map.Entry<String, String> entry : params.entrySet()) {
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			put(entry.getKey(), entry.getValue(), isReplace);
 		}
 	}
 
-	public void put(String key, String value, boolean... isReplace) {
+	public void put(String key, Object value, boolean... isReplace) {
 		if (isReplace != null && isReplace.length > 0) {
 			put(key, value, isReplace[0]);
 		} else {

@@ -241,7 +241,7 @@ public class QueryController {
 		
 		Example example = new Example(ChargeOrder.class,true,false);
 		Criteria createCriteria = example.createCriteria();
-		if (!StringUtils.isEmpty(account)) {
+		if (!StringUtils.isEmpty(account)&&!"-1".equals(account)) {
 			createCriteria.andEqualTo("account", account);
 		}
 		if (!StringUtils.isEmpty(mobile)) {
@@ -276,7 +276,7 @@ public class QueryController {
 				createCriteria.andEqualTo("chargeStatus", -1);
 			}
 		}
-		if (!StringUtils.isEmpty(submitChannel)) {
+		if (!StringUtils.isEmpty(submitChannel)&&!"-1".equals(submitChannel)) {
 			createCriteria.andEqualTo("submitChannel", submitChannel);
 		}
 		if (StringUtils.isEmpty(cacheFlag)) {

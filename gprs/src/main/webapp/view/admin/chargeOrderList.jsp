@@ -9,6 +9,10 @@ form {
 	margin-top: 15px
 }
 
+.layui-table td, .layui-table th{
+	padding: 9px 5px;
+
+}
 td .status{
 	padding: 5px 10px;
 	color: #fff;
@@ -22,17 +26,73 @@ td .unprofit{
 	font-weight: bold;
 }
 .lable-nosubmit{
+	padding: 4px 10px;
+	color: #fff;
 	background-color: #c2c2c2;
 }
-.lable-wait{
+.lable-charging{
+	padding: 4px 10px;
+	color: #fff;
 	background-color: #01AAED;
 }
 .lable-success{
+	padding: 4px 10px;
+	color: #fff;
 	background-color: #5FB878;
 }
 .lable-fail{
+	padding: 4px 10px;
+	color: #fff;
 	background-color: #FF5722;
 }
+
+body .ui-tooltip{
+	border: 0px solid white;
+}
+.ui-widget-content{
+	background : #2F4056;
+	color: #fff;
+}
+.ui-tooltip, .arrow:after {
+    background-color : #2F4056;
+  }
+.arrow {
+    width: 70px;
+    height: 16px;
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    margin-left: -35px;
+    bottom: -16px;
+  }
+  .arrow.top {
+    top: -16px;
+    bottom: auto;
+  }
+  .arrow.left {
+    left: 20%;
+  }
+  .arrow:after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: -20px;
+    width: 25px;
+    height: 25px;
+    box-shadow: 6px 5px 9px -9px black;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    tranform: rotate(45deg);
+  }
+  .arrow.top:after {
+    bottom: -20px;
+    top: auto;
+  }
+
+
+
 
 </style>
 
@@ -41,27 +101,27 @@ td .unprofit{
 		<legend></legend>
 		<form class="layui-form" action="">
 			<div class="layui-form-item">
-				<input type="hidden" name="cacheFlag" value="1" class="layui-input">
+				<input type="hidden" id="pageNo" name="pageNo" value="1" class="layui-input">
 				<div class="layui-inline">
 					<label class="layui-form-label">代理商</label>
 					<div class="layui-input-inline">
-						<select id="agent" name="agent" lay-filter="agent" lay-search>
-							<option value="000">请选择</option>
+						<select id="agent" name="account" lay-filter="agent" lay-search>
+							<option value="-1">请选择</option>
 						</select>
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">手机号码</label>
 					<div class="layui-input-inline">
-						<input type="tel" name="phone" autocomplete="off"
+						<input type="tel" name="mobile" autocomplete="off"
 							class="layui-input">
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">归属地</label>
 					<div class="layui-input-inline">
-						<select id="location" lay-search>
-							<option value="000">请选择</option>
+						<select id="location" name="location" lay-search>
+							<option value="请选择">请选择</option>
 							<option>北京</option>
 							<option>天津</option>
 							<option>河北</option>
@@ -99,23 +159,23 @@ td .unprofit{
 				<div class="layui-inline">
 					<label class="layui-form-label">开始时间</label>
 					<div class="layui-input-inline">
-						<input id="start" name="start" class="layui-input" onclick="">
+						<input id="start" name="from" class="layui-input" onclick="">
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">开始时间</label>
 					<div class="layui-input-inline">
-						<input id="end" name="end" class="layui-input">
+						<input id="end" name="to" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">号码类型</label>
 					<div class="layui-input-inline">
 						<select name="type" lay-verify="" lay-search>
-							<option value="000">请选择</option>
-							<option value="">移动</option>
-							<option value="">联通</option>
-							<option value="">电信</option>
+							<option value="0">请选择</option>
+							<option value="1">移动</option>
+							<option value="2">联通</option>
+							<option value="3">电信</option>
 						</select>
 					</div>
 				</div>
@@ -123,7 +183,7 @@ td .unprofit{
 					<label class="layui-form-label">流量值</label>
 					<div class="layui-input-inline">
 						<select name="amount">
-							<option value="000">请选择</option>
+							<option value="0">请选择</option>
 							<option value="5">5M</option>
 							<option value="10">10M</option>
 							<option value="20">20M</option>
@@ -149,9 +209,9 @@ td .unprofit{
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
 						<select name="locationType" lay-verify="" lay-search>
-							<option value="000">请选择</option>
-							<option value="001">全国流量</option>
-							<option value="002">省内流量</option>
+							<option value="0">请选择</option>
+							<option value="1">全国流量</option>
+							<option value="2">省内流量</option>
 						</select>
 					</div>
 				</div>
@@ -159,11 +219,11 @@ td .unprofit{
 					<label class="layui-form-label">充值状态</label>
 					<div class="layui-input-inline">
 						<select name="submitStatus" lay-verify="" lay-search>
-							<option value="000">请选择</option>
-							<option value="">未提交</option>
-							<option value="">充值中</option>
-							<option value="">充值失败</option>
-							<option value="">充值成功</option>
+							<option value="-1">请选择</option>
+							<option value="0">未提交</option>
+							<option value="1">充值中</option>
+							<option value="2">充值成功</option>
+							<option value="3">充值失败</option>
 						</select>
 					</div>
 				</div>
@@ -171,11 +231,11 @@ td .unprofit{
 					<label class="layui-form-label">充值通道</label>
 					<div class="layui-input-inline">
 						<select id="submitChannel" name="submitChannel" lay-filter="submitChannel" lay-search>
-							<option value="000">请选择</option>
+							<option value="-1">请选择</option>
 						</select>
 					</div>
 				</div>
-				<div class="layui-inline">
+				<div  class="layui-inline">
 					<div class="layui-input-block">
 						<button class="layui-btn" lay-submit="" lay-filter="btn-submit">查询</button>
 					</div>
@@ -200,15 +260,15 @@ td .unprofit{
 					<th>代理商</th>
 					<th>手机号码</th>
 					<th>号码类型</th>
-					<th>流量类型</th>
+					<th width = "60">流量类型</th>
 					<th>流量值</th>
 					<th>基础价格</th>
 					<th>扣费金额</th>
 					<th>充值时间</th>
 					<th>回调时间</th>
 					<th>充值方式</th>
-					<th>充值结果</th>
-					<th>充值通道</th>
+					<th width="60">充值结果</th>
+					<th width="70">充值通道</th>
 					<th>接入</th>
 					<th>外放</th>
 					<th>带票</th>
@@ -217,156 +277,6 @@ td .unprofit{
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td><input type="checkbox" name="" data-id="1" lay-skin="primary"></td>
-					<td>adminRuiCheng</td>
-					<td>15858509302</td>
-					<td>浙江&nbsp;移动</td>
-					<td>全国流量</td>
-					<td>500M</td>
-					<td>30元</td>
-					<td>14.4元</td>
-					<td>2017-04-24 13:39:19</td>
-					<td></td>
-					<td>接口充值</td>
-					<td>
-						<span class="status lable-nosubmit">未提交</span>
-					</td>
-					<td>乐尧通道</td>
-					<td>4.90</td>
-					<td>4.80</td>
-					<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></th>
-					<td><span class="profit">￥-0.3</span> </td>
-					<td>
-						<button class="layui-btn layui-btn-mini">详情</button>
-						<button class="layui-btn layui-btn-mini">推送回调</button>
-					</td>
-				</tr>
-				<tr>
-					<td><input type="checkbox" name="" data-id="2" lay-skin="primary"></td>
-					<td>adminShuoRuan2</td>
-					<td>15316092513</td>
-					<td>上海&nbsp;电信</td>
-					<td>省内流量</td>
-					<td>200M</td>
-					<td>30元</td>
-					<td>14.4元</td>
-					<td>2017-04-24 14:38:45</td>
-					<td></td>
-					<td>接口充值</td>
-					<td>
-						<span class="status lable-wait">充值中</span>
-					</td>
-					<td>乐尧通道</td>
-					<td>4.90</td>
-					<td>4.80</td>
-					<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></th>
-					<td>￥-0.3</td>
-					<td>
-						<button class="layui-btn layui-btn-mini">详情</button>
-						<button class="layui-btn layui-btn-mini">推送回调</button>
-					</td>
-				</tr>
-				<tr>
-					<td><input type="checkbox" name="" data-id="3" lay-skin="primary"></td>
-					<td>adminShuoRuan2</td>
-					<td>15316092513</td>
-					<td>上海&nbsp;电信</td>
-					<td>省内流量</td>
-					<td>200M</td>
-					<td>30元</td>
-					<td>14.4元</td>
-					<td>2017-04-24 14:38:45</td>
-					<td></td>
-					<td>接口充值</td>
-					<td>
-						<span class="lable-success">充值成功</span>
-					</td>
-					<td>乐尧通道</td>
-					<td>4.90</td>
-					<td>4.80</td>
-					<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></th>
-					<td><span style="color:#5FB878; ">￥0.3</span>   </td>
-					<td>
-						<button class="layui-btn layui-btn-mini">详情</button>
-						<button class="layui-btn layui-btn-mini">推送回调</button>
-					</td>
-				</tr>
-				<tr>
-					<td><input type="checkbox" name="" data-id="4" lay-skin="primary"></td>
-					<td>adminShuoRuan2</td>
-					<td>15316092513</td>
-					<td>上海&nbsp;电信</td>
-					<td>省内流量</td>
-					<td>200M</td>
-					<td>30元</td>
-					<td>14.4元</td>
-					<td>2017-04-24 14:38:45</td>
-					<td></td>
-					<td>接口充值</td>
-					<td>
-						<span class="lable-fail" >充值失败</span>
-					</td>
-					<td>乐尧通道</td>
-					<td>4.90</td>
-					<td>4.80</td>
-					<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></th>
-					<td>￥-0.3</td>
-					<td>
-						<button class="layui-btn layui-btn-mini">详情</button>
-						<button class="layui-btn layui-btn-mini">推送回调</button>
-					</td>
-				</tr>
-				<tr>
-					<td><input type="checkbox" name="" data-id="5" lay-skin="primary"></td>
-					<td>adminShuoRuan2</td>
-					<td>15316092513</td>
-					<td>上海&nbsp;电信</td>
-					<td>省内流量</td>
-					<td>200M</td>
-					<td>30元</td>
-					<td>14.4元</td>
-					<td>2017-04-24 14:38:45</td>
-					<td></td>
-					<td>接口充值</td>
-					<td>
-						<span class="lable-success">充值成功</span>
-					</td>
-					<td>乐尧通道</td>
-					<td>4.90</td>
-					<td>4.80</td>
-					<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></th>
-					<td><span style=" ">￥0.5</span></td>
-					<td>
-						<button class="layui-btn layui-btn-mini">详情</button>
-						<button class="layui-btn layui-btn-mini">推送回调</button>
-					</td>
-				</tr>
-				<tr>
-					<td><input type="checkbox" name="" data-id="6" lay-skin="primary"></td>
-					<td>adminShuoRuan2</td>
-					<td>15316092513</td>
-					<td>上海&nbsp;电信</td>
-					<td>省内流量</td>
-					<td>200M</td>
-					<td>30元</td>
-					<td>14.4元</td>
-					<td>2017-04-24 14:38:45</td>
-					<td></td>
-					<td>接口充值</td>
-					<td>
-						<span class="lable-success">充值成功</span>
-					</td>
-					<td>乐尧通道</td>
-					<td>4.90</td>
-					<td>4.80</td>
-					<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></th>
-					<td>￥-0.3</td>
-					<td>
-						<button class="layui-btn layui-btn-mini">详情</button>
-						<button class="layui-btn layui-btn-mini">推送回调</button>
-					</td>
-				</tr>
 			</tbody>
 		</table>
 	</div>
@@ -382,5 +292,6 @@ td .unprofit{
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
 	}).use('charge-order-admin'); //加载入口
+	
 </script>
 </html>

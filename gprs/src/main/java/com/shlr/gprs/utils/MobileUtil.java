@@ -30,25 +30,24 @@ public class MobileUtil {
 		return 3;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static String getAddress(String mobile) {
 		if (isNotMobileNO(mobile)) {
 			return "";
 		}
-		Map params = new HashMap();
+		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("tel", mobile);
 		String url = "https://tcc.taobao.com/cc/json/mobile_tel_segment.htm";
 		String response=null;
 		try {
 			
-			response = OkhttpUtils.get(url)
+			response = OkhttpUtils.getInstance().get(url)
 				.params(params, true)
 				.execute().body().string();
 		} catch (IOException e) {
 			
 			
 			try {
-				response = OkhttpUtils.get(url)
+				response = OkhttpUtils.getInstance().get(url)
 						.params(params, true)
 						.execute().body().string();
 			} catch (IOException e1) {

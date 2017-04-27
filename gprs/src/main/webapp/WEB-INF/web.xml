@@ -122,7 +122,7 @@
 
     <!-- 默认页面 -->
     <welcome-file-list>
-        <welcome-file>n_index.jsp</welcome-file>
+        <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
     <!-- 错误页面的处理 -->
     <error-page>

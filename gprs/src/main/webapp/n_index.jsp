@@ -204,7 +204,7 @@ dd{padding-left: 15px}
 		</div>
 		<div class="layui-footer">
 			<!-- 底部固定区域 -->
-			<div style="text-align: center; height:44px; padding: 10px">版权所有：利茸(上海)信息科技有限公司 沪ICP备11011739号</div>
+			<div style="text-align: center; line-height: 44px;">版权所有：利茸(上海)信息科技有限公司 沪ICP备11011739号</div>
 		</div>
 	</div>
 
@@ -217,7 +217,9 @@ layui.use([ 'layer', 'form', 'laydate', 'element','laypage' ], function() {
 	var laydate = layui.laydate;
 	var layer = layui.layer;
 	
-	
+	/*
+	 * 左侧导航栏点击添加tab
+	 */
 	addtab = function addtab(id,title,url){
 		var t=$("#title_"+id);
 		if( t[0]) {
@@ -226,15 +228,32 @@ layui.use([ 'layer', 'form', 'laydate', 'element','laypage' ], function() {
 		}else{
 			element.tabAdd('content_tab', {
 				title: '<span id="title_'+id+'" >'+title+' </span>',
-			    content: '<div class="layui-main"><iframe width="100%" height="100%" style="border:0;" src="${pageContext.request.contextPath}/'+url+'" ></iframe></div>', //支持传入html
+			    content: '<div class="layui-main"><iframe id="iframe_'+id+'" width="100%" height="100%" style="border:0;" src="${pageContext.request.contextPath}/'+url+'" ></iframe></div>', //支持传入html
 				id: id
 			});
 			element.tabChange('content_tab',id);
 		}
 	}
+	
+	/*
+	 * 监听tab切换  刷新内容  
+	 */
+	element.on('tab(content_tab)', function(data){
+		var url= $('iframe:eq('+data.index+')').attr('src');
+		$('iframe:eq('+data.index+')').attr('src', url);
+	});
+	
+	
+	/*
+	 * 右上角时间
+	 */
 	setInterval(function(){
 		$('#currenttime').html(laydate.now(0, 'YYYY年MM月DD日 hh时mm分ss秒'))
 	},1000);
+	
+	/*
+	 * 退出系统
+	 */
 	$('#exit').click(function(){
 		
 		layer.confirm('是否确定退出系统？', {

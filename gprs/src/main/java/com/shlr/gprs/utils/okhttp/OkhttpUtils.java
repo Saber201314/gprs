@@ -24,8 +24,11 @@ public class OkhttpUtils {
     private int mRetryCount = 0;     
 
 	private OkhttpUtils() {
-		okHttpClientBuilder = new OkHttpClient.Builder().connectTimeout(100, TimeUnit.SECONDS)
-				.writeTimeout(100, TimeUnit.SECONDS).readTimeout(100, TimeUnit.SECONDS);
+		okHttpClientBuilder = new OkHttpClient.Builder()
+				.addInterceptor(new HttpLoggingInterceptor())
+				.connectTimeout(100, TimeUnit.SECONDS)
+				.writeTimeout(100, TimeUnit.SECONDS)
+				.readTimeout(100, TimeUnit.SECONDS);
 	}
 
 	public static OkhttpUtils getInstance() {
@@ -65,12 +68,12 @@ public class OkhttpUtils {
         return mRetryCount;
     }
     /** get请求 */
-    public static GetRequest get(String url) {
+    public GetRequest get(String url) {
         return new GetRequest(url);
     }
 
     /** post请求 */
-    public static PostRequest post(String url) {
+    public PostRequest post(String url) {
         return new PostRequest(url);
     }
 
