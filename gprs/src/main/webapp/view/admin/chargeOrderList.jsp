@@ -268,6 +268,7 @@ body .ui-tooltip{
 					<th>回调时间</th>
 					<th>充值方式</th>
 					<th width="60">充值结果</th>
+					<th>异常信息</th>
 					<th width="70">充值通道</th>
 					<th>接入</th>
 					<th>外放</th>

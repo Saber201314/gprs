@@ -212,6 +212,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
 	        			var chargeStatus = data.list[i].chargeStatus;
 	        			var status = "";
 	        			var cacheFlag = data.list[i].cacheFlag;
+	        			var error_msg="";
 	        			if(cacheFlag != 1){
 	            			if(submitStatus == 1){
 	            				if(chargeStatus == 0){
@@ -224,6 +225,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
 	                					status = "<span class='lable-fail'>充值失败 </span>";
 	                				}else{
 	                    				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span onclick='showtip(this)' class='hide-option lable-fail' title='"+error+"'>充值失败</span>";
+	                    				error_msg=error;
 	                				}            					
 	            				}
 	            			}else{  
@@ -232,6 +234,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
 	            					status = "<span class='lable-nosubmit'>未提交 </span>";
 	            				}else{
 	                				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span onclick='showtip(this)' class='hide-option lable-nosubmit' title='"+error+"'>未提交</span>";
+	                				error_msg=error;
 	            				}
 
 	            			}       				       				
@@ -239,7 +242,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
 	        				status = "缓存中...";
 	        			}
 	        			html.push('<td style="padding : 5px 0px;">'+status+'</td>');
-	        			
+	        			html.push('<td style="padding : 5px 0px;">'+error_msg+'</td>')
 	        			var channelName = data.list[i].channelName;
             			if(!channelName){
             				channelName = "";
