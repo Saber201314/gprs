@@ -6,12 +6,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.dao.PayLogMapper;
 import com.shlr.gprs.domain.PayLog;
 
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
 * @author xucong
@@ -24,13 +26,49 @@ public class PayLogService implements DruidStatInterceptor{
 	@Resource
 	PayLogMapper payLogMapper;
 	
+	
+	public Integer update(PayLog payLog){
+		return payLogMapper.updateByPrimaryKey(payLog);
+	}
+	
 	/**
-	 * 根据条件查询所有PayLog
+	 * 根据条件分页查询指定数量的PayLog,
 	 * @param example
 	 * @return
 	 */
 	public List<PayLog> listByExample(Example example,Integer pageNo,Integer pageSize){
 		return payLogMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*pageSize, pageSize));
+	}
+	
+	public List<PayLog> listByExample(PayLog payLog){
+		Example example = new Example(PayLog.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		 String account = payLog.getAccount();
+		    if(!StringUtils.isEmpty(account)){
+		    	createCriteria.andEqualTo("account", account);
+		    }
+		    String agent = payLog.getAgent();
+		    if(!StringUtils.isEmpty(agent)){
+		    	createCriteria.andEqualTo("agent", agent);
+		    }    
+		    Integer type = payLog.getType();
+		    if(type != null){
+		    	createCriteria.andEqualTo("type", type);
+		    } 
+		    Integer orderId = payLog.getOrderId();
+		    if(orderId != null){
+		    	createCriteria.andEqualTo("orderId", orderId);
+		    } 
+		    Integer status = payLog.getStatus();
+		    if(status != null){
+		    	createCriteria.andEqualTo("status", status);
+		    }     
+		    String mobile = payLog.getMobile();
+		    if(!StringUtils.isEmpty(mobile)){
+		    	createCriteria.andEqualTo("mobile", mobile);
+		    }
+		    example.setOrderByClause(" id desc");
+		return payLogMapper.selectByExample(example);
 	}
 	
 	/**

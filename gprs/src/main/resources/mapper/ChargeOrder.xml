@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shlr.gprs.dao.ChargeOrderMapper">
+	<resultMap type="ChargeOrder" id="chargeOrderResult">
+		<id property="id" column="id"/>
+		<result property="account" column="account"/>
+		<result property="mobile" column="mobile"/>
+		<result property="type" column="type"/>
+		<result property="locationType" column="location_type"/>
+		<result property="location" column="location"/>
+		<result property="packageId" column="package_id"/>
+		<result property="amount" column="amount"/>
+		<result property="money" column="money"/>
+		<result property="discountMoney" column="discount_money"/>
+		<result property="profit" column="profit"/>
+		<result property="payBill" column="pay_bill"/>
+		<result property="optionTime" column="option_time"/>
+		<result property="takeTime" column="take_time"/>
+		<result property="submitType" column="submit_type"/>
+		<result property="submitTime" column="submit_time"/>
+		<result property="submitChannel" column="submit_channel"/>
+		<result property="submitTemplate" column="submit_template"/>
+		<result property="submitStatus" column="submit_status"/>
+		<result property="chargeTaskId" column="charge_task_id"/>
+		<result property="chargeStatus" column="charge_status"/>
+		<result property="reportTime" column="report_time"/>
+		<result property="memo" column="memo"/>
+		<result property="error" column="error"/>
+		<result property="batchId" column="batch_id"/>
+		<result property="report" column="report"/>
+		<result property="paymoney" column="paymoney"/>
+		<result property="paystatus" column="paystatus"/>
+		<result property="hongbao" column="hongbao"/>
+		<result property="thirdInfo" column="thirdInfo"/>
+		<result property="backUrl" column="backUrl"/>
+		<result property="agentorderId" column="order_id"/>
+		<result property="cache_flag" column="cache_flag"/>
+		<result property="orderReqNo" column="order_req_no"/>
+		<result property="orderReqNo1" column="order_req_no1"/>
+		<result property="reqStatus" column="req_status"/>
+		<result property="refundFlag" column="refund_flag"/>
+		<result property="routeFlag" column="route_flag"/>
+		<result property="routeStatus" column="route_status"/>
+		<result property="routeTimes" column="route_times"/>
+		<result property="curRoutePos" column="cur_route_pos"/>
+		<result property="packageId1" column="package_id1"/>
+		<result property="packageId2" column="package_id2"/>
+		<result property="packageId3" column="package_id3"/>
+	
+	</resultMap>
+	<update id="forceToFailOrder">
+		update g_charge_order 
+		 	set charge_status = #{charge_status}, 
+		 	error = #{error}, 
+		 	submit_status = 1,
+		 	cache_flag = 0, 
+		 	report_time = #{report_time} 
+		 		where id = ${id} and cache_flag = #{cache_flag}
+	</update>
+	<update id="updateChargeStatus">
+		update g_charge_order 
+		  	set charge_status = #{charge_status}, 
+		  	error = #{error}, 
+		  	report_time = #{report_time}
+		  		where charge_task_id = #{charge_task_id} and submit_template = #{submit_template}
+	
+	</update>
+</mapper>

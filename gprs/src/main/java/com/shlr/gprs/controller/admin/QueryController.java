@@ -71,17 +71,15 @@ import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.CallbackService;
 import com.shlr.gprs.services.ChannelLogService;
 import com.shlr.gprs.services.ChannelResourceService;
-import com.shlr.gprs.services.ChargeOderService;
+import com.shlr.gprs.services.ChargeOrderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.DecimalUtils;
 import com.shlr.gprs.utils.StrUtils;
 import com.shlr.gprs.utils.TimeUtls;
-import com.shlr.gprs.vo.PageResultVO;
 import com.shlr.gprs.vo.PayLogFmt;
 import com.shlr.gprs.vo.ResultBaseVO;
-import com.shlr.gprs.vo.UsersVO;
 
 import junit.framework.Assert;
 import net.sf.jxls.transformer.XLSTransformer;
@@ -106,7 +104,7 @@ public class QueryController {
 	@Resource
 	ChannelResourceService channelResourceService;
 	@Resource
-	ChargeOderService chargeOderService;
+	ChargeOrderService chargeOderService;
 	@Resource
 	PayLogService payLogService;
 	@Resource

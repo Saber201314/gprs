@@ -66,6 +66,9 @@ public class UserService implements DruidStatInterceptor{
 		return userMapper.selectAll();
 		
 	}
+	public Users findById(Integer userid){
+		return UsersCache.idMap.get(userid);
+	}
 	/**
 	 * 根据条件查询
 	 * @return

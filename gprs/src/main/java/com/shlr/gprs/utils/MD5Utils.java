@@ -39,7 +39,6 @@ public class MD5Utils {
 	public static void main(String[] args) {
 		String md5 = getMd5("xc886696");
 		System.out.println(md5);
-		System.out.println(md5.equals("29c882af2a3e5cab568acd87dae78407"));
 		
 	}
 }

@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.shlr.gprs.utils.User;
 import com.suwoit.json.util.StringUtils;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
@@ -76,6 +79,5 @@ public class OkhttpUtils {
     public PostRequest post(String url) {
         return new PostRequest(url);
     }
-
 
 }
