@@ -66,6 +66,20 @@ public class UserService implements DruidStatInterceptor{
 		return userMapper.selectAll();
 		
 	}
+	/**
+	 * 更新余额
+	 * @param userId
+	 * @param money
+	 * @return
+	 */
+	public Integer updateMoney(int userId, double money){
+		return userMapper.updatebalance(userId, money);
+	}
+	/**
+	 * 根据ID查找
+	 * @param userid
+	 * @return
+	 */
 	public Users findById(Integer userid){
 		return UsersCache.idMap.get(userid);
 	}

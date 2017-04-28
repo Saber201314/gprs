@@ -18,5 +18,16 @@
 	font-size: 12px;
 	font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
 }
+.lable-success{
+	padding: 4px 10px;
+	color: #fff;
+	background-color: #5FB878;
+}
+.lable-fail{
+	padding: 4px 10px;
+	color: #fff;
+	background-color: #FF5722;
+}
+
 
 </style>

@@ -1,5 +1,6 @@
 package com.shlr.gprs.dao;
 
+import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.annotation.MapperScan;
 
 import com.shlr.gprs.domain.Users;
@@ -14,5 +15,5 @@ import tk.mybatis.mapper.common.Mapper;
 */
 @MapperScan
 public interface UserMapper extends Mapper<Users> {
-	
-}
+	Integer updatebalance(@Param("id")int id,@Param("money")double money);
+}	

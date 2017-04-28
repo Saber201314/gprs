@@ -22,6 +22,18 @@ public class CallbackService implements DruidStatInterceptor{
 	@Resource
 	CallBackMapper callBackMapper;
 	
+	public Integer saveOrUpdate(Callback callback){
+		Callback call = callBackMapper.selectByPrimaryKey(callback.getId());
+		int result ;
+		if (call==null) {
+			result=callBackMapper.insertSelective(callback);
+		}else{
+			result=callBackMapper.updateByPrimaryKeySelective(callback);
+		}
+		return result;
+	}
+	
+	
 	public List<Callback> listByExampleAndPage(Example example,Integer pageNo){
 		return callBackMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
 	}

@@ -1,13 +1,23 @@
 package com.shlr.gprs.services;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.dao.ChannelMapper;
+import com.shlr.gprs.dao.ChargeOrderMapper;
 import com.shlr.gprs.domain.Channel;
+import com.shlr.gprs.domain.ChargeOrder;
+
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
 * @author xucong
@@ -18,6 +28,8 @@ import com.shlr.gprs.domain.Channel;
 public class ChannelService implements DruidStatInterceptor{
 	@Resource
 	ChannelMapper channelMapper;
+	@Resource
+	ChargeOrderMapper chargeOrderMapper;
 	
 	/**
 	 * 查询所有通道
@@ -26,5 +38,27 @@ public class ChannelService implements DruidStatInterceptor{
 	public List<Channel> list(){
 		return channelMapper.selectAll();
 		
+	}
+	public Channel findById(Integer id){
+		return ChannelCache.idMap.get(id);
+	}
+	
+	
+	public Map<Integer, Integer> qaueryMonthAmount(){
+		Map<Integer, Integer> monthMap = new HashMap<Integer, Integer>();
+
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.set(5, 1);
+	    calendar.set(11, 0);
+	    calendar.set(12, 0);
+	    calendar.set(13, 0);
+	    
+	    List<ChargeOrder> qaueryMonthAmount = chargeOrderMapper.qaueryMonthAmount(calendar.getTime());
+	    
+	    for (ChargeOrder item : qaueryMonthAmount) {
+	      monthMap.put(item.getSubmitChannel(), Integer.valueOf(item.getAmount()));
+	    }
+
+	    return monthMap;
 	}
 }

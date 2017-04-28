@@ -195,7 +195,7 @@ dd{padding-left: 15px}
 				<div class="layui-body layui-tab-content site-demo site-demo-body" >
 					<div class="layui-tab-item layui-show ">
 						<div class="layui-main">
-							<iframe width="100%" height="100%" style="border:0;" src="/view/admin/home.jsp" > </iframe>
+							<iframe width="100%" height="100%" style="border:0;" src="/view/admin/layout/home.jsp" > </iframe>
 						</div>
 						
 					</div>
@@ -210,6 +210,11 @@ dd{padding-left: 15px}
 
 </body>
 <script>
+layui.config({
+	base : '/assts/js/gprs/' //你的模块目录
+}).extend({ //设定模块别名
+  	base: 'base' //如果test.js是在根目录，也可以不用设定别名
+});
 var addtab;
 layui.use([ 'layer', 'form', 'laydate', 'element','laypage' ], function() {
 	var element = layui.element();

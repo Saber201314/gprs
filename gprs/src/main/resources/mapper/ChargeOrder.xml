@@ -47,8 +47,11 @@
 		<result property="packageId1" column="package_id1"/>
 		<result property="packageId2" column="package_id2"/>
 		<result property="packageId3" column="package_id3"/>
-	
 	</resultMap>
+	<select id="qaueryMonthAmount" resultMap="chargeOrderResult">
+		select submit_channel,sum(amount) as amount 
+			from g_charge_order where submit_time > #{submit_time} group by submit_channel
+	</select>
 	<update id="forceToFailOrder">
 		update g_charge_order 
 		 	set charge_status = #{charge_status}, 

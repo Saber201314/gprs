@@ -30,7 +30,16 @@ public class PayLogService implements DruidStatInterceptor{
 	public Integer update(PayLog payLog){
 		return payLogMapper.updateByPrimaryKey(payLog);
 	}
-	
+	public Integer saveOrUpdate(PayLog payLog){
+		PayLog selectByPrimaryKey = payLogMapper.selectByPrimaryKey(payLog.getId());
+		int num;
+		if (selectByPrimaryKey==null) {
+			num = payLogMapper.insertSelective(payLog);
+		}else{
+			num = payLogMapper.updateByPrimaryKeySelective(payLog);
+		}
+		return num;
+	}
 	/**
 	 * 根据条件分页查询指定数量的PayLog,
 	 * @param example

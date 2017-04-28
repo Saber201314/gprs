@@ -1,5 +1,6 @@
 package com.shlr.gprs.cache;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.shlr.gprs.services.ChannelService;
  */
 public class ChannelCache {
 	public static Map<Integer, Channel> idMap = new HashMap<Integer, Channel>();
+	public static List<Map<String,Object>> cacheChannelList = new ArrayList<Map<String,Object>>();
 	
 	/**
 	 * 初始化加载所有通道

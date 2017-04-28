@@ -13,6 +13,7 @@ import com.shlr.gprs.dao.ChargeOrderMapper;
 import com.shlr.gprs.domain.ChargeOrder;
 
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
 * @author xucong
@@ -27,6 +28,27 @@ public class ChargeOrderService implements DruidStatInterceptor{
 	
 	public List<ChargeOrder> listByExampleAndPage(Example example,Integer pageNo){
 		return chargeOrderMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+	}
+	
+	public List<ChargeOrder> selectOneByExample(Integer taskId,Integer templateId){
+		Example example=new Example(ChargeOrder.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		createCriteria.andEqualTo("chargeTaskId", taskId);
+		createCriteria.andEqualTo("submitTemplate", templateId);
+		List<ChargeOrder> selectByExample = chargeOrderMapper.selectByExample(example);
+		return selectByExample;
+		
+	}
+	
+	public Integer saveOrUpdate(ChargeOrder chargeOrder){
+		ChargeOrder order = chargeOrderMapper.selectByPrimaryKey(chargeOrder.getId());
+		int result;
+		if (order == null) {
+			result=chargeOrderMapper.insertSelective(chargeOrder);
+		}else{
+			result=chargeOrderMapper.updateByPrimaryKeySelective(chargeOrder);
+		}
+		return result;
 	}
 	
 	public Integer forceToFailOrder(Integer id, Integer cacheFlag, Integer status,	String error){

@@ -1,5 +1,8 @@
 package com.shlr.gprs.dao;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.annotation.MapperScan;
 
@@ -25,4 +28,7 @@ public interface ChargeOrderMapper extends Mapper<ChargeOrder>{
 			@Param("report_time")Long report_time,
 			@Param("charge_task_id")String charge_task_id,
 			@Param("submit_template")Integer submit_template);
+	
+	List<ChargeOrder> qaueryMonthAmount(@Param("submit_time")Date submit_time);
+	
 }

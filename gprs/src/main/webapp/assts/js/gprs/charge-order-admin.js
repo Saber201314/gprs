@@ -4,14 +4,14 @@
  * 
  * 
  **/
-layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
+layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], function(
 		exports) {
 	var form = layui.form();
 	var laypage = layui.laypage;
 	var laydate = layui.laydate;
 	var elem = layui.element();
 	var $ = layui.jquery;
-	
+	var base = layui.base;
 	
 	var index;//加载loading
 	var total;
@@ -56,50 +56,9 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
 		$('#start').val(laydate.now(0, 'YYYY-MM-DD 00:00:00'));
 		$('#end').val(laydate.now(0, 'YYYY-MM-DD 23:59:59'));
 		
+		base.initagent();
+		base.initchannel();
 		
-		/*
-		 * 初始化代理商
-		 */
-		$.ajax({
-		    url:"/admin/query/userListByLevel.action",
-		    type:"post",
-		    dataType:'json',
-		    cache:false,
-		    success:function(data){
-		    	if(data && data.success){
-		    		var list=data.module;
-		    		var options=[];
-		    		$.each(list,function(i,item){
-		    			options.push('<option value="'+item.username+'">'+item.name+'</option>');
-		    		})
-		    		$('#agent').append(options);
-		    		form.render('select');
-		    	}else{
-		    		top.window.location = "/login.jsp";
-		    	}
-		    },
-		    error:function(){
-		    }
-		});
-		/*
-		 * 初始化通道
-		 */
-		$.ajax({
-	        url:"/admin/query/getCurrentChannelList.action",
-	        type : 'post',
-	        dataType:'json',
-	        cache:false,
-	        success:function(data){
-	        	if(data && data.length >0){
-	        		var options=[];
-	        		for(var i =0;i<data.length;i++){
-	        			options.push("<option value="+data[i].id+">"+data[i].name+"</option>");
-	        		}
-	        		$("#submitChannel").append(options);
-	        		form.render('select');
-	        	}
-	        }
-		});
 		initChargeOrderList();
 		
 		
@@ -396,7 +355,5 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage' ], function(
 		});
 		top.layer.msg(JSON.stringify(ids));
 	})
-	
-
 	exports('charge-order-admin'); //注意，这里是模块输出的核心，模块名必须和use时的模块名一致
 });
