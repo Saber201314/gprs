@@ -5,6 +5,9 @@
 <title>Insert title here</title>
 </head>
 <style>
+form {
+	margin-top: 15px
+}
 
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
@@ -160,7 +163,7 @@ body .ui-tooltip{
 					</div>
 				</div>
 				<div class="layui-inline">
-					<label class="layui-form-label">结束时间</label>
+					<label class="layui-form-label">开始时间</label>
 					<div class="layui-input-inline">
 						<input id="end" name="to" class="layui-input">
 					</div>
