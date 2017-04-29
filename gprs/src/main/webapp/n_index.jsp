@@ -177,7 +177,7 @@ dd{padding-left: 15px}
 					<li class="layui-nav-item"><a href="javascript:;"><i class="layui-icon" style="font-size: 20px;margin-right: 10px; ">&#xe60e;</i>日志管理</a>
 						<dl class="layui-nav-child">
 							<dd>
-								<a href="javascript:;" onclick="addtab('1001','通道提交日志')">通道提交日志</a>
+								<a href="javascript:;" onclick="addtab('1001','通道提交日志','view/admin/log/channellog.jsp')">通道提交日志</a>
 							</dd>
 							<dd>
 								<a href="javascript:;" onclick="addtab('1002','回调日志')">回调日志</a>

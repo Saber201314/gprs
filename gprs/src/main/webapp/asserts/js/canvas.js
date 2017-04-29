@@ -40,20 +40,20 @@ CanvasAnimate.prototype.getLength=function(){
     return arr
 };
 CanvasAnimate.prototype.Draw = function(list){
-    let new_arr = []
-    let line_arr = []
+	var new_arr = []
+    var line_arr = []
 
     list.map((item,index)=>{
-        let xy = this.ControlXY(item)
-        let obj = this.ControlRound(xy)
+    	var xy = this.ControlXY(item)
+        var obj = this.ControlRound(xy)
         new_arr.push( obj )
     });
     
     new_arr.map((item1,index1)=>{
         new_arr.map((item2,index2)=>{
             if(item1 !== item2){
-                let x = item1.x - item2.x
-                let y = item1.y - item2.y
+            	var x = item1.x - item2.x
+                var y = item1.y - item2.y
                 if( Math.abs(x)< 100 && Math.abs(y)<100 ){
                     let obj = {
                         x1:item1.x,

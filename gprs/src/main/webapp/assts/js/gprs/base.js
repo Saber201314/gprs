@@ -3,10 +3,51 @@
  * 
  * 
  */
-layui.define([ 'jquery', 'form' ], function(exports) {
+layui.define([ 'jquery', 'form','laypage' ], function(exports) {
 	var $ = layui.jquery;
 	var form = layui.form();
+	var laypage = layui.laypage;
+	
+	var total;
+	var current;
+	var pages;
+	
 	var obj = {
+			
+		inittime : function(pattern){
+			/*
+			 * 初始化开始结束时间
+			 */
+			var start = {
+				elem : document.getElementById('start'),
+				max : '2099-06-16 23:59:59',
+				format : pattern,
+				istime : true,
+				istoday : false,
+				choose : function(datas) {
+					end.min = datas; //开始日选好后，重置结束日的最小日期
+					end.start = datas //将结束日的初始值设定为开始日
+				}
+			};
+			var end = {
+				elem : document.getElementById('end'),
+				max : '2099-06-16 23:59:59',
+				format : pattern,
+				istime : true,
+				istoday : false,
+				choose : function(datas) {
+					start.max = datas; //结束日选好后，重置开始日的最大日期
+				}
+			};
+			$('#start').click(function() {
+				laydate(start);
+			})
+			$('#end').click(function() {
+				laydate(end);
+			})
+			
+		},	
+			
 		/*
 		 * 初始化代理商
 		 */
@@ -56,6 +97,35 @@ layui.define([ 'jquery', 'form' ], function(exports) {
 		        	}
 		        }
 			});
+		},
+		initpage : function(data,isinitpage,callback){
+			/*
+			 * 初始化分页信息
+			 * 
+			 */
+			total = data.allRecord;
+		    pages = data.allPage;
+		    current = data.pageNo;
+		    $('#page-total').html(
+					'共有<strong>' + total + '</strong> 条记录, 当前第<strong>'
+							+ current + '</strong> 页， 共 <strong>' + pages
+							+ '</strong> 页');
+		    if(!isinitpage){
+		    	isinitpage=true;
+		    	//分页
+		    	laypage({
+		    		cont : 'pate',
+		    		pages : pages, //总页数
+		    		groups : 5, //连续显示分页数
+		    		jump : function(obj, first) {
+		    			if (!first) {
+		    				top.layer.msg('第 ' + obj.curr + ' 页');
+		    				$('#pageNo').val(obj.curr);
+		    				callback();
+		    			}
+		    		}
+		    	});
+		    }
 		}
 
 	}
