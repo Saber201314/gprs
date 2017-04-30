@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
+<beans  xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
       http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -7,9 +7,8 @@
       http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- 本文件整合Spring与Mybatis -->
-	<!-- 使用数据库配置文件，可以使得配置解耦 -->
-	<context:property-placeholder location="classpath:jdbc.properties" />
-
+	<context:property-placeholder location="classpath:jdbc-prod.properties" />
+	
 	<!-- Druid配置 -->
 	<!-- 数据库连接池相关 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
@@ -19,7 +18,8 @@
 		<property name="url" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
 		<property name="password" value="${jdbc.password}" />
-     	<!-- <property name="connectionProperties" value="config.decrypt=true;config.decrypt.key=${jdbc.publickey}" /> -->
+		<!-- <property name="connectionProperties" value="config.decrypt=true;config.decrypt.key=${jdbc.publickey}" 
+			/> -->
 
 		<!-- 配置初始化大小、最小、最大 -->
 		<property name="initialSize" value="${initialSize}" />
@@ -42,9 +42,8 @@
 		<property name="testOnReturn" value="false" />
 
 		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
-		<property name="poolPreparedStatements" value="true" />
-		<property name="maxPoolPreparedStatementPerConnectionSize"
-			value="20" />
+		<!-- 官方建议oracle打开 MySQL可以关闭 -->
+		<property name="poolPreparedStatements" value="false" />
 
 		<!-- 这里配置提交方式，默认就是TRUE，可以不用配置 -->
 
@@ -101,8 +100,7 @@
 			</value>
 		</property>
 	</bean>
-
-
+	
 
 
 

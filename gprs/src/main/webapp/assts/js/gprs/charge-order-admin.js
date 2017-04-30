@@ -1,8 +1,5 @@
 /**
  *  充值记录
- * 
- * 
- * 
  **/
 layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], function(
 		exports) {
@@ -23,39 +20,10 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 	 * 初始化数据
 	 */
 	$(function(){
-		/*
-		 * 初始化开始结束时间
-		 */
-		var start = {
-			elem : document.getElementById('start'),
-			max : '2099-06-16 23:59:59',
-			format : 'YYYY-MM-DD hh:mm:ss',
-			istime : true,
-			istoday : false,
-			choose : function(datas) {
-				end.min = datas; //开始日选好后，重置结束日的最小日期
-				end.start = datas //将结束日的初始值设定为开始日
-			}
-		};
-		var end = {
-			elem : document.getElementById('end'),
-			max : '2099-06-16 23:59:59',
-			format : 'YYYY-MM-DD hh:mm:ss',
-			istime : true,
-			istoday : false,
-			choose : function(datas) {
-				start.max = datas; //结束日选好后，重置开始日的最大日期
-			}
-		};
-		$('#start').click(function() {
-			laydate(start);
-		})
-		$('#end').click(function() {
-			laydate(end);
-		})
+		
 		$('#start').val(laydate.now(0, 'YYYY-MM-DD 00:00:00'));
 		$('#end').val(laydate.now(0, 'YYYY-MM-DD 23:59:59'));
-		
+		base.inittime('YYYY-MM-DD hh:mm:ss');
 		base.initagent();
 		base.initchannel();
 		
@@ -273,7 +241,10 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 	        		});
 					form.render('checkbox');
 				}
-				initPage(data);
+				base.initpage(data,isinitpage,function(isinit){
+					isinitpage = isinit;
+					initChargeOrderList();
+				})
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 		    	console.log(XMLHttpRequest.status);
@@ -286,38 +257,6 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 		})
 	}
 
-	/*
-	 * 初始化分页信息
-	 * 
-	 */
-	function initPage(data){
-	    total = data.allRecord;
-	    pages = data.allPage;
-	    current = data.pageNo;
-	    $('#page-total').html(
-				'共有<strong>' + total + '</strong> 条记录, 当前第<strong>'
-						+ current + '</strong> 页， 共 <strong>' + pages
-						+ '</strong> 页');
-	    if(!isinitpage){
-	    	isinitpage=true;
-	    	//分页
-	    	laypage({
-	    		cont : 'pate',
-	    		pages : pages, //总页数
-	    		groups : 5, //连续显示分页数
-	    		jump : function(obj, first) {
-	    			if (!first) {
-	    				top.layer.msg('第 ' + obj.curr + ' 页');
-	    				$('#pageNo').val(obj.curr);
-	    				initChargeOrderList();
-	    			}
-	    			
-	    			
-
-	    		}
-	    	});
-	    }
-	}
 	
 	/*
 	 * 时间补0
@@ -327,17 +266,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 	    else return obj;  
 	}
 	
-	/*
-	 * 全选checkbox
-	 */
-	form.on('checkbox(allChoose)', function(data) {
-		var child = $(data.elem).parents('table').find(
-				'tbody input[type="checkbox"]');
-		child.each(function(index, item) {
-			item.checked = data.elem.checked;
-		});
-		form.render('checkbox');
-	});
+	
 	/*
 	 * 获取所有选中checkbox
 	 */

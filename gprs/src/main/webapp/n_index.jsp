@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <jsp:include page="/cssjs.jsp"></jsp:include>
-<link href="${pageContext.request.contextPath}/res/css/global.css" rel="stylesheet"/>
+<link href="/res/css/global.css" rel="stylesheet"/>
 <title>利茸-流量分发平台</title>
 </head>
 <style>
@@ -39,6 +39,21 @@ dd{padding-left: 15px}
 </style>
  
 <body>
+	
+	
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+	</head>
+	<body>
+		
+	</body>
+	</html>
+	
+
+
 	<div class="layui-layout layui-layout-admin">
 	
 		<!-- 头部区域（可配合layui已有的水平导航） -->
@@ -177,7 +192,7 @@ dd{padding-left: 15px}
 					<li class="layui-nav-item"><a href="javascript:;"><i class="layui-icon" style="font-size: 20px;margin-right: 10px; ">&#xe60e;</i>日志管理</a>
 						<dl class="layui-nav-child">
 							<dd>
-								<a href="javascript:;" onclick="addtab('1001','通道提交日志')">通道提交日志</a>
+								<a href="javascript:;" onclick="addtab('1001','通道提交日志','view/admin/log/channellog.jsp')">通道提交日志</a>
 							</dd>
 							<dd>
 								<a href="javascript:;" onclick="addtab('1002','回调日志')">回调日志</a>
@@ -221,81 +236,67 @@ layui.use([ 'layer', 'form', 'laydate', 'element','laypage' ], function() {
 	var $ = layui.jquery;
 	var laydate = layui.laydate;
 	var layer = layui.layer;
-	
+
 	/*
 	 * 左侧导航栏点击添加tab
 	 */
-	addtab = function addtab(id,title,url){
-		var t=$("#title_"+id);
-		if( t[0]) {
-			element.tabChange('content_tab',id);
-			return ;
-		}else{
+	addtab = function addtab(id, title, url) {
+		var t = $("#title_" + id);
+		if (t[0]) {
+			element.tabChange('content_tab', id);
+			return;
+		} else {
 			element.tabAdd('content_tab', {
-				title: '<span id="title_'+id+'" >'+title+' </span>',
-			    content: '<div class="layui-main"><iframe id="iframe_'+id+'" width="100%" height="100%" style="border:0;" src="${pageContext.request.contextPath}/'+url+'" ></iframe></div>', //支持传入html
+				title: '<span id="title_' + id + '" >' + title + ' </span>',
+				content: '<div class="layui-main"><iframe id="iframe_' + id + '" width="100%" height="100%" style="border:0;" src="/' + url + '" ></iframe></div>', //支持传入html
 				id: id
 			});
-			element.tabChange('content_tab',id);
+			element.tabChange('content_tab', id);
 		}
 	}
-	
+
 	/*
 	 * 监听tab切换  刷新内容  
 	 */
-	element.on('tab(content_tab)', function(data){
-		var url= $('iframe:eq('+data.index+')').attr('src');
-		$('iframe:eq('+data.index+')').attr('src', url);
+	element.on('tab(content_tab)', function(data) {
+		var url = $('iframe:eq(' + data.index + ')').attr('src');
+		$('iframe:eq(' + data.index + ')').attr('src', url);
 	});
-	
-	
+
+
 	/*
 	 * 右上角时间
 	 */
-	setInterval(function(){
+	setInterval(function() {
 		$('#currenttime').html(laydate.now(0, 'YYYY年MM月DD日 hh时mm分ss秒'))
-	},1000);
-	
+	}, 1000);
+
 	/*
 	 * 退出系统
 	 */
-	$('#exit').click(function(){
-		
+	$('#exit').click(function() {
+
 		layer.confirm('是否确定退出系统？', {
-			  btn: ['是','否'] //按钮
-			}, function(){
-				$.ajax({
-					url : 'exit.action',
-					type : 'get',
-					cache : false,
-					success : function(data){
-						data = JSON.parse(data);
-						if(data){
-							window.location = data.url;
-						}
-					},
-					error : function(){
-						
+			btn: ['是', '否'] //按钮
+		}, function() {
+			$.ajax({
+				url: 'exit.action',
+				type: 'get',
+				cache: false,
+				success: function(data) {
+					data = JSON.parse(data);
+					if (data) {
+						window.location = data.url;
 					}
-				})
-			}, function(){
-				
-			});
-		
-	})
-	
-	 
-	
-	
-	
-	
-	
+				},
+				error: function() {
+
+				}
+			})
+		}, function() {
+
+		});
+	})	
 })
-
-
-
-	
 </script>
-
-
 </html>

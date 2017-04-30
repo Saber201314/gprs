@@ -286,9 +286,9 @@ public class QueryController {
 		List<ChargeOrder> listByPage = chargeOderService.listByExampleAndPage(example, pageNo);
 		Page<ChargeOrder> page=(Page<ChargeOrder>) listByPage;
 		JSONObject result=new JSONObject();
-		result.put("allRecord", page.getTotal());
-		result.put("allPage", page.getPages());
-		result.put("pageNo", page.getPageNum());
+		result.put("pages", page.getPages());
+		result.put("total", page.getTotal());
+		result.put("pageno", page.getPageNum());
 		result.put("list", listByPage);
 		response.getWriter().print(result.toJSONString());
 		return null;
@@ -743,12 +743,13 @@ public class QueryController {
 	 * @throws UnsupportedEncodingException
 	 */
 	@RequestMapping(value="/query/channelLogList.action")
+	@ResponseBody
 	public String channelLogList(HttpSession session,
 			@RequestParam(value="mobile",required=false)String mobile,
-			@RequestParam(value="pageNo",required=false,defaultValue = "1")String pageNo,
+			@RequestParam(value="pageNo",required=false)String pageNo,
 			@RequestParam(value="from",required=false)String from,
 			@RequestParam(value="to",required=false)String to,
-			@RequestParam(value="templateId",required=false)String templateId,
+			@RequestParam(value="submitChannel",required=false)String templateId,
 			Model model) throws UnsupportedEncodingException{
 		Users currentUser = userService.getCurrentUser(session);
 		if ((currentUser == null) || (currentUser.getType() != 1)) {
@@ -769,24 +770,22 @@ public class QueryController {
 			dto=TimeUtls.timeStr2Date(to,"yyyy-MM-dd");
 			createCriteria.andLessThanOrEqualTo("optionTime", dto);
 		}
-		if (!StringUtils.isEmpty(templateId)&&!"请选择".equals(templateId)) {
-			createCriteria.andEqualTo("templateId", templateId);
+		if (!StringUtils.isEmpty(templateId)&&!"-1".equals(templateId)) {
+			createCriteria.andEqualTo("templateId", Integer.valueOf(templateId)-2);
 		}
 		example.setOrderByClause(" id desc ");
 		List<ChannelLog> listByExampleAndPage = channelLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
 		Page<ChannelLog> page=(Page<ChannelLog>) listByExampleAndPage;
-		Collection<ChannelTemplate> values = ChannelTemplateCache.identityMap.values();
-		model.addAttribute("mobile", mobile);
-		model.addAttribute("templateId", templateId);
-		model.addAttribute("from", dfrom == null ? "" : dfrom);
-		model.addAttribute("to", dto == null ? "" : dto);
-		model.addAttribute("channelLogList", listByExampleAndPage);
-		model.addAttribute("templateList", values);
 		
-		model.addAttribute("util", new StrUtils());
-		
-		model.addAttribute("page", page);
-		return "admin/query/channelLogList";
+		for (ChannelLog channelLog : listByExampleAndPage) {
+			channelLog.setResponse(StrUtils.ascii2native(channelLog.getResponse()));
+		}
+		JSONObject result=new JSONObject();
+		result.put("list", listByExampleAndPage);
+		result.put("pages", page.getPages());
+		result.put("total", page.getTotal());
+		result.put("pageno", page.getPageNum());
+		return JSON.toJSONString(result);
 	}
 	
 	

@@ -17,6 +17,7 @@ import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.manager.ChargeManager;
 import com.shlr.gprs.services.GprsPackageService;
 import com.shlr.gprs.utils.MD5Utils;
+import com.shlr.gprs.utils.MailUtils;
 import com.shlr.gprs.utils.MobileUtil;
 import com.shlr.gprs.vo.ResultBaseVO;
 
