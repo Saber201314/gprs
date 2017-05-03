@@ -87,11 +87,11 @@ public class HttpUtils {
         return url;
     }
     /** 将传递进来的参数拼接成 url */
-    public static String createFromParams(Map<String, Object> params) {
+    public static String createFromParams(Map<String, String> params) {
     	StringBuilder sb = new StringBuilder();
         try {
             
-            for (Map.Entry<String, Object> urlParams : params.entrySet()) {
+            for (Map.Entry<String, String> urlParams : params.entrySet()) {
                 Object obj = urlParams.getValue();
                     //对参数进行 utf-8 编码,防止头信息传中文
                     String urlValue = URLEncoder.encode(obj.toString(), "UTF-8");

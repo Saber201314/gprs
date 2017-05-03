@@ -648,7 +648,7 @@ public class ChargeManager {
 		callback.setUrl(chargeOrder.getBackUrl());
 		callback.setOrderId(chargeOrder.getId());
 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, String> params = new HashMap<String, String>();
 		params.put("taskId", String.valueOf(chargeOrder.getId()));
 		params.put("orderId", chargeOrder.getAgentorderId());
 		params.put("mobile", chargeOrder.getMobile());

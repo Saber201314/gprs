@@ -34,7 +34,7 @@ public class MobileUtil {
 		if (isNotMobileNO(mobile)) {
 			return "";
 		}
-		Map<String,Object> params = new HashMap<String,Object>();
+		Map<String,String> params = new HashMap<String,String>();
 		params.put("tel", mobile);
 		String url = "https://tcc.taobao.com/cc/json/mobile_tel_segment.htm";
 		String response=null;
