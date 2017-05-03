@@ -15,14 +15,14 @@
 			<div class="layui-form-item">
 				<label class="layui-form-label">账号</label>
 				<div class="layui-input-block">
-					<input type="text" name="username" required lay-verify="required"
+					<input type="text" name="username" value="admin" required lay-verify="required"
 						placeholder="账号" autocomplete="off" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
 				<label class="layui-form-label">密码</label>
 				<div class="layui-input-block">
-					<input type="password" name="password" required
+					<input type="password" name="password" value="lr2017.." required
 						lay-verify="required" placeholder="密码" autocomplete="off"
 						class="layui-input">
 				</div>

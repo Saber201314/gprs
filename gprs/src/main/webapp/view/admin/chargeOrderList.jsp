@@ -5,9 +5,7 @@
 <title>Insert title here</title>
 </head>
 <style>
-form {
-	margin-top: 15px
-}
+
 
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
@@ -163,7 +161,7 @@ body .ui-tooltip{
 					</div>
 				</div>
 				<div class="layui-inline">
-					<label class="layui-form-label">开始时间</label>
+					<label class="layui-form-label">结束时间</label>
 					<div class="layui-input-inline">
 						<input id="end" name="to" class="layui-input">
 					</div>
@@ -260,14 +258,14 @@ body .ui-tooltip{
 					<th>代理商</th>
 					<th>手机号码</th>
 					<th>号码类型</th>
-					<th width = "60">流量类型</th>
+					<th width = "70">流量类型</th>
 					<th>流量值</th>
 					<th>基础价格</th>
 					<th>扣费金额</th>
 					<th>充值时间</th>
 					<th>回调时间</th>
 					<th>充值方式</th>
-					<th width="60">充值结果</th>
+					<th width="80">充值结果</th>
 					<th>异常信息</th>
 					<th width="70">充值通道</th>
 					<th>接入</th>

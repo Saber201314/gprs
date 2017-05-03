@@ -1,9 +1,14 @@
 package com.shlr.gprs.utils.okhttp;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +28,43 @@ public class HttpUtils {
 	
 	static Logger logger=LoggerFactory.getLogger(HttpUtils.class);
 	
-	/** 将传递进来的参数拼接成 url */
+	/**
+	 * 读取request请求内容
+	 * @param request
+	 * @return
+	 */
+	public static String readContent(HttpServletRequest request){
+		byte[] b = new byte[1024];
+		ServletInputStream is ;
+		ByteArrayOutputStream bos=new ByteArrayOutputStream();
+		int len= -1;
+		String content="";
+		try {
+			is = request.getInputStream();
+			while(( len = is.read(b) ) != -1){
+				bos.write(b);
+			}
+			byte[] contentbyte = bos.toByteArray();
+			if (contentbyte.length != 0) {
+				content=new String(contentbyte, "utf-8");
+			}
+			if (bos != null) {
+				bos.close();
+			}
+			if (is != null) {
+				is.close();
+			}
+			return content;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		return null;
+	}
+	
+	/** 
+	 * 将传递进来的参数拼接成 url
+	 */
     public static String createUrlFromParams(String url, Map<String, List<String>> params) {
         try {
             StringBuilder sb = new StringBuilder();

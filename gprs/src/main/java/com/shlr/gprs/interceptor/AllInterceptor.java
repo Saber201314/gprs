@@ -26,7 +26,6 @@ import com.shlr.gprs.services.UserService;
 * @version 创建时间：2017年4月3日 下午7:07:00
 * 
 */
-@Component
 public class AllInterceptor implements HandlerInterceptor   {
 
 	Logger logger=LoggerFactory.getLogger(AllInterceptor.class);
