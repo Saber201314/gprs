@@ -10,7 +10,7 @@ public class StrUtils {
 	 * @param asciicode
 	 * @return
 	 */
-	public  String ascii2native(String asciicode) {
+	public static String ascii2native(String asciicode) {
 		String[] asciis = asciicode.split("\\\\u");
 		String nativeValue = asciis[0];
 		try {
