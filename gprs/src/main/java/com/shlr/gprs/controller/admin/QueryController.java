@@ -290,7 +290,7 @@ public class QueryController {
 		response.getWriter().print(result.toJSONString());
 		return null;
 	}
-	@RequestMapping(value="/query/chargeOrderCacheList.action")
+	@RequestMapping(value="/chargeOrderCacheList.action")
 	public String chargeOrderCacheList(HttpServletResponse response,HttpSession session,
 			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
 			@RequestParam(value="mobile",required=false)String mobile,@RequestParam(value="location",required=false)String location,
@@ -787,6 +787,7 @@ public class QueryController {
 	
 	
 	@RequestMapping(value="/query/callbackList.action")
+	@ResponseBody
 	public String callbackList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
 			@RequestParam(value="account",required=false)String account,
@@ -803,16 +804,19 @@ public class QueryController {
 			createCriteria.andEqualTo("mobile", mobile);
 			model.addAttribute("mobile", mobile);
 		}
-		if (!StringUtils.isEmpty(account)) {
+		if (!StringUtils.isEmpty(account) && !"-1".equals(account)) {
 			createCriteria.andEqualTo("account", account);
 			model.addAttribute("account", account);
 		}
 		example.setOrderByClause(" id desc");
 		List<Callback> listByExampleAndPage = callbackService.listByExampleAndPage(example, Integer.valueOf(pageNo));
 		Page<Callback> page= (Page<Callback>) listByExampleAndPage;
-		model.addAttribute("callbackList", listByExampleAndPage.toArray());
-		model.addAttribute("page", page);
-		return "admin/query/callbackList";
+		JSONObject result=new JSONObject();
+		result.put("list", listByExampleAndPage);
+		result.put("pages", page.getPages());
+		result.put("total", page.getTotal());
+		result.put("pageno", page.getPageNum());
+		return result.toJSONString();
 	}
 	
 	

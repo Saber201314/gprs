@@ -662,7 +662,9 @@ public class ChargeManager {
 		callback.setRequest(query);
 		for (int i = 0; i < 5; i++) {
 			try {
-				Response execute = OkhttpUtils.getInstance().post(chargeOrder.getBackUrl()).params(params, true)
+				Response execute = OkhttpUtils.getInstance()
+						.post(chargeOrder.getBackUrl())
+						.params(params, true)
 						.execute();
 				response = execute.body().string();
 				if (StringUtils.isEmpty(response)) {

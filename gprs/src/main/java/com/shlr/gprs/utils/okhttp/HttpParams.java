@@ -43,18 +43,20 @@ public class HttpParams implements Serializable {
 		if (params != null) {
 			if (params.urlParamsMap != null && !params.urlParamsMap.isEmpty())
 				urlParamsMap.putAll(params.urlParamsMap);
+			if (params.fileParamsMap != null && !params.fileParamsMap.isEmpty())
+				fileParamsMap.putAll(params.fileParamsMap);
 		}
 	}
 
-	public void put(Map<String, Object> params, boolean... isReplace) {
+	public void put(Map<String, String> params, boolean... isReplace) {
 		if (params == null || params.isEmpty())
 			return;
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
+		for (Map.Entry<String, String> entry : params.entrySet()) {
 			put(entry.getKey(), entry.getValue(), isReplace);
 		}
 	}
 
-	public void put(String key, Object value, boolean... isReplace) {
+	public void put(String key, String value, boolean... isReplace) {
 		if (isReplace != null && isReplace.length > 0) {
 			put(key, value, isReplace[0]);
 		} else {
@@ -114,7 +116,7 @@ public class HttpParams implements Serializable {
 		if (key != null && value != null) {
 			List<String> urlValues = urlParamsMap.get(key);
 			if (urlValues == null) {
-				urlValues = new ArrayList<String>();
+				urlValues = new ArrayList<>();
 				urlParamsMap.put(key, urlValues);
 			}
 			if (isReplace)

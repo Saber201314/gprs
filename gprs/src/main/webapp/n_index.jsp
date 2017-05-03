@@ -126,7 +126,7 @@ dd{padding-left: 15px}
 								<a href="javascript:;" onclick="addtab('401','流量充值记录','view/admin/chargeOrderList.jsp')">流量充值记录</a>
 							</dd>
 							<dd>
-								<a href="javascript:;" onclick="addtab('402','流量缓存记录')">流量缓存记录</a>
+								<a href="javascript:;" onclick="addtab('402','流量缓存记录','view/admin/chargeOrderCacheList.jsp')">流量缓存记录</a>
 							</dd>
 							<dd>
 								<a href="javascript:;" onclick="addtab('403','消费明细查询')">消费明细查询</a>
@@ -195,7 +195,7 @@ dd{padding-left: 15px}
 								<a href="javascript:;" onclick="addtab('1001','通道提交日志','view/admin/log/channellog.jsp')">通道提交日志</a>
 							</dd>
 							<dd>
-								<a href="javascript:;" onclick="addtab('1002','回调日志')">回调日志</a>
+								<a href="javascript:;" onclick="addtab('1002','回调日志','view/admin/log/callbacklog.jsp')">回调日志</a>
 							</dd>
 						</dl></li>
 				</ul>

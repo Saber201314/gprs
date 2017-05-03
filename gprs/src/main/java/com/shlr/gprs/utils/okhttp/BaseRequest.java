@@ -69,7 +69,7 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return (R) this;
     }
 
-    public R params(Map<String, Object> params, boolean... isReplace) {
+    public R params(Map<String, String> params, boolean... isReplace) {
         this.params.put(params, isReplace);
         return (R) this;
     }

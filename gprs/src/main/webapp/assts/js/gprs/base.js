@@ -140,6 +140,8 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 						}
 						$("#submitChannel").append(options);
 						form.render('select');
+					}else {
+						top.window.location = "/login.jsp";
 					}
 				}
 			});

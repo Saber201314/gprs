@@ -8,10 +8,8 @@ layui.define([ 'base', ], function(exports) {
 	var isinitpage = false;
 
 	$(function() {
-		base.inittime('YYYY-MM-DD');
-		base.initchannel();
-
-		initchannelloglist();
+		base.initagent();
+		initcallbackloglist();
 	})
 	/*
 	 * 拦截表单提交
@@ -21,14 +19,14 @@ layui.define([ 'base', ], function(exports) {
 	form.on('submit(btn-submit)', function(data) {
 		isinitpage = false;
 		$('#pageNo').val(1);
-		initchannelloglist();
+		initcallbackloglist();
 		return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
 	})
-	function initchannelloglist() {
+	function initcallbackloglist() {
 		index = top.layer.load();
 		$(".layui-table tbody").html('');
 		$.ajax({
-			url : '/admin/query/channelLogList.action',
+			url : '/admin/query/callbackList.action',
 			type : 'post',
 			data : $('form').serialize(),
 			dataType : 'json',
@@ -39,9 +37,10 @@ layui.define([ 'base', ], function(exports) {
 				if (data && data.list.length > 0) {
 					$.each(data.list, function(index, item) {
 						html.push('<tr>');
-						html.push('<td>' + item.mobile + '</td>');
 						html.push('<td>' + item.orderId + '</td>');
-						html.push('<td>' + item.templateName + '</td>');
+						html.push('<td>' + item.mobile + '</td>');
+						html.push('<td>' + item.url + '</td>');
+						html.push('<td style="overflow:hidden;text-overflow:ellipsis;max-width:800px;"  >' + item.request + '</td>');
 						html.push('<td>' + item.response + '</td>');
 						
 						var newDate = new Date();
@@ -52,17 +51,18 @@ layui.define([ 'base', ], function(exports) {
 					$(".layui-table tbody").append(html.join(''));
 					base.initpage(data, isinitpage, function(isinit) {
 						isinitpage = isinit;
-						initchannelloglist();
+						initcallbackloglist();
 					})
 				}
 
 			},
 			error : function() {
-				layer.msg('连接服务器失败');
+				top.layer.msg('连接服务器失败');
+				top.layer.close(index);
 			}
 		})
 	}
 
-	exports('channellog');
+	exports('callbacklog');
 
 })

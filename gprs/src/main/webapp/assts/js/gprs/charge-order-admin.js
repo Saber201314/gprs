@@ -47,6 +47,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 	function initChargeOrderList(){
 		index=layer.load();
 		$(".layui-table tbody").html('');	
+		
 		$.ajax({
 			url : '/admin/chargeOrderList.action',
 			type : "post",
@@ -55,191 +56,10 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 			cache : false,
 			success : function(data) {
 				layer.close(index);  
-				if(data && data.list.length>0){
-					var html = [];
-					for(var i = 0;i<data.list.length;i++){
-						html.push("<tr>");
-		        		html.push('<td><input type="checkbox"  data-id="'+data.list[i].id+'" lay-skin="primary"/></td>');
-		        		html.push('<td>'+data.list[i].account+'</td>');
-	        			html.push('<td>'+data.list[i].mobile+'</td>');
-	        			var type = data.list[i].type;
-	        			if(type == 1){
-	        				type = "移动";
-	        			}else if(type == 2){
-	        				type = "联通";
-	        			}else if(type == 3){
-	        				type = "电信";
-	        			}
-	        			html.push('<td>'+data.list[i].location + ' &nbsp;' + type +'</td>');
-	        			
-	        			var locationType = data.list[i].locationType;
-	        			if(locationType == 1){
-	        				locationType ="全国流量";
-	        			}else{
-	        				locationType ="省内流量";
-	        			}
-	        			
-	        			html.push('<td>'+locationType+'</td>');
-	        			html.push('<td>'+data.list[i].amount+'M</td>');
-	        			
-	        			var money = data.list[i].money;
-	        			if(money == 0){
-	        				money = "";
-	        			}else{
-	        				money = data.list[i].money + "元";
-	        			}
-	        			html.push('<td>'+money+'</td>');
-	        			
-	        			var discountMoney = data.list[i].discountMoney;
-	        			if(!discountMoney || discountMoney == null){
-	        				discountMoney = "";
-	        			}else{
-	            			discountMoney = discountMoney + "元";          				
-	        			} 			
-	        			html.push('<td>'+discountMoney+'</td>');
-	        			
-	        			var optionTime = data.list[i].optionTime; 
-	        			optionTime = new Date(optionTime);
-	        			optionTime = optionTime.getFullYear()+"-"+
-	        				Appendzero( (optionTime.getMonth()+1))+"-"+
-	        				Appendzero(optionTime.getDate())+" "+
-	        				Appendzero(optionTime.getHours())+":"+
-	        				Appendzero(optionTime.getMinutes())+":"+
-	        				Appendzero(optionTime.getSeconds());
-	        			html.push('<td>'+optionTime+'</td>');
-	        			var reportTime = data.list[i].reportTime;
-	        			if(!reportTime || reportTime == ""){
-	        				reportTime = "";
-	        			}else{
-	        				reportTime=new Date(reportTime);
-	        				reportTime=reportTime.getFullYear()+"-"+
-	        					Appendzero( (reportTime.getMonth()+1))+"-"+
-	        					Appendzero(reportTime.getDate())+" "+
-	        					Appendzero(reportTime.getHours())+":"+
-	        					Appendzero(reportTime.getMinutes())+":"+
-	        					Appendzero(reportTime.getSeconds());
-
-	        			}
-	        			html.push('<td>'+reportTime+'</td>');
-	        			var submitType = data.list[i].submitType;
-	        			if(submitType == 1){
-	        				submitType = "代理商直充";
-	        			}else if(submitType == 2){
-	        				submitType = "充值卡充值";
-	        			}else if(submitType == 3){
-	        				submitType = "支付宝充值";
-	        			}else if(submitType == 4){
-	        				submitType = "批量充值";
-	        			}else if(submitType == 5){
-	        				submitType = "接口充值";
-	        			}
-	        			html.push('<td>'+submitType+'</td>');
-	        			
-	        			var submitStatus = data.list[i].submitStatus;
-	        			var chargeStatus = data.list[i].chargeStatus;
-	        			var status = "";
-	        			var cacheFlag = data.list[i].cacheFlag;
-	        			var error_msg="";
-	        			if(cacheFlag != 1){
-	            			if(submitStatus == 1){
-	            				if(chargeStatus == 0){
-	            					status = "<span class='lable-charging'>充值中</span>";
-	            				}else if(chargeStatus == 1){
-	            					status = "<span class='lable-success'>充值成功</span>";
-	            				}else{
-	                				var error = data.list[i].error;
-	                				if(typeof(error) == "undefined" || error == "null" || error == null || error == ""){
-	                					status = "<span class='lable-fail'>充值失败 </span>";
-	                				}else{
-	                    				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span onclick='showtip(this)' class='hide-option lable-fail' title='"+error+"'>充值失败</span>";
-	                    				error_msg=error;
-	                				}            					
-	            				}
-	            			}else{  
-	            				var error = data.list[i].error;
-	            				if(typeof(error) == "undefined" || error == "null" || error == null || error == ""){
-	            					status = "<span class='lable-nosubmit'>未提交 </span>";
-	            				}else{
-	                				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span onclick='showtip(this)' class='hide-option lable-nosubmit' title='"+error+"'>未提交</span>";
-	                				error_msg=error;
-	            				}
-
-	            			}       				       				
-	        			}else{
-	        				status = "缓存中...";
-	        			}
-	        			html.push('<td style="padding : 5px 0px;">'+status+'</td>');
-	        			html.push('<td style="padding : 5px 0px;">'+error_msg+'</td>')
-	        			var channelName = data.list[i].channelName;
-            			if(!channelName){
-            				channelName = "";
-            			}          			
-            			html.push('<td><span style="font-weight:bold;">'+channelName+'</span></td>'); 
-            			
-            			var discount = "",_discount = "";
-            			if(data.list[i].discountMoney){
-            				if(data.list[i].money){
-            					discount = (data.list[i].discountMoney/data.list[i].money*10).toFixed(2);
-            					if(data.list[i].profit){
-            						_discount = ((data.list[i].discountMoney-data.list[i].profit)/data.list[i].money*10).toFixed(2);
-            					}else{
-            						_discount = discount;
-            					}       					
-            				}else{
-            					discount = "10.0";
-            				}       				
-            			}
-            			html.push('<td>' + _discount + '</td>');   
-            			html.push('<td>' + discount + '</td>');
-            			
-            			if(data.list[i].discountMoney){
-                			if(data.list[i].payBill == 1){
-                				html.push('<td><i class="layui-icon" style="font-size: 25px; color:#5FB878;">&#xe616;</i></td>');
-                			}else{
-                    			html.push('<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></td>');        				
-                			}       				
-            			}else{
-            				html.push('<td></td>');
-            			}
-            			//利润
-            			var profit = data.list[i].profit==undefined ? "" : data.list[i].profit;
-            			if(data.list[i].discountMoney){
-                			if(profit>0){
-                				profit = "<span class='profit' >￥" + profit + "</span>";
-                			}else{
-                				profit = "<span class='unprofit' >￥" + profit + "</span>";
-                			}         				
-            			}else{
-            				html.push('<span></span>');      				
-            			}
-            			html.push('<td>'+profit+'</td>'); 
-            			
-            			var btnhtml=[];
-            			
-            			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">详情</button>');
-            			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">推送回调</button>');
-						html.push('<td>' +btnhtml.join("")+'</td>');
-						html.push('</tr>')
-					}
-					$(".layui-table tbody").append(html.join("")); 
-					
-					$(".hide-option").each(function(){
-	    				$(this).tooltip({
-	    					position: {
-	    				        my: "center bottom-20",
-	    				        at: "center top",
-	    				        using: function( position, feedback ) {
-	    				          $( this ).css( position );
-	    				          $( "<div>" )
-	    				            .addClass( "arrow" )
-	    				            .addClass( feedback.vertical )
-	    				            .addClass( feedback.horizontal )
-	    				            .appendTo( this );
-	    				        }
-	    				      }
-	    				});        			   			
-	        		});
-					form.render('checkbox');
+				if($("#cacheFlag").length>0){
+					fillCacheChargeOrder(data);
+				}else{
+					fillchargeOrder(data);
 				}
 				base.initpage(data,isinitpage,function(isinit){
 					isinitpage = isinit;
@@ -256,7 +76,364 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 			}
 		})
 	}
+	function fillchargeOrder(data){
+		if(data && data.list.length>0){
+			var html = [];
+			for(var i = 0;i<data.list.length;i++){
+				html.push("<tr>");
+        		html.push('<td><input type="checkbox"  data-id="'+data.list[i].id+'" lay-skin="primary"/></td>');
+        		html.push('<td>'+data.list[i].account+'</td>');
+    			html.push('<td>'+data.list[i].mobile+'</td>');
+    			var type = data.list[i].type;
+    			if(type == 1){
+    				type = "移动";
+    			}else if(type == 2){
+    				type = "联通";
+    			}else if(type == 3){
+    				type = "电信";
+    			}
+    			html.push('<td>'+data.list[i].location + ' &nbsp;' + type +'</td>');
+    			
+    			var locationType = data.list[i].locationType;
+    			if(locationType == 1){
+    				locationType ="全国流量";
+    			}else{
+    				locationType ="省内流量";
+    			}
+    			
+    			html.push('<td>'+locationType+'</td>');
+    			html.push('<td>'+data.list[i].amount+'M</td>');
+    			
+    			var money = data.list[i].money;
+    			if(money == 0){
+    				money = "";
+    			}else{
+    				money = data.list[i].money + "元";
+    			}
+    			html.push('<td>'+money+'</td>');
+    			
+    			var discountMoney = data.list[i].discountMoney;
+    			if(!discountMoney || discountMoney == null){
+    				discountMoney = "";
+    			}else{
+        			discountMoney = discountMoney + "元";          				
+    			} 			
+    			html.push('<td>'+discountMoney+'</td>');
+    			
+    			var optionTime = data.list[i].optionTime; 
+    			optionTime = new Date(optionTime);
+    			optionTime = optionTime.getFullYear()+"-"+
+    				Appendzero( (optionTime.getMonth()+1))+"-"+
+    				Appendzero(optionTime.getDate())+" "+
+    				Appendzero(optionTime.getHours())+":"+
+    				Appendzero(optionTime.getMinutes())+":"+
+    				Appendzero(optionTime.getSeconds());
+    			html.push('<td>'+optionTime+'</td>');
+    			var reportTime = data.list[i].reportTime;
+    			if(!reportTime || reportTime == ""){
+    				reportTime = "";
+    			}else{
+    				reportTime=new Date(reportTime);
+    				reportTime=reportTime.getFullYear()+"-"+
+    					Appendzero( (reportTime.getMonth()+1))+"-"+
+    					Appendzero(reportTime.getDate())+" "+
+    					Appendzero(reportTime.getHours())+":"+
+    					Appendzero(reportTime.getMinutes())+":"+
+    					Appendzero(reportTime.getSeconds());
 
+    			}
+    			html.push('<td>'+reportTime+'</td>');
+    			var submitType = data.list[i].submitType;
+    			if(submitType == 1){
+    				submitType = "代理商直充";
+    			}else if(submitType == 2){
+    				submitType = "充值卡充值";
+    			}else if(submitType == 3){
+    				submitType = "支付宝充值";
+    			}else if(submitType == 4){
+    				submitType = "批量充值";
+    			}else if(submitType == 5){
+    				submitType = "接口充值";
+    			}
+    			html.push('<td>'+submitType+'</td>');
+    			
+    			var submitStatus = data.list[i].submitStatus;
+    			var chargeStatus = data.list[i].chargeStatus;
+    			var status = "";
+    			var cacheFlag = data.list[i].cacheFlag;
+    			var error_msg="";
+    			if(cacheFlag != 1){
+        			if(submitStatus == 1){
+        				if(chargeStatus == 0){
+        					status = "<span class='lable-charging'>充值中</span>";
+        				}else if(chargeStatus == 1){
+        					status = "<span class='lable-success'>充值成功</span>";
+        				}else{
+            				var error = data.list[i].error;
+            				if(typeof(error) == "undefined" || error == "null" || error == null || error == ""){
+            					status = "<span class='lable-fail'>充值失败 </span>";
+            				}else{
+                				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span class='hide-option lable-fail' title='"+error+"'>充值失败</span>";
+                				error_msg=error;
+            				}            					
+        				}
+        			}else{  
+        				var error = data.list[i].error;
+        				if(typeof(error) == "undefined" || error == "null" || error == null || error == ""){
+        					status = "<span class='lable-nosubmit'>未提交 </span>";
+        				}else{
+            				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span  class='hide-option lable-nosubmit' title='"+error+"'>未提交</span>";
+            				error_msg=error;
+        				}
+
+        			}       				       				
+    			}else{
+    				status = "缓存中...";
+    			}
+    			html.push('<td style="padding : 5px 0px;">'+status+'</td>');
+    			html.push('<td style="padding : 5px 0px;max-width:100px;"><span>'+error_msg+'</span></td>')
+    			var channelName = data.list[i].channelName;
+    			if(!channelName){
+    				channelName = "";
+    			}          			
+    			html.push('<td><span style="font-weight:bold;">'+channelName+'</span></td>'); 
+    			
+    			var discount = "",_discount = "";
+    			if(data.list[i].discountMoney){
+    				if(data.list[i].money){
+    					discount = (data.list[i].discountMoney/data.list[i].money*10).toFixed(2);
+    					if(data.list[i].profit){
+    						_discount = ((data.list[i].discountMoney-data.list[i].profit)/data.list[i].money*10).toFixed(2);
+    					}else{
+    						_discount = discount;
+    					}       					
+    				}else{
+    					discount = "10.0";
+    				}       				
+    			}
+    			html.push('<td>' + _discount + '</td>');   
+    			html.push('<td>' + discount + '</td>');
+    			
+    			if(data.list[i].discountMoney){
+        			if(data.list[i].payBill == 1){
+        				html.push('<td><i class="layui-icon" style="font-size: 25px; color:#5FB878;">&#xe616;</i></td>');
+        			}else{
+            			html.push('<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></td>');        				
+        			}       				
+    			}else{
+    				html.push('<td></td>');
+    			}
+    			//利润
+    			var profit = data.list[i].profit==undefined ? "" : data.list[i].profit;
+    			if(data.list[i].discountMoney){
+        			if(profit>0){
+        				profit = "<span class='profit' >￥" + profit + "</span>";
+        			}else{
+        				profit = "<span class='unprofit' >￥" + profit + "</span>";
+        			}         				
+    			}else{
+    				html.push('<span></span>');      				
+    			}
+    			html.push('<td>'+profit+'</td>'); 
+    			
+    			var btnhtml=[];
+    			
+    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">详情</button>');
+    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">推送回调</button>');
+				html.push('<td>' +btnhtml.join("")+'</td>');
+				html.push('</tr>')
+			}
+			$(".layui-table tbody").append(html.join("")); 
+			
+			$(".hide-option").each(function(){
+				$(this).tooltip({
+					position: {
+				        my: "center bottom-20",
+				        at: "center top",
+				        using: function( position, feedback ) {
+				          $( this ).css( position );
+				          $( "<div>" )
+				            .addClass( "arrow" )
+				            .addClass( feedback.vertical )
+				            .addClass( feedback.horizontal )
+				            .appendTo( this );
+				        }
+				      }
+				});        			   			
+    		});
+			form.render('checkbox');
+		}
+	}
+	
+	function fillCacheChargeOrder(data){
+		if(data && data.list.length>0){
+			var html = [];
+			for(var i = 0;i<data.list.length;i++){
+				html.push("<tr>");
+        		html.push('<td><input type="checkbox"  data-id="'+data.list[i].id+'" lay-skin="primary"/></td>');
+        		html.push('<td>'+data.list[i].account+'</td>');
+    			html.push('<td>'+data.list[i].mobile+'</td>');
+    			var type = data.list[i].type;
+    			if(type == 1){
+    				type = "移动";
+    			}else if(type == 2){
+    				type = "联通";
+    			}else if(type == 3){
+    				type = "电信";
+    			}
+    			html.push('<td>'+data.list[i].location + ' &nbsp;' + type +'</td>');
+    			
+    			var locationType = data.list[i].locationType;
+    			if(locationType == 1){
+    				locationType ="全国流量";
+    			}else{
+    				locationType ="省内流量";
+    			}
+    			
+    			html.push('<td>'+locationType+'</td>');
+    			html.push('<td>'+data.list[i].amount+'M</td>');
+    			
+    			var money = data.list[i].money;
+    			if(money == 0){
+    				money = "";
+    			}else{
+    				money = data.list[i].money + "元";
+    			}
+    			html.push('<td>'+money+'</td>');
+    			
+    			var discountMoney = data.list[i].discountMoney;
+    			if(!discountMoney || discountMoney == null){
+    				discountMoney = "";
+    			}else{
+        			discountMoney = discountMoney + "元";          				
+    			} 			
+    			html.push('<td>'+discountMoney+'</td>');
+    			
+    			var optionTime = data.list[i].optionTime; 
+    			optionTime = new Date(optionTime);
+    			optionTime = optionTime.getFullYear()+"-"+
+    				Appendzero( (optionTime.getMonth()+1))+"-"+
+    				Appendzero(optionTime.getDate())+" "+
+    				Appendzero(optionTime.getHours())+":"+
+    				Appendzero(optionTime.getMinutes())+":"+
+    				Appendzero(optionTime.getSeconds());
+    			html.push('<td>'+optionTime+'</td>');
+    			var submitType = data.list[i].submitType;
+    			if(submitType == 1){
+    				submitType = "代理商直充";
+    			}else if(submitType == 2){
+    				submitType = "充值卡充值";
+    			}else if(submitType == 3){
+    				submitType = "支付宝充值";
+    			}else if(submitType == 4){
+    				submitType = "批量充值";
+    			}else if(submitType == 5){
+    				submitType = "接口充值";
+    			}
+    			html.push('<td>'+submitType+'</td>');
+    			
+    			var submitStatus = data.list[i].submitStatus;
+    			var chargeStatus = data.list[i].chargeStatus;
+    			var status = "";
+    			var cacheFlag = data.list[i].cacheFlag;
+    			var error_msg="";
+    			if(cacheFlag != 1){
+        			if(submitStatus == 1){
+        				if(chargeStatus == 0){
+        					status = "<span class='lable-charging'>充值中</span>";
+        				}else if(chargeStatus == 1){
+        					status = "<span class='lable-success'>充值成功</span>";
+        				}else{
+            				var error = data.list[i].error;
+            				if(typeof(error) == "undefined" || error == "null" || error == null || error == ""){
+            					status = "<span class='lable-fail'>充值失败 </span>";
+            				}else{
+                				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span class='hide-option lable-fail' title='"+error+"'>充值失败</span>";
+                				error_msg=error;
+            				}            					
+        				}
+        			}else{  
+        				var error = data.list[i].error;
+        				if(typeof(error) == "undefined" || error == "null" || error == null || error == ""){
+        					status = "<span class='lable-nosubmit'>未提交 </span>";
+        				}else{
+            				status = "<p class='hide-option' style='white-space: nowrap;overflow:hidden;' title='"+error+"'></p><span  class='hide-option lable-nosubmit' title='"+error+"'>未提交</span>";
+            				error_msg=error;
+        				}
+
+        			}       				       				
+    			}else{
+    				status = "缓存中...";
+    			}
+    			html.push('<td style="padding : 5px 0px;">'+status+'</td>');
+    			html.push('<td style="padding : 5px 0px;max-width:100px;"><span>'+error_msg+'</span></td>')
+    			
+    			var discount = "",_discount = "";
+    			if(data.list[i].discountMoney){
+    				if(data.list[i].money){
+    					discount = (data.list[i].discountMoney/data.list[i].money*10).toFixed(2);
+    					if(data.list[i].profit){
+    						_discount = ((data.list[i].discountMoney-data.list[i].profit)/data.list[i].money*10).toFixed(2);
+    					}else{
+    						_discount = discount;
+    					}       					
+    				}else{
+    					discount = "10.0";
+    				}       				
+    			}
+    			html.push('<td>' + _discount + '</td>');   
+    			html.push('<td>' + discount + '</td>');
+    			
+    			if(data.list[i].discountMoney){
+        			if(data.list[i].payBill == 1){
+        				html.push('<td><i class="layui-icon" style="font-size: 25px; color:#5FB878;">&#xe616;</i></td>');
+        			}else{
+            			html.push('<td><i class="layui-icon" style="font-size: 25px; color:#FF5722;">&#x1007;</i></td>');        				
+        			}       				
+    			}else{
+    				html.push('<td></td>');
+    			}
+    			//利润
+    			var profit = data.list[i].profit==undefined ? "" : data.list[i].profit;
+    			if(data.list[i].discountMoney){
+        			if(profit>0){
+        				profit = "<span class='profit' >￥" + profit + "</span>";
+        			}else{
+        				profit = "<span class='unprofit' >￥" + profit + "</span>";
+        			}         				
+    			}else{
+    				html.push('<span></span>');      				
+    			}
+    			html.push('<td>'+profit+'</td>'); 
+    			
+    			var btnhtml=[];
+    			
+    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">详情</button>');
+    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">推送回调</button>');
+				html.push('<td>' +btnhtml.join("")+'</td>');
+				html.push('</tr>')
+			}
+			$(".layui-table tbody").append(html.join("")); 
+			
+			$(".hide-option").each(function(){
+				$(this).tooltip({
+					position: {
+				        my: "center bottom-20",
+				        at: "center top",
+				        using: function( position, feedback ) {
+				          $( this ).css( position );
+				          $( "<div>" )
+				            .addClass( "arrow" )
+				            .addClass( feedback.vertical )
+				            .addClass( feedback.horizontal )
+				            .appendTo( this );
+				        }
+				      }
+				});        			   			
+    		});
+			form.render('checkbox');
+		}
+	}
 	
 	/*
 	 * 时间补0
