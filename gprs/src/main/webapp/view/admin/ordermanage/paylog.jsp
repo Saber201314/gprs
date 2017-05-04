@@ -97,7 +97,6 @@ body .ui-tooltip{
 
 <body>
 	<fieldset class="layui-elem-field site-demo-button" style="margin-top: 5px;">
-		<legend></legend>
 		<form class="layui-form" action="">
 			<div class="layui-form-item">
 				<input type="hidden" id="pageNo" name="pageNo" value="1" class="layui-input">

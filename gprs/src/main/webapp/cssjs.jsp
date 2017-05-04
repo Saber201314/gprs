@@ -9,7 +9,6 @@
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"/>
 <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css"/>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/assts/css/ace.min.css" />
 <script src="//code.jquery.com/jquery-1.9.1.js"></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   
@@ -17,7 +16,9 @@
 .layui-table th,td{
 	text-align: center;
 	font-size: 12px;
-	font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+	font-family: "Arial",sans-serif;
+	
+	/* font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif; */
 }
 form {
 	margin-top: 15px

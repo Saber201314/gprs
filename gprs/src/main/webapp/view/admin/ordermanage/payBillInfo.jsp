@@ -9,6 +9,89 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 .layui-layer{}
 .profile-info-name{width:120px;}
 #pay-bill-content span{font-weight:bold;}
+.profile-user-info{
+  margin: 0 12px;
+}
+@media only screen and (max-width:480px)
+{
+  .profile-info-name
+  {
+    width: 80px;
+  }
+
+  .profile-info-value
+  {
+    margin-left: 90px;
+  }
+
+  .profile-user-info-striped .profile-info-name
+  {
+    position: static;
+    width: auto;
+    text-align: left;
+    padding: 6px 0 6px 10px;
+  }
+
+  .profile-user-info-striped .profile-info-value
+  {
+    margin-left: 10px;
+  }
+}
+.profile-user-info{
+  margin: 0 12px;
+}
+
+.profile-info-row
+{
+  position: relative;
+}
+
+.profile-info-name
+{
+  position: absolute;
+  width: 110px;
+  text-align: right;
+  padding: 6px 10px 6px 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  font-weight: normal;
+  color: #667e99;
+  background-color: transparent;
+  border-top: 1px dotted #d5e4f1;
+}
+
+.profile-info-value
+{
+  padding: 6px 4px 6px 6px;
+  margin-left: 120px;
+  border-top: 1px dotted #d5e4f1;
+}
+.profile-info-name
+{
+  position: absolute;
+  width: 110px;
+  text-align: right;
+  padding: 6px 10px 6px 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  font-weight: normal;
+  color: #667e99;
+  background-color: transparent;
+  border-top: 1px dotted #d5e4f1;
+}
+.profile-info-row:first-child .profile-info-name
+{
+  border-top: 0;
+}
+.profile-user-info-striped .profile-info-name
+{
+  color: #336199;
+  background-color: #edf3f4;
+  border-top: 1px solid #f7fbff;
+}
+
 </style>
 
 <div id="pay-bill-content" style="display:none;">
