@@ -9,6 +9,7 @@
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"/>
 <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css"/>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assts/css/ace.min.css" />
 <script src="//code.jquery.com/jquery-1.9.1.js"></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   
@@ -17,6 +18,19 @@
 	text-align: center;
 	font-size: 12px;
 	font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+}
+form {
+	margin-top: 15px
+}
+.lable-nosubmit{
+	padding: 4px 10px;
+	color: #fff;
+	background-color: #c2c2c2;
+}
+.lable-charging{
+	padding: 4px 10px;
+	color: #fff;
+	background-color: #01AAED;
 }
 .lable-success{
 	padding: 4px 10px;
@@ -27,9 +41,6 @@
 	padding: 4px 10px;
 	color: #fff;
 	background-color: #FF5722;
-}
-form {
-	margin-top: 15px
 }
 
 

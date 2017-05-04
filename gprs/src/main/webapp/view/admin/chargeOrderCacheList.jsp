@@ -23,26 +23,7 @@ td .unprofit{
 	color:#FF5722;
 	font-weight: bold;
 }
-.lable-nosubmit{
-	padding: 4px 10px;
-	color: #fff;
-	background-color: #c2c2c2;
-}
-.lable-charging{
-	padding: 4px 10px;
-	color: #fff;
-	background-color: #01AAED;
-}
-.lable-success{
-	padding: 4px 10px;
-	color: #fff;
-	background-color: #5FB878;
-}
-.lable-fail{
-	padding: 4px 10px;
-	color: #fff;
-	background-color: #FF5722;
-}
+
 
 body .ui-tooltip{
 	border: 0px solid white;
@@ -211,18 +192,6 @@ body .ui-tooltip{
 							<option value="0">请选择</option>
 							<option value="1">全国流量</option>
 							<option value="2">省内流量</option>
-						</select>
-					</div>
-				</div>
-				<div class="layui-inline">
-					<label class="layui-form-label">充值状态</label>
-					<div class="layui-input-inline">
-						<select name="submitStatus" lay-verify="" lay-search>
-							<option value="-1">请选择</option>
-							<option value="0">未提交</option>
-							<option value="1">充值中</option>
-							<option value="2">充值成功</option>
-							<option value="3">充值失败</option>
 						</select>
 					</div>
 				</div>

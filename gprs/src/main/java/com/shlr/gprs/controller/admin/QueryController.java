@@ -370,6 +370,7 @@ public class QueryController {
 	 * @return
 	 */
 	@RequestMapping(value="/query/payLogList.action")
+	@ResponseBody
 	public String payLogList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
 			@RequestParam(value="mobile",required=false)String mobile,
@@ -415,7 +416,7 @@ public class QueryController {
 		createCriteria.andBetween("optionTime", dfrom, dto);
 		if (StringUtils.isEmpty(account) && type != 1) {
 			createCriteria.andEqualTo("account", currentUser.getUsername());
-		}else if(!StringUtils.isEmpty(account) && type == 1){
+		}else if(!StringUtils.isEmpty(account)&& !"-1".equals(account)  && type == 1){
 			createCriteria.andEqualTo("account", account);
 		}
 		if (!StringUtils.isEmpty(status)&&!"-3".equals(status)) {
@@ -425,21 +426,17 @@ public class QueryController {
 			createCriteria.andLike("memo", mobile+"%");
 		}
 		example.setOrderByClause(" option_time desc");
+		
 		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
 		Page<PayLog> page=(Page<PayLog>) listByExampleAndPage;
-		LinkedList<PayLog> arrayList = new LinkedList<PayLog>();
-		for (PayLog item : listByExampleAndPage) {
-			arrayList.add(item);
-		}
-		model.addAttribute("from", dfrom);
-		model.addAttribute("to", dto);
-		model.addAttribute("status", Integer.valueOf(status));
-		model.addAttribute("account", account);
-		model.addAttribute("mobile", mobile);
-		model.addAttribute("payLogList",arrayList);
-		model.addAttribute("page", page);
 		
-		return "admin/query/payLogList";
+		JSONObject result=new JSONObject();
+		result.put("list", listByExampleAndPage);
+		result.put("total", page.getTotal());
+		result.put("pages", page.getPages());
+		result.put("pageno", page.getPageNum());
+		
+		return result.toJSONString();
 	}
 	
 	

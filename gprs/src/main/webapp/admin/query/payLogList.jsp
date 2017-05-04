@@ -7,7 +7,9 @@ String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
 <jsp:include page="../../cssAndJs.jsp"></jsp:include>
+
 <jsp:include page="payBillInfo.jsp"></jsp:include>
+
 <style>
 .radio, .checkbox {padding-left: 0px;}
 label{width:80px;}
@@ -39,7 +41,6 @@ li {padding-top:5px !important;}
 		      			
 		      			<option  <c:if test="${status == (varstatus.index-3) }">selected="selected" </c:if> value="${varstatus.index-3 }">${item }</option>
 		      		</c:forEach>
-		      	
 		      	</select>
 		      	<%-- <s:select name="queryPayLogDO.status" list="#{1:'充值成功',0:'充值中',-1:'已退款',-2:'充值失败' }" listKey="key" listValue="value" headerKey="" headerValue="" theme="simple"></s:select> --%>
 		      </li>
