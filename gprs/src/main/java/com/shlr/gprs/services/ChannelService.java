@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.dao.ChannelMapper;
 import com.shlr.gprs.dao.ChargeOrderMapper;
@@ -37,8 +38,11 @@ public class ChannelService implements DruidStatInterceptor{
 	 */
 	public List<Channel> list(){
 		return channelMapper.selectAll();
-		
 	}
+	public List<Channel> listByExampleAndPage(Example example,Integer pageNo){
+		return channelMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+	}
+	
 	public Channel findById(Integer id){
 		return ChannelCache.idMap.get(id);
 	}

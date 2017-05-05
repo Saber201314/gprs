@@ -16,7 +16,7 @@ layui.define(['jquery'],function(exports){
 	function getChannelResource(){
 		$.ajax({
 		    url:"/admin/layout/getChannelResource.action",
-		    type:"post",
+		    type:"get",
 		    dataType:'json',
 		    cache:false,
 		    success:function(data){
@@ -87,8 +87,13 @@ layui.define(['jquery'],function(exports){
 					
 				} 	
 		    },
-		    error:function(){
-		    }
+		    error : function(XMLHttpRequest, textStatus, errorThrown) {
+		    	console.log(XMLHttpRequest.status);
+		    	console.log(XMLHttpRequest.readyState);
+		    	console.log(textStatus);
+		    	console.log(errorThrown);
+				top.layer.msg("连接服务器失败");
+			}
 		});
 	}
 	function loadResumeTotalDetail(){

@@ -99,13 +99,13 @@ dd{padding-left: 15px}
 					<li class="layui-nav-item"><a href="javascript:;"><i class="layui-icon" style="font-size: 20px; margin-right: 10px; ">&#xe609;</i>通道管理</a>
 						<dl class="layui-nav-child">
 							<dd>
-								<a href="javascript:;" onclick="addtab('201','通道管理')">通道管理</a>
+								<a href="javascript:;" onclick="addtab('201','通道管理','view/admin/channel/channelList.jsp')">通道管理</a>
 							</dd>
 							<dd>
 								<a href="javascript:;" onclick="addtab('202','添加新通道')">添加新通道</a>
 							</dd>
 							<dd>
-								<a href="javascript:;" onclick="addtab('203','通道模板列表')">通道模板列表</a>
+								<a href="javascript:;" onclick="addtab('203','通道模板列表','view/admin/channel/channelTemplate.jsp')">通道模板列表</a>
 							</dd>
 						</dl></li>
 					<li class="layui-nav-item"><a href="javascript:;"><i class="layui-icon" style="font-size: 20px; margin-right: 10px;">&#xe63b;</i>业务管理</a>

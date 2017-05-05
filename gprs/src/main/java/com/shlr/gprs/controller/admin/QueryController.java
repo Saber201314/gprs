@@ -133,6 +133,17 @@ public class QueryController {
 			return null;
 		}
 		List<ChargeReport> reportList  = chargeReportService.queryCurDayList();
+		Float resume=0.00F ,remain = 0.00F;
+		for (ChargeReport chargeReport : reportList) {
+			resume +=Float.valueOf(chargeReport.getResumePrice()); 
+			remain +=Float.valueOf(chargeReport.getRemainPrice()); 
+		}
+		
+		ChargeReport total=new ChargeReport();
+		total.setAccount("合计");
+		total.setResumePrice(String.valueOf(resume));
+		total.setRemainPrice(String.valueOf(remain));
+		reportList.add(total);
 		result.put("islogin", "1");
 		result.put("data", reportList);
 		response.getWriter().print(JSON.toJSONString(result));
