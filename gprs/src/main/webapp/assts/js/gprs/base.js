@@ -114,12 +114,10 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 						})
 						$('#agent').append(options);
 						form.render('select');
-					} else {
-						top.window.location = "/login.jsp";
-					}
+					} 
 				},
 				error: function() {
-
+					//top.window.location = "/login.jsp";
 				}
 			});
 		},
@@ -140,9 +138,10 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 						}
 						$("#submitChannel").append(options);
 						form.render('select');
-					}else {
-						top.window.location = "/login.jsp";
 					}
+				},
+				error: function() {
+					//top.window.location = "/login.jsp";
 				}
 			});
 		}

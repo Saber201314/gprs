@@ -5,61 +5,72 @@
   <title>Web Socket JavaScript Echo Client</title>
   <script src="http://cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
   <script src="/assts/js/jquery-1.9.1.min.js"></script>
+  <script src="/res/css/layui.css"></script>
+  <script src="/res/layui.js"></script>
   <script language="javascript" type="text/javascript">
-  
-    var echo_websocket;
-    function init() {
-      output = document.getElementById("output");
-    }
-    function send_echo() {
-      echo_websocket = new SockJS("http://localhost:8080/websocket") ;   //初始化 websocket
-
-      echo_websocket.onopen = function () {
-        console.log('Info: connection opened.');
-        doSend("name="+document.getElementById("name").value);
-      };
-
-      echo_websocket.onmessage = function (event) {
-        console.log('Received: ' + event.data); //处理服务端返回消息
-        writeToScreen('Received: ' + event.data);
-      };
-
-      echo_websocket.onclose = function (event) {
-        console.log('Info: connection closed.');
-        console.log(event);
-      };
-    }
-    $('#send').click(function(){
-    	var msg = $('#textID').val();
-    	doSend(msg);
-    })
-    function doSend(message) {
-      echo_websocket.send(message);
-      writeToScreen("Sent message: " + message);
-    }
-    function writeToScreen(message) {
-      var pre = document.createElement("p");
-      pre.style.wordWrap = "break-word";
-      pre.innerHTML = message;
-      output.appendChild(pre);
-    }
-    window.addEventListener("load", init, false);
-    $(function(){
-        $('#send').click(function(){
-        	var msg = $('#textID').val();
-        	doSend(msg);
-        })
-    	
-    })
-  </script>
+  layui.use('layer',function(){
+	  var $ = layui.jquery;
+	  var echo_websocket;
+	  $(function(){
+	    	init();
+	        setInterval(function() {
+	        	var child=$('#output').children();
+	        	if(child.length > 10){
+	        		$('#output').children().get(0).remove();
+	        	}
+	        	console.log(child);
+	    	}, 1000);
+	        $('#send').click(function(){
+	        	var msg = $('#textID').val();
+	        	if(msg == undefined || msg == ''){
+	        		layer.msg('发送内容不能为空');
+	        	}else{
+	        		doSend(msg);
+	        		$('#textID').val('');
+	        	}
+	        })
+	  })
+  })
+	function init() {
+		output = document.getElementById("output");
+	}
+	function send_echo() {
+		echo_websocket = new SockJS("/websocket"); //初始化 websocket
+	
+		echo_websocket.onopen = function() {
+			console.log('Info: connection opened.');
+			doSend("name=" + document.getElementById("name").value);
+		};
+	
+		echo_websocket.onmessage = function(event) {
+			console.log('Received: ' + event.data); //处理服务端返回消息
+			writeToScreen(event.data);
+		};
+	
+		echo_websocket.onclose = function(event) {
+			console.log('Info: connection closed.');
+			console.log(event);
+	
+		};
+	}
+	function doSend(message) {
+		echo_websocket.send(message);
+	}
+	function writeToScreen(message) {
+		var pre = document.createElement("p");
+		pre.style.wordWrap = "break-word";
+		pre.innerHTML = message;
+		output.appendChild(pre);
+	}
+</script>
 </head>
 <body>
 <h1>Echo Server</h1>
 <div style="text-align: left;">
   <form action="">
-    <input onclick="send_echo()" value="connect server" type="button">
-    <input id="name"  value="" type="text"></br>
-    <input id="send"  value="send msg" type="button">
+    <input onclick="send_echo()" value="连接服务器" type="button">
+    <input id="name"  value="" placeholder="请输入名字" type="text"></br>
+    <input id="send"  value="发送消息" type="button">
     <input id="textID" name="message" value="" type="text">
     <br>
   </form>

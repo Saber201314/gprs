@@ -21,25 +21,30 @@ public class WsHandler implements WebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		// TODO Auto-generated method stub
-		System.out.println("connect to the websocket success......");
 		sessionMap.put(session.getId(), session);
-		session.sendMessage(new TextMessage("Server:connected OK!"));
+		session.sendMessage(new TextMessage("连接服务器成功"));
 	}
 
 	@Override
 	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
 		// TODO Auto-generated method stub
-		TextMessage returnMessage = new TextMessage(message.getPayload() + " received at server");
+		TextMessage returnMessage = new TextMessage(message.getPayload().toString());
 		Object payload = message.getPayload();
 		String name=payload.toString();
 		String[] split = name.split("=");
 		if (split.length == 2) {
 			nameMap.put(session.getId(), split[1]);
+			for (String key : nameMap.keySet()) {
+				WebSocketSession webSocketSession = sessionMap.get(key);
+				webSocketSession.sendMessage(new TextMessage(split[1]+"加入聊天室"));
+			}
+		}else{
+			for (String key : nameMap.keySet()) {
+				WebSocketSession webSocketSession = sessionMap.get(key);
+				webSocketSession.sendMessage(new TextMessage(nameMap.get(session.getId())+":"+payload.toString()));
+			}
 		}
-		for (String key : nameMap.keySet()) {
-			WebSocketSession webSocketSession = sessionMap.get(key);
-			webSocketSession.sendMessage(returnMessage);
-		}
+		
 	}
 
 	@Override
@@ -47,15 +52,20 @@ public class WsHandler implements WebSocketHandler {
 		// TODO Auto-generated method stub
 		if (session.isOpen()) {
 			session.close();
+			sessionMap.remove(session.getId());
+			nameMap.remove(session.getId());
 		}
-		System.out.println("websocket connection closed......");
-		exception.printStackTrace();
 	}
-
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 		// TODO Auto-generated method stub
-		System.out.println("websocket connection closed......");
+		sessionMap.remove(session.getId());
+		String name = nameMap.get(session.getId());
+		nameMap.remove(session.getId());
+		for (String key : nameMap.keySet()) {
+			WebSocketSession webSocketSession = sessionMap.get(key);
+			webSocketSession.sendMessage(new TextMessage(name+"离开了聊天室"));
+		}
 	}
 
 	@Override

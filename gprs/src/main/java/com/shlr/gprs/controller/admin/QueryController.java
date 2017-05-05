@@ -101,7 +101,7 @@ public class QueryController {
 	@Resource
 	ChannelResourceService channelResourceService;
 	@Resource
-	ChargeOrderService chargeOderService;
+	ChargeOrderService chargeOrderService;
 	@Resource
 	PayLogService payLogService;
 	@Resource
@@ -280,7 +280,7 @@ public class QueryController {
 			createCriteria.andEqualTo("cacheFlag", cacheFlag);
 		}
 		example.setOrderByClause("  option_time desc");
-		List<ChargeOrder> listByPage = chargeOderService.listByExampleAndPage(example, pageNo);
+		List<ChargeOrder> listByPage = chargeOrderService.listByExampleAndPage(example, pageNo);
 		Page<ChargeOrder> page=(Page<ChargeOrder>) listByPage;
 		JSONObject result=new JSONObject();
 		result.put("pages", page.getPages());
@@ -325,7 +325,7 @@ public class QueryController {
 		}
 		createCriteria.andEqualTo("cacheFlag", 1);
 		example.setOrderByClause("  id desc");
-		List<ChargeOrder> listByExampleAndPage = chargeOderService.listByExampleAndPage(example, 1);
+		List<ChargeOrder> listByExampleAndPage = chargeOrderService.listByExampleAndPage(example, 1);
 		JSONObject result=new JSONObject();
 		result.put("list", listByExampleAndPage);
 		response.getWriter().print(result.toJSONString());
