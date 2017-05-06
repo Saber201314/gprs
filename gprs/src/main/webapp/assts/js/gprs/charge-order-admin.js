@@ -366,7 +366,6 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
     				status = "缓存中...";
     			}
     			html.push('<td style="padding : 5px 0px;">'+status+'</td>');
-    			html.push('<td style="padding : 5px 0px;max-width:100px;"><span>'+error_msg+'</span></td>')
     			
     			var discount = "",_discount = "";
     			if(data.list[i].discountMoney){

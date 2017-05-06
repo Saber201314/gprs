@@ -2,12 +2,15 @@ package com.shlr.gprs.controller.admin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,8 +20,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.shlr.gprs.cache.ChannelTemplateCache;
+import com.shlr.gprs.cache.ChannelTemplateCodeCache;
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelTemplate;
+import com.shlr.gprs.domain.ChannelTemplateCode;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.ChannelService;
 import com.shlr.gprs.services.UserService;
@@ -85,8 +90,41 @@ public class ChannelController {
 				break;
 			}
 		}
+		Collections.sort(list, new Comparator<ChannelTemplate>() {
+
+			@Override
+			public int compare(ChannelTemplate o1, ChannelTemplate o2) {
+				// TODO Auto-generated method stub
+				return o2.getId().compareTo( o1.getId()) ;
+			}
+
+		});
 		JSONObject result=new JSONObject();
 		result.put("list", list);
 		return result.toJSONString();
+	}
+	@RequestMapping(value="/query/channelTemplateCodeList.action")
+	public String channelTemplateCodeList(HttpSession session,
+			@RequestParam(value="templateId")Integer templateId,Model model){
+		Users currentUser = userService.getCurrentUser(session);
+		if (currentUser == null || currentUser.getType() != 1) {
+			return null;
+		}
+		List<ChannelTemplateCode> list = ChannelTemplateCodeCache.codeMapByChannel.get(templateId);
+		model.addAttribute("list", list);
+		model.addAttribute("templateId", templateId);
+		return "admin/channel/channelTemplateCode";
+	}
+	
+	@RequestMapping(value="/query/publishChannelTemplateCode.action")
+	public String publishChannelTemplateCode(HttpSession session,
+			@RequestParam(value="templateId")Integer templateId,Model model){
+		Users currentUser = userService.getCurrentUser(session);
+		if (currentUser == null || currentUser.getType() != 1) {
+			return null;
+		}
+		List<ChannelTemplateCode> list = ChannelTemplateCodeCache.codeMapByChannel.get(templateId);
+		model.addAttribute("templateId", templateId);
+		return "admin/channel/addChannelTemplateCode";
 	}
 }

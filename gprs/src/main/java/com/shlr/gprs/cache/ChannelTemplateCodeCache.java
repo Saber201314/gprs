@@ -16,14 +16,6 @@ import com.shlr.gprs.services.ChannelTemplateCodeService;
 public class ChannelTemplateCodeCache {
 	public static Map<Integer, List<ChannelTemplateCode>> codeMapByChannel = new HashMap<Integer, List<ChannelTemplateCode>>();
 
-	
-	
-	
-	
-	
-	
-	
-	
 	public static void load() {
 		ChannelTemplateCodeService channelTemplateCodeService = WebApplicationContextManager.getApplicationContext().getBean(ChannelTemplateCodeService.class);
 

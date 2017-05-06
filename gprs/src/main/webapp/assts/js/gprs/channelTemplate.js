@@ -49,8 +49,8 @@ layui.define([ 'base', ], function(exports) {
 						var newDate = new Date();
 						newDate.setTime(item.option_time);
 						html.push('<td>' + newDate.toLocaleString() + '</td>');
-						html.push('<td width="150">流量包编号</td>');
-						html.push('<td width="50">编辑</td>');
+						html.push('<td width="150"><a style="color : #009688;" href="/admin/query/channelTemplateCodeList.action?templateId='+item.id+'">流量包编号</a></td>');
+						html.push('<td width="50"><a style="color : #009688;" href="javascript:;">编辑</a></td>');
 						html.push('</tr>');
 					});
 					

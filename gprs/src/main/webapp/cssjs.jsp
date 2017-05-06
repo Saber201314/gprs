@@ -16,9 +16,8 @@
 .layui-table th,td{
 	text-align: center;
 	font-size: 12px;
-	font-family: "Arial",sans-serif;
-	
-	/* font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif; */
+	/* font-family: "Arial",sans-serif; */
+	font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
 }
 form {
 	margin-top: 15px

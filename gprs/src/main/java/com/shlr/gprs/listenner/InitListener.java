@@ -35,6 +35,8 @@ public class InitListener implements ApplicationListener<ContextRefreshedEvent> 
 		PricePaperCache.load();
 
 		GprsPackageCache.load();
+		
+		ChannelTemplateCodeCache.load();
 
 		try {
 			ChargeManager.getInstance().init();
