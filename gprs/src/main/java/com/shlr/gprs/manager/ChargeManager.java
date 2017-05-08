@@ -36,6 +36,7 @@ import com.shlr.gprs.services.ChargeOrderService;
 import com.shlr.gprs.services.GprsPackageService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.PricePaperService;
+import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.okhttp.HttpUtils;
 import com.shlr.gprs.utils.okhttp.OkhttpUtils;
 import com.shlr.gprs.vo.BackMoneyVO;
@@ -50,6 +51,7 @@ import okhttp3.Response;
 public class ChargeManager {
 	static Logger logger=LoggerFactory.getLogger(ChargeManager.class);
 	
+	static UserService userService;
 	static GprsPackageService gprsPackageService;
 	static ChargeOrderService chargeOrderService;
 	static PayLogService payLogService;
@@ -68,7 +70,7 @@ public class ChargeManager {
 	}
 
 	public static ChargeManager getInstance() {
-
+		userService = WebApplicationContextManager.getApplicationContext().getBean(UserService.class);
 		gprsPackageService = WebApplicationContextManager.getApplicationContext().getBean(GprsPackageService.class);
 		chargeOrderService = WebApplicationContextManager.getApplicationContext().getBean(ChargeOrderService.class);
 		payLogService = WebApplicationContextManager.getApplicationContext().getBean(PayLogService.class);
@@ -246,7 +248,15 @@ public class ChargeManager {
 			chargeOrder.setPayBill(payBill == null ? 0 : payBill);
 		}
 		double paymoney = gprsPackage.getMoney() * discount.doubleValue() / 10.0D;
-		if (agent.getMoney() < paymoney) {
+//		if (PayManager.getInstance().getUserMoney(agent.getId()) < paymoney) {
+//			// 如果提交的是缓存里面的数据
+//			int ignoreCacheCondition = chargeOrder.getIgnoreCacheCondition();
+//			if (ignoreCacheCondition == 0) {
+//				resultBaseDO.addError("余额不足");
+//				return resultBaseDO;
+//			}
+//		}
+		if (!PayManager.getInstance().validBalance(agent.getId(), paymoney)) {
 			// 如果提交的是缓存里面的数据
 			int ignoreCacheCondition = chargeOrder.getIgnoreCacheCondition();
 			if (ignoreCacheCondition == 0) {

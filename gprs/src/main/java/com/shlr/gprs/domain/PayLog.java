@@ -36,7 +36,9 @@ public class PayLog implements Serializable{
 	private Integer type;//流量类型
 	private String memo;//备注
 	private Date optionTime;//扣费时间
-	private Integer status;//操作状态  1:'充值成功',0:'充值中',-1:'已退款',-2:'充值失败'
+	private Integer status = 0;//操作状态  1:'充值成功',0:'充值中',-1:'已退款',-2:'充值失败'
+	@Column
+	private Long createTime;
 	@Transient
 	private String mobile;//手机号
 	/**
@@ -218,6 +220,18 @@ public class PayLog implements Serializable{
 	 */
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+	/**
+	 * @return the createTime
+	 */
+	public Long getCreateTime() {
+		return createTime;
+	}
+	/**
+	 * @param createTime the createTime to set
+	 */
+	public void setCreateTime(Long createTime) {
+		this.createTime = createTime;
 	}
 	
 	

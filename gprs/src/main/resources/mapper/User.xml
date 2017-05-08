@@ -8,7 +8,13 @@
 		update g_users 
 			set money= money + (#{money}) 
 				where id = #{id}
-	
-	
 	</update>
+	
+	<resultMap type="double" id="balance">
+		<result property="money" column="money"/>
+	</resultMap>
+	
+	<select id="getBalance" resultMap="balance">
+		select money from g_users where id = #{id}
+	</select>
 </mapper>

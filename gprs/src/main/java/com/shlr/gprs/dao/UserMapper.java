@@ -16,4 +16,6 @@ import tk.mybatis.mapper.common.Mapper;
 @MapperScan
 public interface UserMapper extends Mapper<Users> {
 	Integer updatebalance(@Param("id")int id,@Param("money")double money);
+	
+	Double getBalance(@Param("id")int id);
 }	

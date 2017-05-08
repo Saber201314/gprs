@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
@@ -24,7 +25,8 @@ public class PayManager {
 	
 	Logger logger=LoggerFactory.getLogger(PayManager.class);
 	
-	private static Map<Integer, Double> moneyMap = new HashMap<Integer, Double>();
+	private ConcurrentHashMap<Integer, Double> premoneyMap = new ConcurrentHashMap<Integer, Double>();
+	private ConcurrentHashMap<Integer, Double> moneyMap = new ConcurrentHashMap<Integer, Double>();
 	private static LinkedBlockingQueue<Object> paytaskList = new LinkedBlockingQueue<Object>();
 	
 	PayLogService payLogService;
@@ -42,8 +44,8 @@ public class PayManager {
 		userService =  WebApplicationContextManager.getApplicationContext().getBean(UserService.class);
 		List<Users> list = userService.list();
 		for (Users users : list) {
-			moneyMap.put(Integer.valueOf(users.getId()),
-					Double.valueOf(users.getInitMoney()));
+			moneyMap.put(users.getId(), Double.valueOf(users.getInitMoney()));
+			premoneyMap.put(users.getId(), Double.valueOf(users.getInitMoney()));
 		}
 		logger.info("pay manager inited..........");
 		ThreadManager.getInstance().execute(new Runnable() {
@@ -73,15 +75,16 @@ public class PayManager {
 	 * @param payLog
 	 */
 	public void pay(PayLog payLog) {
-		Double userMoney = Double.valueOf(getUserMoney(payLog.getUserId())
+		Double userMoney = Double.valueOf(moneyMap.get(payLog.getUserId())
 				- payLog.getMoney());
-		moneyMap.put(Integer.valueOf(payLog.getUserId()), userMoney);
+		moneyMap.put(payLog.getUserId(), userMoney);
 		userService.updateMoney(payLog.getUserId(), 0.0D - payLog.getMoney());
 		// 消费明细充值中的状态：0
 		payLog.setStatus(0);
 		payLog.setOptionTime(new Date());
 		payLog.setMoney(payLog.getMoney());
 		payLog.setBalance(Math.round(userMoney * 100) / 100.0);
+		payLog.setCreateTime(System.currentTimeMillis());
 		payLogService.saveOrUpdate(payLog);
 	}
 	/**
@@ -89,10 +92,9 @@ public class PayManager {
 	 * @param payLog
 	 */
 	public void backMoney(PayLog payLog) {
-		Double userMoney = Double.valueOf(getUserMoney(payLog.getUserId())
+		Double userMoney = Double.valueOf(moneyMap.get(payLog.getUserId())
 				+ payLog.getMoney());
-		moneyMap.put(Integer.valueOf(payLog.getUserId()), userMoney);
-
+		moneyMap.put(payLog.getUserId(), userMoney);
 		// 更新代理商余额
 		userService.updateMoney(payLog.getUserId(), payLog.getMoney());
 
@@ -107,6 +109,7 @@ public class PayManager {
 		newPayLog.setAccount(payLog.getAccount());
 		newPayLog.setAgent(payLog.getAgent());
 		newPayLog.setDiscount(payLog.getDiscount());
+		newPayLog.setCreateTime(System.currentTimeMillis());
 		Double profit = payLog.getProfit();
 		if(profit != null){
 			newPayLog.setProfit(0.0D - payLog.getProfit());			
@@ -140,12 +143,19 @@ public class PayManager {
 		payLog.setStatus(1);
 		payLogService.update(payLog);
 	}
-	
 	public double getUserMoney(int userId) {
-		Double money = (Double) moneyMap.get(Integer.valueOf(userId));
+		Double money = (Double) premoneyMap.get(Integer.valueOf(userId));
 		if (money == null) {
 			return 0.0D;
 		}
 		return money.doubleValue();
+	}
+	public synchronized boolean validBalance(Integer id,Double money){
+		if (getUserMoney(id) < money) {
+			return false;
+		}else{
+			premoneyMap.put(id, getUserMoney(id) - money);
+			return true;
+		}
 	}
 }

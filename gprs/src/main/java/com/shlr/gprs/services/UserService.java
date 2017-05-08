@@ -75,6 +75,9 @@ public class UserService implements DruidStatInterceptor{
 	public Integer updateMoney(int userId, double money){
 		return userMapper.updatebalance(userId, money);
 	}
+	public Double getBalance(int userId){
+		return userMapper.getBalance(userId);
+	}
 	/**
 	 * 根据ID查找
 	 * @param userid
