@@ -38,6 +38,7 @@ import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.PricePaperService;
 import com.shlr.gprs.utils.okhttp.HttpUtils;
 import com.shlr.gprs.utils.okhttp.OkhttpUtils;
+import com.shlr.gprs.vo.BackMoneyVO;
 import com.shlr.gprs.vo.ResultBaseVO;
 
 import okhttp3.Response;
@@ -226,7 +227,7 @@ public class ChargeManager {
 			resultBaseDO.addError("用户已过有效期！");
 			return resultBaseDO;
 		}
-		PricePaper pricePaper = pricePaperService.selectOneByPK(Integer.valueOf(agent.getPaperId()));
+		PricePaper pricePaper = pricePaperService.findById(Integer.valueOf(agent.getPaperId()));
 		if (pricePaper == null) {
 			resultBaseDO.addError("报价单不存在");
 			return resultBaseDO;
@@ -495,7 +496,7 @@ public class ChargeManager {
 			payLog.setStatus(Integer.valueOf(0));
 			List<PayLog> payLogList = payLogService.listByExample(payLog);
 			for (PayLog item : payLogList) {
-				PayManager.getInstance().addToPay(item);
+				PayManager.getInstance().addToPay(new BackMoneyVO(item));
 			}
 		} else {
 			// 充值成功....
@@ -519,7 +520,7 @@ public class ChargeManager {
 		ChargeOrder queryChargeOrderDO = new ChargeOrder();
 		queryChargeOrderDO.setChargeTaskId(taskId);
 		queryChargeOrderDO.setSubmitTemplate(Integer.valueOf(templateId));
-		List<ChargeOrder> orderlist = chargeOrderService.selectOneByExample(Integer.valueOf(taskId), templateId);
+		List<ChargeOrder> orderlist = chargeOrderService.selectOneByExample(taskId, templateId);
 		if (orderlist.isEmpty()) {
 			return;
 		}

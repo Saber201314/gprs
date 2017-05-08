@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.shlr.gprs.cache.PricePaperCache;
 import com.shlr.gprs.dao.PricePaperMapper;
 import com.shlr.gprs.domain.PricePaper;
 
@@ -18,8 +19,8 @@ public class PricePaperService implements DruidStatInterceptor{
 	@Resource
 	PricePaperMapper pricePaperMapper;
 	
-	public PricePaper selectOneByPK(Object pk){
-		return pricePaperMapper.selectByPrimaryKey(pk);
+	public PricePaper findById(Integer id){
+		return PricePaperCache.idMap.get(id);
 	}
 	public List<PricePaper> listAll(){
 		return pricePaperMapper.selectAll();

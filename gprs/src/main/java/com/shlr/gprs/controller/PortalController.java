@@ -21,6 +21,7 @@ import org.springframework.web.context.ContextLoaderListener;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.shlr.gprs.constants.Const;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.MobileUtil;
@@ -253,5 +254,22 @@ public class PortalController {
 		response.getWriter().printf(  JSON.toJSONString(result));
 		return null;
 	}
-	
+	@RequestMapping("/switchStatus")
+	@ResponseBody
+	public String setSwitchStatus(@RequestParam(value="status",required=false)String switchstatus){
+		String result="";
+		if (!StringUtils.isEmpty(switchstatus)) {
+			if (Const.isApiSwitch()) {
+				Const.setApiSwitch(false);
+			}else{
+				Const.setApiSwitch(true);
+			}
+		}
+		if (Const.isApiSwitch()) {
+			result= " 接口状态 ：开启"; 
+		}else{
+			result= " 接口状态 ：关闭"; 
+		}
+		return result;
+	}
 }

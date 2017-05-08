@@ -24,4 +24,10 @@ public class ChannelLogService implements DruidStatInterceptor{
 	public List<ChannelLog> listByExampleAndPage(Example example,Integer pageNo){
 		return channelLogMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
 	}
+	
+	public Integer save(ChannelLog channelLog){
+		int insert = channelLogMapper.insert(channelLog);
+		return insert;
+	}
+	
 }

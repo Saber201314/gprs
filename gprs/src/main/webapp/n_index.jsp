@@ -259,8 +259,6 @@ layui.use([ 'layer', 'form', 'laydate', 'element','laypage' ], function() {
 	 * 监听tab切换  刷新内容  
 	 */
 	element.on('tab(content_tab)', function(data) {
-		var url = $('iframe:eq(' + data.index + ')').attr('src');
-		$('iframe:eq(' + data.index + ')').attr('src', url);
 	});
 
 

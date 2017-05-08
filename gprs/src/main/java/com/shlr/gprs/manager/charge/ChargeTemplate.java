@@ -20,6 +20,9 @@ import com.shlr.gprs.vo.ResultBaseVO;
  */
 
 public abstract class ChargeTemplate {
+	
+	
+	
 	protected static ChannelLogService channelLogService;
 	protected static ChargeOrderService chargeOrderService;
 	protected static PayLogService payLogService;
@@ -80,7 +83,7 @@ public abstract class ChargeTemplate {
 	 * @param paramChargeOrder
 	 * @return
 	 */
-	public abstract ResultBaseVO<String> charge(ChargeOrder paramChargeOrder);
+	public abstract ResultBaseVO<String> charge(ChargeOrder chargeOrder);
 	
 	/**
 	 * 查询订单状态

@@ -38,7 +38,7 @@ public class GprsPackageService implements DruidStatInterceptor {
 
 	public List<GprsPackage> getPackageListByPaperId(Integer paperId) {
 		List<GprsPackage> packageList = new ArrayList<GprsPackage>();
-		PricePaper pricePaper = pricePaperService.selectOneByPK(paperId);
+		PricePaper pricePaper = pricePaperService.findById(paperId);
 		if (pricePaper == null) {
 			return packageList;
 		}

@@ -8,9 +8,13 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.shlr.gprs.cache.PricePaperCache;
 import com.shlr.gprs.cache.UsersCache;
+import com.shlr.gprs.constants.Const;
 import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.GprsPackage;
 import com.shlr.gprs.domain.Users;
@@ -31,43 +35,52 @@ public class ExternalV2Controller {
 	@Resource
 	GprsPackageService gprsPackageService;
 
+	@RequestMapping(value="/externalV2/charge.action")
+	@ResponseBody
 	public String charge(HttpServletRequest request, HttpSession session, String username, String password,
 			String mobile, Integer amount, Integer range, String backUrl, String orderId) {
 		ResultBaseVO<Object> result = new ResultBaseVO<Object>();
+		if (!Const.isApiSwitch()) {
+			result.addError("接口维护中,请稍后访问");
+			return JSON.toJSONString(result);
+		}
+		
+		
+		
 		if ((StringUtils.isEmpty(username)) || (StringUtils.isEmpty(password))) {
 			result.addError("用户名或密码为空");
-			return "success";
+			return JSON.toJSONString(result);
 		}
 		if (MobileUtil.isNotMobileNO(mobile)) {
 			result.addError("手机号码不正确");
-			return "success";
+			return JSON.toJSONString(result);
 		}
 		if (amount == 0) {
 			result.addError("流量包大小不正确");
-			return "success";
+			return JSON.toJSONString(result);
 		}
 		Users currentUser = UsersCache.usernameMap.get(username);
 
 		if ((currentUser == null) || (currentUser.getType() != 2)) {
 			result.addError("用户名不存在");
-			return "success";
+			return JSON.toJSONString(result);
 		}
 		if (!StringUtils.isEmpty(currentUser.getWhiteIp())) {
 			String ip = request.getRemoteAddr();
 			if (currentUser.getWhiteIp().indexOf(ip) == -1) {
 				result.addError("ip限制");
-				return "success";
+				return JSON.toJSONString(result);
 			}
 		}
 		String sign = MD5Utils.getMd5(currentUser.getUsername() + currentUser.getPassword() + mobile);
 		if (!sign.equals(password.toLowerCase())) {
 			result.addError("密码不正确");
-			return "success";
+			return JSON.toJSONString(result);
 		}
 		String location = MobileUtil.getAddress(mobile);
 		if (StringUtils.isEmpty(location)) {
 			result.addError("号码查询归属地失败");
-			return "success";
+			return JSON.toJSONString(result);
 		}
 		ChargeOrder chargeOrder = new ChargeOrder();
 		chargeOrder.setAccount(currentUser.getUsername());//代理商账号
@@ -89,6 +102,13 @@ public class ExternalV2Controller {
 		// 路由次数
 		Integer routeTime = 0;
 		for (GprsPackage gprsPackage : packageList) {
+			
+			System.out.println(gprsPackage.getAmount());
+			System.out.println(gprsPackage.getType()+"   "+chargeOrder.getType() );
+			System.out.println(gprsPackage.getLocationType()+"   "+chargeOrder.getLocationType());
+			System.out.println(gprsPackage.getLocations());
+			System.out.println(chargeOrder.getLocation());
+			
 			if ((gprsPackage.getAmount() != amount) || (gprsPackage.getType() != chargeOrder.getType())
 					|| (gprsPackage.getLocationType() != chargeOrder.getLocationType())
 					|| ((!gprsPackage.getLocations().equals("全国"))
@@ -132,6 +152,6 @@ public class ExternalV2Controller {
 				chargeOrder.setError(result.getError());
 			}
 		}
-		return "";
+		return JSON.toJSONString(result);
 	}
 }

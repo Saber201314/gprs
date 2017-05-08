@@ -37,8 +37,10 @@ public class MD5Utils {
 		}
 	}
 	public static void main(String[] args) {
-		String md5 = getMd5("xc886696");
-		System.out.println(md5);
+		String sign = getMd5("test12313545141090");
+		System.out.println(sign);
+		String pwd = getMd5("123");
+		System.out.println(pwd);
 		
 	}
 }

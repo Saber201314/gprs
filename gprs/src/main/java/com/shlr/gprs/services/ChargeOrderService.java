@@ -30,7 +30,7 @@ public class ChargeOrderService implements DruidStatInterceptor{
 		return chargeOrderMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
 	}
 	
-	public List<ChargeOrder> selectOneByExample(Integer taskId,Integer templateId){
+	public List<ChargeOrder> selectOneByExample(String taskId,Integer templateId){
 		Example example=new Example(ChargeOrder.class,true,false);
 		Criteria createCriteria = example.createCriteria();
 		createCriteria.andEqualTo("chargeTaskId", taskId);

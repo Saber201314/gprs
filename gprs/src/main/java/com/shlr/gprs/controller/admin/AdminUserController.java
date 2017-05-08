@@ -64,7 +64,7 @@ public class AdminUserController {
 		Page<Users> page=(Page<Users>) listByExampleAndPage;
 		
 		for (Users users : listByExampleAndPage) {
-			PricePaper selectOneByPK = pricePaperService.selectOneByPK(users.getPaperId());
+			PricePaper selectOneByPK = pricePaperService.findById(users.getPaperId());
 			if (selectOneByPK != null) {
 				users.setPaperName(selectOneByPK.getName());
 			}

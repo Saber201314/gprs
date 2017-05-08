@@ -67,13 +67,13 @@ public class ChargeOrder {
 	private Integer submitTemplate;//提交模板
 	
 	@Column(name="submit_status")
-	private Integer submitStatus;//提交状态  1 充值中 0 未提交
+	private Integer submitStatus = 0 ;//提交状态  1 充值中 0 未提交
 	
 	@Column(name="charge_task_id")
 	private String chargeTaskId;// 订单号
 	
 	@Column(name="charge_status")
-	private Integer chargeStatus;//充值状态  1 充值成功 -1 充值失败  0 未充值
+	private Integer chargeStatus = 0;//充值状态  1 充值成功 -1 充值失败  0 未充值
 	
 	
 	
@@ -134,16 +134,16 @@ public class ChargeOrder {
 	private Double outDiscount;//放出折扣
 	
 	@Column(name="route_flag")
-	private Integer routeFlag;//是否路由     0  不路由  1路由
+	private Integer routeFlag = 0;//是否路由     0  不路由  1路由
 	
 	@Column(name="route_status")
-	private Integer routeStatus ;//路由状态，0：不可被搜索，1：当前可以被搜索
+	private Integer routeStatus = 0;//路由状态，0：不可被搜索，1：当前可以被搜索
 	
 	@Column(name="route_times")
 	private Integer routeTimes;//路由次数
 	
 	@Column(name="cur_route_pos")
-	private Integer curRoutePos ;//当前路由位置
+	private Integer curRoutePos = 0 ;//当前路由位置
 	
 	@Column(name="package_id1")
 	private Integer packageId1;//第一个包id
