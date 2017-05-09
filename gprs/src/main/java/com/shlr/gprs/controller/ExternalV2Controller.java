@@ -44,9 +44,6 @@ public class ExternalV2Controller {
 			result.addError("接口维护中,请稍后访问");
 			return JSON.toJSONString(result);
 		}
-		
-		
-		
 		if ((StringUtils.isEmpty(username)) || (StringUtils.isEmpty(password))) {
 			result.addError("用户名或密码为空");
 			return JSON.toJSONString(result);
@@ -102,13 +99,6 @@ public class ExternalV2Controller {
 		// 路由次数
 		Integer routeTime = 0;
 		for (GprsPackage gprsPackage : packageList) {
-			
-			System.out.println(gprsPackage.getAmount());
-			System.out.println(gprsPackage.getType()+"   "+chargeOrder.getType() );
-			System.out.println(gprsPackage.getLocationType()+"   "+chargeOrder.getLocationType());
-			System.out.println(gprsPackage.getLocations());
-			System.out.println(chargeOrder.getLocation());
-			
 			if ((gprsPackage.getAmount() != amount) || (gprsPackage.getType() != chargeOrder.getType())
 					|| (gprsPackage.getLocationType() != chargeOrder.getLocationType())
 					|| ((!gprsPackage.getLocations().equals("全国"))

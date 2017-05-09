@@ -23,7 +23,7 @@ public class ChannelLog implements Serializable{
 	@Id
 	@GeneratedValue(generator="JDBC")
 	private Integer id;
-	private Integer orderId;
+	private String orderId;
 	private Integer templateId;
 	private String templateName;
 	private String mobile;
@@ -36,10 +36,10 @@ public class ChannelLog implements Serializable{
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getOrderId() {
+	public String getOrderId() {
 		return orderId;
 	}
-	public void setOrderId(Integer orderId) {
+	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
 	public Integer getTemplateId() {

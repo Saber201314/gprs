@@ -178,14 +178,10 @@ public class ChargeManager {
 				payLog.setOrderId(chargeOrder.getId());
 				payLogService.saveOrUpdate(payLog);
 			}
-			
 		}
 		for (PayLog payLog : payLogList) {
 			// 如果是提交的数据产生了费用
 			if (payLog.getMoney() != 0.0D) {
-				if (ignoreCacheCondition == 0) {
-					PayManager.getInstance().addToPay(payLog);
-				}
 				// 更新订单实际支付金额
 				Double factMoney = Math.round(payLog.getMoney() * 100) / 100.0;
 				chargeOrder.setDiscountMoney(factMoney);
@@ -199,6 +195,9 @@ public class ChargeManager {
 					// 设置利润盈余
 					chargeOrder.setProfit(Math.round(profit * 100) / 100.0);
 					payLog.setProfit(Math.round(profit * 100) / 100.0);
+				}
+				if (ignoreCacheCondition == 0) {
+					PayManager.getInstance().addToPay(payLog);
 				}
 			}
 		}
@@ -438,7 +437,6 @@ public class ChargeManager {
 				chargeOrder.setSubmitChannel(channel.getId());
 				chargeOrder.setSubmitTemplate(template.getTemplateId());
 			}
-
 			chargeOrderService.saveOrUpdate(chargeOrder);
 			// 开始充值
 			chargeResult = template.charge(chargeOrder);
@@ -446,14 +444,10 @@ public class ChargeManager {
 			// 如果提交成功
 			if (chargeResult.isSuccess()) {
 				manager.addAmount(chargeOrder.getAmount());
-
 				chargeOrder.setSubmitChannel(channel.getId());
 				chargeOrder.setSubmitTemplate(template.getTemplateId());
 				chargeOrder.setSubmitStatus(1);
 				chargeOrder.setSubmitTime(new Date());
-
-				chargeOrder.setChargeTaskId(String.valueOf(chargeResult.getModule()));
-
 				return result;
 				// 如果提交失败
 			} else {
@@ -463,7 +457,6 @@ public class ChargeManager {
 				if (ignoreCacheCondition == 1) {
 					chargeOrder.setSubmitStatus(1);
 					chargeOrder.setSubmitTime(new Date());
-					chargeOrder.setChargeTaskId(String.valueOf(chargeOrder.getId()));
 				}
 			}
 			if (managerList.size() == 1) {

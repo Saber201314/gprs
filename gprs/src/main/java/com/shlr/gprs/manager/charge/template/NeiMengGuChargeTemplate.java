@@ -157,7 +157,7 @@ public class NeiMengGuChargeTemplate extends ChargeTemplate{
 		channelLog.setTemplateId(this.templateId);
 		channelLog.setTemplateName(this.templateName);
 		channelLog.setMobile(chargeOrder.getMobile());
-		channelLog.setOrderId(chargeOrder.getId());
+//		channelLog.setOrderId(chargeOrder.getId());
 		try {
 //			if (ChargeManager.analysisOrderIdExisted(chargeOrder.getId())) {
 //				return result;

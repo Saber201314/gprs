@@ -54,16 +54,15 @@
 		<property name="filters" value="stat,config,wall" />
 		<property name="proxyFilters">
 			<list>
-				<ref bean="logFilter" />
 			</list>
 		</property>
 	</bean>
 
-	<bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
+<!-- 	<bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
 		<property name="statementExecutableSqlLogEnable" value="false" />
 		<property name="resultSetLogEnabled" value="false"></property>
 		<property name="statementPrepareAfterLogEnabled" value="false"></property>
-	</bean>
+	</bean> -->
 
 	<!-- 配置SqlSessionFactory对象 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

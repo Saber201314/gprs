@@ -101,7 +101,7 @@ public class TestChargeTemplate extends ChargeTemplate{
 		channelLog.setTemplateId(this.templateId);
 		channelLog.setTemplateName(this.templateName);
 		channelLog.setMobile(chargeOrder.getMobile());
-		channelLog.setOrderId(chargeOrder.getId());
+		channelLog.setOrderId(requestid);
 		try {
 			execute1 = client.newCall(request).execute();
 			response= execute1.body().string();
@@ -122,6 +122,7 @@ public class TestChargeTemplate extends ChargeTemplate{
 	    String orderid = jsonObject.getString("orderid");
 		
 		if (code == 0) {
+			chargeOrder.setChargeTaskId(orderid);
 			result.setModule(orderid);
 			result.setOrderId(chargeOrder.getAgentorderId());
 		} else {

@@ -74,7 +74,7 @@ public class PayManager {
 	 * 
 	 * @param payLog
 	 */
-	public void pay(PayLog payLog) {
+	public synchronized void pay(PayLog payLog) {
 		Double userMoney = Double.valueOf(moneyMap.get(payLog.getUserId())
 				- payLog.getMoney());
 		moneyMap.put(payLog.getUserId(), userMoney);
@@ -91,7 +91,7 @@ public class PayManager {
 	 * 充值失败
 	 * @param payLog
 	 */
-	public void backMoney(PayLog payLog) {
+	public synchronized void backMoney(PayLog payLog) {
 		Double userMoney = Double.valueOf(moneyMap.get(payLog.getUserId())
 				+ payLog.getMoney());
 		moneyMap.put(payLog.getUserId(), userMoney);
@@ -100,6 +100,7 @@ public class PayManager {
 
 		// 消费明细充值失败的状态：-2
 		payLog.setStatus(-2);
+		payLog.setCreateTime(System.currentTimeMillis());
 		payLogService.saveOrUpdate(payLog);
 
 		// 新增一条记录记为退款状态
