@@ -1,5 +1,6 @@
 package com.shlr.gprs.constants;
 
+
 /**
 * @author xucong
 * @version 创建时间：2017年4月4日 下午3:26:05
@@ -18,5 +19,15 @@ public class Const {
 		Const.apiSwitch = apiSwitch;
 	}
 	
+	
+	private static Integer orderid=1;
+
+	public synchronized static Integer getOrderid() {
+		return orderid++;
+	}
+
+	public  static void setOrderid(Integer orderid) {
+		Const.orderid = orderid;
+	}
 	
 }

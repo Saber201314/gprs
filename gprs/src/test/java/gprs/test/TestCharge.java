@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
+import com.shlr.gprs.constants.Const;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -23,10 +24,6 @@ import okhttp3.Response;
 public class TestCharge {
 	static Random random=new Random();
 	static OkHttpClient client = null;
-	
-	
-	
-	
 	public static void main(String[] args) throws IOException {
 		client=new OkHttpClient.Builder()
 			.connectTimeout(30, TimeUnit.SECONDS)
@@ -35,27 +32,50 @@ public class TestCharge {
 			.build();
 		
 //		charge();
-		callback();
+//		callback();
 
-//		test();
-		
+		test();
+//		testcharge();
 		
 		
 	}
+	public static void testcharge(){
+		Map<String, String> param= new HashMap<String, String>();
+		param.put("username", "test");
+		param.put("password", "51abc98035cc9999a8a776b5bd67326f");
+		param.put("mobile", "13545141090");
+		param.put("amount", "10");
+		param.put("range", "0");
+		param.put("backUrl", "");
+		param.put("orderId",String.valueOf(random.nextInt(1000)) );
+		
+		RequestBody body=RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), createFromParams(param));
+		
+		Request request=new Request.Builder()
+				.url("http://localhost:8080/externalV2/charge.action")
+				.post(body)
+				.build();
+		Response execute=null;
+		try {
+			execute = client.newCall(request).execute();
+			System.out.println(execute.body().string());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public static void test(){
 		Map<String, String> param= new HashMap<String, String>();
-		param.put("orderid", "1");
-		param.put("code", "0");
-		param.put("message", "余额不足");
+		param.put("orderid", "101");
+		param.put("code", "1");
+		param.put("message", "充值成功");
 		
 		RequestBody body=RequestBody.create(MediaType.parse("application/json"), JSON.toJSONString(param));
 		
 		Request request=new Request.Builder()
-				.url("http://localhost:8081/test.notify")
+				.url("http://localhost:8080/test.notify")
 				.post(body)
 				.build();
-		
-		
 		Response execute=null;
 		try {
 			execute = client.newCall(request).execute();
@@ -93,7 +113,7 @@ public class TestCharge {
 						RequestBody body=RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), createFromParams(param));
 						
 						Request request=new Request.Builder()
-								.url("http://localhost:8081/externalV2/charge.action")
+								.url("http://localhost:8080/externalV2/charge.action")
 								.post(body)
 								.build();
 						Response execute=null;
@@ -133,14 +153,14 @@ public class TestCharge {
 				public void run() {
 					// TODO Auto-generated method stub
 					Map<String, String> param= new HashMap<String, String>();
-//					param.put("orderid", Const.getOrderid().toString());
-					param.put("code", "0");
-					param.put("message", "余额不足");
+					param.put("orderid", Const.getOrderid().toString());
+					param.put("code", "1");
+					param.put("message", "充值成功");
 					
 					RequestBody body=RequestBody.create(MediaType.parse("application/json"), JSON.toJSONString(param));
 					
 					Request request=new Request.Builder()
-							.url("http://localhost:8081/test.notify")
+							.url("http://localhost:8080/test.notify")
 							.post(body)
 							.build();
 					
