@@ -8,7 +8,6 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 	var laypage = layui.laypage;
 	
 	
-	
 	$(function(){
 		/*
 		 * 全选checkbox
@@ -30,8 +29,45 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 	
 	
 	
-	
 	var obj = {
+		
+		initProvince : function(){
+			var province = [];
+			province.push('北京');
+			province.push('天津');
+			province.push('河北');
+			province.push('山西');
+			province.push('辽宁');
+			province.push('吉林');
+			province.push('上海');
+			province.push('江苏');
+			province.push('浙江');
+			province.push('安徽');
+			province.push('福建');
+			province.push('江西');
+			province.push('山东'); 
+			province.push('河南');
+			province.push('湖北');
+			province.push('湖南');
+			province.push('广东');
+			province.push('广西');
+			province.push('海南'); 
+			province.push('重庆');
+			province.push('四川');
+			province.push('贵州');
+			province.push('云南');
+			province.push('西藏');
+			province.push('陕西');
+			province.push('甘肃');
+			province.push('宁夏');
+			province.push('青海');
+			province.push('新疆');
+			province.push('内蒙古');
+			province.push('黑龙江');
+			
+			return province;
+		},
+		
 			
 		inittime : function(pattern){
 			/*
@@ -102,8 +138,8 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 
 			$.ajax({
 				url: "/admin/query/userListByLevel.action",
-				type: "post",
-				dataType: 'json',
+				type: "get",
+				dataType : 'json',
 				cache: false,
 				success: function(data) {
 					if (data && data.success) {
@@ -117,6 +153,7 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 					} 
 				},
 				error: function() {
+					top.layer.msg('连接服务器失败');
 					//top.window.location = "/login.jsp";
 				}
 			});
@@ -127,8 +164,8 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 		initchannel: function() {
 			$.ajax({
 				url: "/admin/query/getCurrentChannelList.action",
-				type: 'post',
-				dataType: 'json',
+				type: 'get',
+				dataType : 'json',
 				cache: false,
 				success: function(data) {
 					if (data && data.length > 0) {
@@ -141,6 +178,7 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 					}
 				},
 				error: function() {
+					top.layer.msg('连接服务器失败');
 					//top.window.location = "/login.jsp";
 				}
 			});

@@ -73,4 +73,9 @@ public class GprsPackageController {
 		result.put("pageno", page.getPageNum());
 		return result.toJSONString();
 	}
+	@RequestMapping("/addPackage.action")
+	public String addPackage(){
+		return null;
+		
+	}
 }
