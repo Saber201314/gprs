@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,8 @@ public class ChargeManager {
 
 	public static List<ChannelManager> channelManagerList = new LinkedList<ChannelManager>();
 	public static Map<String, ChargeTemplate> chargeTemplateMap = new HashMap<String, ChargeTemplate>();
+	
+	private static LinkedBlockingQueue<ChargeOrder> ordertaskList = new LinkedBlockingQueue<ChargeOrder>();
 
 	public static Boolean moreOperValidMap = false;
 
@@ -109,7 +112,24 @@ public class ChargeManager {
 			}
 			channelManagerList.add(new ChannelManager(channel, amount));
 		}
+		ThreadManager.getInstance().execute(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						ChargeOrder chargeOrder = ordertaskList.take();
+						ChargeManager.getInstance().charge(chargeOrder);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 
+	}
+	
+	public void addToCharge(ChargeOrder chargeOrder) throws InterruptedException{
+		ordertaskList.put(chargeOrder);
 	}
 
 	public ResultBaseVO<Object> charge(ChargeOrder chargeOrder) {

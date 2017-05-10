@@ -69,7 +69,7 @@ public class TestChargeTemplate extends ChargeTemplate{
         	  randomStr = "0" + randomStr  ;
 	    }
 		String requestid=myTime+randomStr;
-		String url="http://localhost:8080/gprs-new/test";
+		String url="http://localhost:8081/gprs-new/test";
 		String api_key=this.password;
 		String timestamp=timessdf.format(new Date());
 		String packageid=chargeOrder.getAmount().toString();

@@ -23,23 +23,24 @@ public class InitListener implements ApplicationListener<ContextRefreshedEvent> 
 		System.out.println("初始化");
 		WebApplicationContextManager.init(event.getApplicationContext());
 		UsersCache.load();
-		logger.info("UserCache inited");
+		logger.debug("UserCache inited");
 		ChannelCache.load();
-		logger.info("ChannelCache inited");
+		logger.debug("ChannelCache inited");
 		ChannelTemplateCache.load();
-		logger.info("ChannelTemplateCache inited");
+		logger.debug("ChannelTemplateCache inited");
 		PayManager.getInstance().init();
-
+		logger.debug("PayManager inited");
 		SuiteOrderCache.getInstance().load();
-
+		logger.debug("SuiteOrderCache inited");
 		PricePaperCache.load();
-
+		logger.debug("PricePaperCache inited");
 		GprsPackageCache.load();
-		
+		logger.debug("GprsPackageCache inited");
 		ChannelTemplateCodeCache.load();
-
+		logger.debug("ChannelTemplateCodeCache inited");
 		try {
 			ChargeManager.getInstance().init();
+			logger.debug("ChargeManager inited");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

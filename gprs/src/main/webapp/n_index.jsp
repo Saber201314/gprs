@@ -90,7 +90,7 @@ dd{padding-left: 15px}
 					<li class="layui-nav-item"><a href="javascript:;"  ><i class="layui-icon" style="font-size: 20px; margin-right: 10px; ">&#xe617;</i>流量包管理</a>
 						<dl class="layui-nav-child">
 							<dd>
-								<a href="javascript:;" onclick="addtab('101','流量包管理')">流量包列表</a>
+								<a href="javascript:;" onclick="addtab('101','流量包管理','view/admin/package/packageList.jsp')">流量包列表</a>
 							</dd>
 							<dd>
 								<a href="javascript:;" onclick="addtab('102','添加流量包')">添加流量包</a>

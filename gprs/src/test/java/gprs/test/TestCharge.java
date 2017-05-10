@@ -24,6 +24,7 @@ import okhttp3.Response;
 public class TestCharge {
 	static Random random=new Random();
 	static OkHttpClient client = null;
+	static String url="http://localhost:8081";
 	public static void main(String[] args) throws IOException {
 		client=new OkHttpClient.Builder()
 			.connectTimeout(30, TimeUnit.SECONDS)
@@ -52,7 +53,7 @@ public class TestCharge {
 		RequestBody body=RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), createFromParams(param));
 		
 		Request request=new Request.Builder()
-				.url("http://localhost:8080/externalV2/charge.action")
+				.url(url+"/externalV2/charge.action")
 				.post(body)
 				.build();
 		Response execute=null;
@@ -73,7 +74,7 @@ public class TestCharge {
 		RequestBody body=RequestBody.create(MediaType.parse("application/json"), JSON.toJSONString(param));
 		
 		Request request=new Request.Builder()
-				.url("http://localhost:8080/test.notify")
+				.url(url+"/test.notify")
 				.post(body)
 				.build();
 		Response execute=null;
@@ -113,7 +114,7 @@ public class TestCharge {
 						RequestBody body=RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), createFromParams(param));
 						
 						Request request=new Request.Builder()
-								.url("http://localhost:8080/externalV2/charge.action")
+								.url(url+"/externalV2/charge.action")
 								.post(body)
 								.build();
 						Response execute=null;
@@ -160,7 +161,7 @@ public class TestCharge {
 					RequestBody body=RequestBody.create(MediaType.parse("application/json"), JSON.toJSONString(param));
 					
 					Request request=new Request.Builder()
-							.url("http://localhost:8080/test.notify")
+							.url(url+"/test.notify")
 							.post(body)
 							.build();
 					

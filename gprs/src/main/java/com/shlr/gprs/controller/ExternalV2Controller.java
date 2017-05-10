@@ -19,6 +19,7 @@ import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.GprsPackage;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.manager.ChargeManager;
+import com.shlr.gprs.services.ChargeOrderService;
 import com.shlr.gprs.services.GprsPackageService;
 import com.shlr.gprs.utils.MD5Utils;
 import com.shlr.gprs.utils.MailUtils;
@@ -34,6 +35,8 @@ import com.shlr.gprs.vo.ResultBaseVO;
 public class ExternalV2Controller {
 	@Resource
 	GprsPackageService gprsPackageService;
+	@Resource
+	ChargeOrderService chargeOrderService;
 
 	@RequestMapping(value="/externalV2/charge.action")
 	@ResponseBody
@@ -137,7 +140,17 @@ public class ExternalV2Controller {
 			result.addError("没有可用的流量包");
 		} else {
 			chargeOrder.setPackageId(packageId);
-			result = ChargeManager.getInstance().charge(chargeOrder);
+//			result = ChargeManager.getInstance().charge(chargeOrder);
+			try {
+				Integer saveOrUpdate = chargeOrderService.saveOrUpdate(chargeOrder);
+				if (saveOrUpdate == 1) {
+					ChargeManager.getInstance().addToCharge(chargeOrder);
+				}
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				result.addError("订单接收失败");
+			}
 			if (!result.isSuccess()) {
 				chargeOrder.setError(result.getError());
 			}

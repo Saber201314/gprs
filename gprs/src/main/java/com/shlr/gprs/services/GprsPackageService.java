@@ -9,12 +9,15 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.GprsPackageCache;
 import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.dao.GprsPackageMapper;
 import com.shlr.gprs.domain.GprsPackage;
 import com.shlr.gprs.domain.PricePaper;
 import com.shlr.gprs.domain.Users;
+
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * @author xucong
@@ -63,6 +66,10 @@ public class GprsPackageService implements DruidStatInterceptor {
 	}
 	public List<GprsPackage> listAll(){
 		return gprsPackageMapper.selectAll();
+	}
+	public List<GprsPackage> listByPage(Example example,Integer pageNo){
+		List<GprsPackage> selectByExampleAndRowBounds = gprsPackageMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+		return selectByExampleAndRowBounds;
 	}
 	
 	public GprsPackage findById(Integer id){
