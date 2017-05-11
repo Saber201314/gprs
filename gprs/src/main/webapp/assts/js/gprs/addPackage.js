@@ -31,13 +31,18 @@ layui.define([ 'base', ], function(exports) {
 	 */
 	form.on('submit(btn-submit)', function(data) {
 		$.ajax({
-			url: "/admin/query/test",
+			url: "/admin/addPackage.action",
 			type: "post",
 			data : $('form').serialize(),
 			dataType : 'json',
 			cache: false,
 			success: function(data) {
-				
+				if(data && data.success){
+					top.layer.msg(data.msg);
+					window.location.reload();
+				}else{
+					top.layer.msg(data.msg);
+				}
 			},
 			error: function() {
 				top.layer.msg('连接服务器失败');

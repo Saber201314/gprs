@@ -62,8 +62,7 @@
 			</div>
 		</form>
 	</fieldset>
-	<button class="layui-btn layui-btn-mini " >删除</button>
-	<button class="layui-btn layui-btn-mini " >添加流量包</button>
+	<button class="layui-btn layui-btn-mini getallcheck" >删除</button>
 	<div class="layui-form">
 		<table class="layui-table">
 			<thead>
@@ -76,7 +75,6 @@
 					<th>标准售价(元)</th>
 					<th>运营商类型</th>
 				    <th>流量类型</th>
-				    
 				    <th>支持地区</th>
 				    <th>添加时间</th>
 					<th>操作</th>

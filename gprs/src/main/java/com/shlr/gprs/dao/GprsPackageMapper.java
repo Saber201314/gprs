@@ -1,5 +1,8 @@
 package com.shlr.gprs.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.annotation.MapperScan;
 
 import com.shlr.gprs.domain.GprsPackage;
@@ -13,5 +16,5 @@ import tk.mybatis.mapper.common.Mapper;
 */
 @MapperScan
 public interface GprsPackageMapper extends Mapper<GprsPackage>{
-
+	Integer delPackage(@Param("ids")List<Integer> ids);
 }

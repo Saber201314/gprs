@@ -34,7 +34,7 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 	private Date optionTime;
 	private Integer locationType;
 	private String locations;
-	private Integer status;
+	private Integer status = 0;
 	@Transient
 	private Double discount;
 	@Transient

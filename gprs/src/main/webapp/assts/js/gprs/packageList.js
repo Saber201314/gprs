@@ -29,7 +29,7 @@ layui.define([ 'base', ], function(exports) {
 			type : 'post',
 			data : $('form').serialize(),
 			dataType : 'json',
-			cache : '',
+			cache : false,
 			success : function(data) {
 				var html = [];
 				top.layer.close(index);
@@ -59,7 +59,7 @@ layui.define([ 'base', ], function(exports) {
 						var newDate = new Date();
 						newDate.setTime(item.optionTime);
 						html.push('<td>' + newDate.toLocaleString() + '</td>');
-						html.push('<td>编辑</td>');
+						html.push('<td><a href=""><button class="layui-btn layui-btn-mini">编辑</button></a></td>');
 						html.push('</tr>');
 					});
 					
@@ -78,6 +78,47 @@ layui.define([ 'base', ], function(exports) {
 			}
 		})
 	}
+	/*
+	 * 获取所有选中checkbox
+	 */
+	
+	$('.getallcheck').click(function() {
+		var checklist = $('tbody tr td input[type="checkbox"]');
+		var ids = [];
+		checklist.each(function(index, item) {
+			if (item.checked) {
+				var id = $(this).data("id");
+				ids.push(id);
+			}
+
+		});
+		if( ids.length > 0){
+			top.layer.msg(JSON.stringify(ids));
+			
+			$.ajax({
+				url : '/admin/delPackage.action',
+				type : 'post',
+				data : {'ids':ids},
+				dataType : 'json',
+				cache : false,
+				success : function(data) {
+					if ( data && data.success){
+						top.layer.msg(data.msg);
+						initPackageList();
+					}else{
+						top.layer.msg(data.msg);
+					}
+				},
+				error : function() {
+					top.layer.msg('连接服务器失败');
+					top.layer.close(index);
+				}
+			})
+		}else{
+			top.layer.msg('请选择流量包');
+		}
+		
+	})
 
 	exports('packageList');
 

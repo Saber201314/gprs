@@ -26,7 +26,7 @@ form {
 				<div class="layui-inline">
 					<label class="layui-form-label">展示名称</label>
 					<div class="layui-input-inline">
-						<input type="text" name="alias" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+						<input type="text" name="alias" lay-verify="required" placeholder="请输入展示名称" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 			</div>
@@ -34,13 +34,13 @@ form {
 				<div class="layui-inline">
 					<label class="layui-form-label">流量值</label>
 					<div class="layui-input-inline">
-						<input type="text" name="amount" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+						<input type="text" name="amount" lay-verify="required" placeholder="请输入流量值" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">标准售价</label>
 					<div class="layui-input-inline">
-						<input type="text" name="money" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+						<input type="text" name="money" lay-verify="required" placeholder="请输入售价" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 			</div>
@@ -68,7 +68,7 @@ form {
 			<div class="layui-form-item" pane="">
 				<label class="layui-form-label">原始复选框</label>
 				<div class="layui-input-block">
-					<input type="checkbox" title="全国"  lay-skin="primary"
+					<input type="checkbox" title="全国" value="全国" name="all" lay-skin="primary"
 						lay-filter="allChoose">
 				</div>
 			</div>
@@ -84,7 +84,7 @@ form {
 				<div class="layui-inline">
 					<label class="layui-form-label">备注</label>
 					<div class="layui-input-inline">
-						<input type="text" name="username" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+						<input type="text" name="memo"  placeholder="请输入备注" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 			</div>
