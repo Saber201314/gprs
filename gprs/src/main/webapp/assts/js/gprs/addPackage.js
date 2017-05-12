@@ -15,13 +15,6 @@ layui.define([ 'base', ], function(exports) {
 			});
 			form.render('checkbox');
 		});
-		
-		province =base.initProvince();
-		var html=[];
-		$.each(province,function(index,item){
-			html.push('<span style="width : 100px;"><input type="checkbox" value="'+item+'" data-id="'+item+'" name="provinces"  title="'+item+'" lay-skin="primary"/></span>');
-		})
-		$('#province').append(html.join(''));
 		form.render('checkbox');
 	})
 	/*
@@ -39,7 +32,7 @@ layui.define([ 'base', ], function(exports) {
 			success: function(data) {
 				if(data && data.success){
 					top.layer.msg(data.msg);
-					window.location.reload();
+					window.location.href='/view/admin/package/packageList.jsp';
 				}else{
 					top.layer.msg(data.msg);
 				}

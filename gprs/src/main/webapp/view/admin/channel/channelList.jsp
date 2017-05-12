@@ -35,7 +35,7 @@
 		</form>
 	</fieldset>
 	<button class="layui-btn layui-btn-mini " >删除</button>
-	<button class="layui-btn layui-btn-mini " >添加通道</button>
+	<button class="layui-btn layui-btn-mini addChannel">添加通道</button>
 	<div class="layui-form">
 		<table class="layui-table">
 			<thead>
@@ -59,6 +59,29 @@
 	<div id="pageinfo" style="text-align: center;">
 		<span id="page-total"></span>
 		<div id="pate"></div>
+	</div>
+	<div id="single-page-content" style="display: none;padding-left: 5px;padding-right: 5px;">
+		<table class="layui-table">
+			<colgroup>
+				<col width="150">
+				<col width="80">
+				<col width="80">
+				<col width="80">
+				<col width="150">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>流量包名称</th>
+           			<th>基础价格</th>
+           			<th>折扣</th>
+           			<th>我的价格</th>
+           			<th>优先级</th>
+           			<th>通道名称</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
 	</div>
 </body>
 <script type="text/javascript">

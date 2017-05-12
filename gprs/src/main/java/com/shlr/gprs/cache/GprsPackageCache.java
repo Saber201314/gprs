@@ -14,12 +14,12 @@ import com.shlr.gprs.services.GprsPackageService;
 * 
 */
 public class GprsPackageCache {
-	public static Map<Integer, GprsPackage> idMap = new HashMap<Integer, GprsPackage>();
+//	public static Map<Integer, GprsPackage> idMap = new HashMap<Integer, GprsPackage>();
 
-	  public static void load() {
-	    GprsPackageService gprsPackageService=(GprsPackageService)WebApplicationContextManager.getApplicationContext().getBean(GprsPackageService.class);
-	    List<GprsPackage> list = gprsPackageService.listAll();
-	    for (GprsPackage gprsPackage : list)
-	      idMap.put(gprsPackage.getId(), gprsPackage);
-	  }
+//	  public static void load() {
+//	    GprsPackageService gprsPackageService=(GprsPackageService)WebApplicationContextManager.getApplicationContext().getBean(GprsPackageService.class);
+//	    List<GprsPackage> list = gprsPackageService.listAll();
+//	    for (GprsPackage gprsPackage : list)
+//	      idMap.put(gprsPackage.getId(), gprsPackage);
+//	  }
 }

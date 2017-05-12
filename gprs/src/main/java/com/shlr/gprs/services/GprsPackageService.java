@@ -41,6 +41,9 @@ public class GprsPackageService implements DruidStatInterceptor {
 	public Integer add(GprsPackage gprsPackage){
 		return gprsPackageMapper.insertSelective(gprsPackage);
 	}
+	public Integer update(GprsPackage gprsPackage){
+		return gprsPackageMapper.updateByPrimaryKey(gprsPackage);
+	}
 	public Integer del(List<Integer> ids){
 		return gprsPackageMapper.delPackage(ids);
 		
@@ -79,6 +82,6 @@ public class GprsPackageService implements DruidStatInterceptor {
 	}
 	
 	public GprsPackage findById(Integer id){
-		return GprsPackageCache.idMap.get(id);
+		return gprsPackageMapper.selectByPrimaryKey(id);
 	}
 }

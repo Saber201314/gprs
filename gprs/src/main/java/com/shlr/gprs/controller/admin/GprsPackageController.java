@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
+import com.shlr.gprs.constants.Const;
 import com.shlr.gprs.domain.GprsPackage;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.GprsPackageService;
@@ -78,6 +80,7 @@ public class GprsPackageController {
 	@RequestMapping("/addPackage.action")
 	@ResponseBody
 	public String addPackage(HttpSession session,
+			@RequestParam(value="packageId",required=false)Integer id,
 			@RequestParam(value="name")String name,
 			@RequestParam(value="alias")String alias,
 			@RequestParam(value="amount")Integer amount,
@@ -111,8 +114,14 @@ public class GprsPackageController {
 			gprsPackage.setLocations(builder.toString());
 		}
 		gprsPackage.setMemo(memo);
-		Integer add = gprsPackageService.add(gprsPackage);
-		if (add == 1) {
+		Integer num=0;
+		if( null != id && id > 0){
+			gprsPackage.setId(id);
+			num = gprsPackageService.update(gprsPackage);
+		}else{
+			num = gprsPackageService.add(gprsPackage);
+		}
+		if (num == 1) {
 			result.put("success", true);
 			result.put("msg", "添加成功");
 		}else{
@@ -121,6 +130,26 @@ public class GprsPackageController {
 		}
 		return result.toJSONString();
 	}
+	@RequestMapping("/editPackage.action")
+	public String editPackage(HttpSession session,@RequestParam(value="id",required=false)Integer id,
+			Model model){
+		JSONObject result=new JSONObject();
+		Users currentUser = userService.getCurrentUser(session);
+		if ((currentUser == null) || (currentUser.getType() != 1)) {
+			result.put("success", false);
+			result.put("msg", "请登录");
+			return result.toJSONString();
+		}
+		if(id != null && id > 0){
+			GprsPackage findById = gprsPackageService.findById(id);
+			if (findById != null) {
+				model.addAttribute("packageObj", findById);
+			}
+		}
+		model.addAttribute("province", Const.province);
+		return "admin/package/addPackage";
+	}
+	
 	@RequestMapping("/delPackage.action")
 	@ResponseBody
 	public String delPackage(HttpSession session,@RequestParam(value="ids[]")List<Integer> ids){

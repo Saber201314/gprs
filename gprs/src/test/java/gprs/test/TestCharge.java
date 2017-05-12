@@ -6,6 +6,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
@@ -25,6 +27,7 @@ public class TestCharge {
 	static Random random=new Random();
 	static OkHttpClient client = null;
 	static String url="http://localhost:8081";
+	static ExecutorService service=Executors.newFixedThreadPool(50);
 	public static void main(String[] args) throws IOException {
 		client=new OkHttpClient.Builder()
 			.connectTimeout(30, TimeUnit.SECONDS)
@@ -32,12 +35,47 @@ public class TestCharge {
 			.writeTimeout(30, TimeUnit.SECONDS)
 			.build();
 		
+		
 //		charge();
 //		callback();
 
-		test();
-//		testcharge();
+//		test();
+//		testcharge();http://101.37.32.70
 		
+		fail();
+	}
+	public static void fail(){
+		Request request=new Request.Builder()
+				.url("http://101.37.32.70")
+				.get()
+				.header("keep-alive", "close")
+				.build();
+		for (int j = 0; j < 50; j++) {
+			service.execute(new Runnable() {
+				@Override
+				public void run() {
+					while (true) {
+						// TODO Auto-generated method stub
+						try {
+							Response execute = client.newCall(request).execute();
+							
+							if (execute.isSuccessful()) {
+								execute.close();
+								System.out.println(Const.getOrderid());
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							client=new OkHttpClient.Builder()
+									.connectTimeout(30, TimeUnit.SECONDS)
+									.readTimeout(30, TimeUnit.SECONDS)
+									.writeTimeout(30, TimeUnit.SECONDS)
+									.build();
+						}
+					}
+					
+				}
+			});
+		}
 		
 	}
 	public static void testcharge(){

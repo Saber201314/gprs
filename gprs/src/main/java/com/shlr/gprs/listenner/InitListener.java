@@ -34,8 +34,8 @@ public class InitListener implements ApplicationListener<ContextRefreshedEvent> 
 		logger.debug("SuiteOrderCache inited");
 		PricePaperCache.load();
 		logger.debug("PricePaperCache inited");
-		GprsPackageCache.load();
-		logger.debug("GprsPackageCache inited");
+//		GprsPackageCache.load();
+//		logger.debug("GprsPackageCache inited");
 		ChannelTemplateCodeCache.load();
 		logger.debug("ChannelTemplateCodeCache inited");
 		try {
