@@ -26,7 +26,7 @@ import okhttp3.Response;
 public class TestCharge {
 	static Random random=new Random();
 	static OkHttpClient client = null;
-	static String url="http://localhost:8081";
+	static String url="http://xucongblog.com:8080";
 	static ExecutorService service=Executors.newFixedThreadPool(50);
 	public static void main(String[] args) throws IOException {
 		client=new OkHttpClient.Builder()
@@ -46,7 +46,7 @@ public class TestCharge {
 	}
 	public static void fail(){
 		Request request=new Request.Builder()
-				.url("http://101.37.32.70")
+				.url("http://101.37.32.70") 
 				.get()
 				.header("keep-alive", "close")
 				.build();
@@ -193,8 +193,8 @@ public class TestCharge {
 					// TODO Auto-generated method stub
 					Map<String, String> param= new HashMap<String, String>();
 					param.put("orderid", Const.getOrderid().toString());
-					param.put("code", "1");
-					param.put("message", "充值成功");
+					param.put("code", "0");
+					param.put("message", "充值失败");
 					
 					RequestBody body=RequestBody.create(MediaType.parse("application/json"), JSON.toJSONString(param));
 					
