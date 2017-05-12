@@ -63,6 +63,7 @@
 		</form>
 	</fieldset>
 	<button class="layui-btn layui-btn-mini getallcheck" >删除</button>
+	<a href="/admin/editPackage.action"><button class="layui-btn layui-btn-mini" >添加流量包</button></a>
 	<div class="layui-form">
 		<table class="layui-table">
 			<thead>

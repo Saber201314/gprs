@@ -59,7 +59,7 @@ layui.define([ 'base', ], function(exports) {
 						var newDate = new Date();
 						newDate.setTime(item.optionTime);
 						html.push('<td>' + newDate.toLocaleString() + '</td>');
-						html.push('<td><a href=""><button class="layui-btn layui-btn-mini">编辑</button></a></td>');
+						html.push('<td><a href="/admin/editPackage.action?id='+item.id+'"><button class="layui-btn layui-btn-mini">编辑</button></a></td>');
 						html.push('</tr>');
 					});
 					
@@ -90,30 +90,32 @@ layui.define([ 'base', ], function(exports) {
 				var id = $(this).data("id");
 				ids.push(id);
 			}
-
 		});
 		if( ids.length > 0){
-			top.layer.msg(JSON.stringify(ids));
-			
-			$.ajax({
-				url : '/admin/delPackage.action',
-				type : 'post',
-				data : {'ids':ids},
-				dataType : 'json',
-				cache : false,
-				success : function(data) {
-					if ( data && data.success){
-						top.layer.msg(data.msg);
-						initPackageList();
-					}else{
-						top.layer.msg(data.msg);
+			top.layer.confirm('确定删除选择数据吗？',{
+				btn: ['确定','取消']
+			},function(){
+				$.ajax({
+					url : '/admin/delPackage.action',
+					type : 'post',
+					data : {'ids':ids},
+					dataType : 'json',
+					cache : false,
+					success : function(data) {
+						if ( data && data.success){
+							top.layer.msg(data.msg);
+							initPackageList();
+						}else{
+							top.layer.msg(data.msg);
+						}
+					},
+					error : function() {
+						top.layer.msg('连接服务器失败');
+						top.layer.close(index);
 					}
-				},
-				error : function() {
-					top.layer.msg('连接服务器失败');
-					top.layer.close(index);
-				}
+				})
 			})
+			
 		}else{
 			top.layer.msg('请选择流量包');
 		}

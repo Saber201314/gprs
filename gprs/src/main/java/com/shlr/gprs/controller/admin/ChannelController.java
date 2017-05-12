@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,8 +27,10 @@ import com.shlr.gprs.cache.ChannelTemplateCodeCache;
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelTemplate;
 import com.shlr.gprs.domain.ChannelTemplateCode;
+import com.shlr.gprs.domain.GprsPackage;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.ChannelService;
+import com.shlr.gprs.services.GprsPackageService;
 import com.shlr.gprs.services.UserService;
 
 import tk.mybatis.mapper.entity.Example;
@@ -39,6 +44,8 @@ public class ChannelController {
 	UserService userService;
 	@Resource
 	ChannelService channelService;
+	@Resource
+	GprsPackageService gprsPackageService;
 	
 	@RequestMapping(value="/query/channelList.action")
 	@ResponseBody
@@ -115,7 +122,6 @@ public class ChannelController {
 		model.addAttribute("templateId", templateId);
 		return "admin/channel/channelTemplateCode";
 	}
-	
 	@RequestMapping(value="/query/publishChannelTemplateCode.action")
 	public String publishChannelTemplateCode(HttpSession session,
 			@RequestParam(value="templateId")Integer templateId,Model model){
@@ -126,5 +132,53 @@ public class ChannelController {
 		List<ChannelTemplateCode> list = ChannelTemplateCodeCache.codeMapByChannel.get(templateId);
 		model.addAttribute("templateId", templateId);
 		return "admin/channel/addChannelTemplateCode";
+	}
+	@RequestMapping("/showSingleChannelInfo.action")
+	@ResponseBody
+	public String showSingleChannelInfo(HttpSession session,@RequestParam(value="id")Integer cid){
+		Users currentUser = userService.getCurrentUser(session);
+		if (currentUser == null || currentUser.getType() != 1) {
+			return null;
+		}
+		Channel channel = this.channelService.findById(cid);
+		String packCode = channel.getPackages();
+		List<Map<String,Object>> mapList = new ArrayList<Map<String,Object>>();
+		if(!StringUtils.isEmpty(packCode)){		
+			String[] packageArr = packCode.split(",");
+			if(packageArr.length>0){
+				for(int i = 0;i<packageArr.length;i++){
+					Map<String,Object> map = new HashMap<String,Object>();					
+					String pack = packageArr[i];
+					int firstLen = pack.indexOf(":");
+					map.put("id", pack.substring(0, firstLen));
+					int lastLen = pack.lastIndexOf(":");					
+					map.put("level", pack.substring(lastLen + 1, pack.length()));					
+					map.put("discount", pack.substring(firstLen + 1,lastLen));					
+					mapList.add(map);
+				}				
+			}
+		}
+		List<Map<String,Object>> channelPackgeList = new ArrayList<Map<String,Object>>();
+		
+		List<GprsPackage> tempPackageList = gprsPackageService.listAll();
+		if(!CollectionUtils.isEmpty(mapList)){
+			if(!CollectionUtils.isEmpty(tempPackageList)){				
+				for(GprsPackage gprsPackage : tempPackageList){
+					int packageId = gprsPackage.getId();
+					for(Map<String,Object> map : mapList){
+						if(packageId == Integer.valueOf(String.valueOf(map.get("id")))){
+							map.put("name", gprsPackage.getName());
+							Double actualPrice = gprsPackage.getMoney()*Double.valueOf(String.valueOf(map.get("discount")))/10;
+							map.put("price", gprsPackage.getMoney());
+							map.put("actualPrice", String.valueOf(Math.round(actualPrice*100)/100.0));							
+							map.put("channelName",channel.getName());
+							channelPackgeList.add(map);
+						}
+					}
+				}			
+			}			
+		}
+		return JSON.toJSONString(channelPackgeList);
+		
 	}
 }

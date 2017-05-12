@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
 <jsp:include page="/cssjs.jsp"></jsp:include>
@@ -13,20 +14,22 @@ form {
 </style>
 <body>
 	<fieldset class="layui-elem-field" style="margin-top: 5px;">
-		<input type="hidden" name="templateId" value="${templateId }"/>
 		<legend>添加流量包</legend>
 		<form class="layui-form" action="">
+			<c:if test="${packageObj != null}">
+				<input id="packageId" type="hidden" name="packageId" value="${ packageObj.id }">
+			</c:if>
 			<div class="layui-form-item">
 				<div class="layui-inline">
 					<label class="layui-form-label">名称</label>
 					<div class="layui-input-inline">
-						<input type="text" name="name" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+						<input type="text" name="name" value="${ packageObj.name }" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
 					</div>	
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">展示名称</label>
 					<div class="layui-input-inline">
-						<input type="text" name="alias" lay-verify="required" placeholder="请输入展示名称" autocomplete="off" class="layui-input">
+						<input type="text" name="alias" value="${ packageObj.alias }" lay-verify="required" placeholder="请输入展示名称" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 			</div>
@@ -34,13 +37,13 @@ form {
 				<div class="layui-inline">
 					<label class="layui-form-label">流量值</label>
 					<div class="layui-input-inline">
-						<input type="text" name="amount" lay-verify="required" placeholder="请输入流量值" autocomplete="off" class="layui-input">
+						<input type="text" name="amount" value="${ packageObj.amount }" lay-verify="required" placeholder="请输入流量值" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">标准售价</label>
 					<div class="layui-input-inline">
-						<input type="text" name="money" lay-verify="required" placeholder="请输入售价" autocomplete="off" class="layui-input">
+						<input type="text" name="money" value="${ packageObj.money }" lay-verify="required" placeholder="请输入售价" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 			</div>
@@ -49,9 +52,9 @@ form {
 					<label class="layui-form-label">运营商类型</label>
 					<div class="layui-input-inline">
 						<select name="type" lay-verify="" lay-search>
-							<option value="1">移动</option>
-							<option value="2">联通</option>
-							<option value="3">电信</option>
+							<option <c:if test="${ packageObj.type == 1 }">selected=""</c:if> value="1">移动</option>
+							<option <c:if test="${ packageObj.type == 2 }">selected=""</c:if> value="2">联通</option>
+							<option <c:if test="${ packageObj.type == 3 }">selected=""</c:if> value="3">电信</option>
 						</select>
 					</div>
 				</div>
@@ -59,16 +62,16 @@ form {
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
 						<select name="locationType" lay-verify="" lay-search>
-							<option value="1">全国流量</option>
-							<option value="2">省内流量</option>
+							<option <c:if test="${ packageObj.locationType == 1 }">selected=""</c:if> value="1">全国流量</option>
+							<option <c:if test="${ packageObj.locationType == 2 }">selected=""</c:if> value="2">省内流量</option>
 						</select>
 					</div>
 				</div>
 			</div>
 			<div class="layui-form-item" pane="">
-				<label class="layui-form-label">原始复选框</label>
+				<label class="layui-form-label">支持地区</label>
 				<div class="layui-input-block">
-					<input type="checkbox" title="全国" value="全国" name="all" lay-skin="primary"
+					<input type="checkbox" title="全国" <c:if test="${ packageObj.locations == '全国' }">checked=""</c:if> value="全国" name="all" lay-skin="primary"
 						lay-filter="allChoose">
 				</div>
 			</div>
@@ -77,6 +80,21 @@ form {
 				<div class="layui-input-block">
 					<div id="province" style="width: 400px;">
 					
+						<c:forEach var="item" items="${province }">
+							<span style="width : 100px;">
+								<c:choose>
+									<c:when test="${fn:contains(packageObj.locations,item)}">
+										<input type="checkbox" checked="" value="${item}"  data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
+									</c:when>
+									<c:when test="${fn:contains(packageObj.locations,'全国')}">
+										<input type="checkbox" checked="" value="${item}"  data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
+									</c:when>
+									<c:otherwise>
+										<input type="checkbox" value="${item}" data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
+									</c:otherwise>
+								</c:choose>
+							</span>
+						</c:forEach>
 					</div>
 				</div>
 			</div>
@@ -84,7 +102,7 @@ form {
 				<div class="layui-inline">
 					<label class="layui-form-label">备注</label>
 					<div class="layui-input-inline">
-						<input type="text" name="memo"  placeholder="请输入备注" autocomplete="off" class="layui-input">
+						<input type="text" name="memo" value="${packageObj.memo }"  placeholder="请输入备注" autocomplete="off" class="layui-input">
 					</div>
 				</div>
 			</div>

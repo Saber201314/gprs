@@ -22,12 +22,12 @@ import com.shlr.gprs.utils.okhttp.HttpUtils;
  */
 @Controller
 public class TestController {
-	@SuppressWarnings("deprecation")
+	
 	@RequestMapping(value="/test")
-	@ResponseBody
-	public String test(HttpServletRequest request){
+	public String test(HttpServletRequest request,Model model){
 		String readContent = HttpUtils.readContent(request);
 		System.out.println(readContent);
+		model.addAttribute("packageObj", "123");
 		return "success";
 	}
 }

@@ -9,6 +9,10 @@ layui.define([ 'base', ], function(exports) {
 
 	$(function() {
 		initChannelList();
+		
+		console.log($('.showChannelInfo'));
+		
+		
 	})
 	/*
 	 * 拦截表单提交
@@ -58,7 +62,7 @@ layui.define([ 'base', ], function(exports) {
 							html.push('<td>启用</td>');
 						}
 						html.push('<td>编辑</td>');
-						html.push('<td>详情</td>');
+						html.push('<td><button data-id="'+item.id+'"  class="layui-btn layui-btn-mini showChannelInfo" >详情</button></td>');
 						html.push('</tr>');
 					});
 					
@@ -70,12 +74,58 @@ layui.define([ 'base', ], function(exports) {
 					form.render('checkbox');
 				}
 
+				$('.showChannelInfo').click(function(){
+					var id=$(this).data('id');
+					showChannelInfo(id);
+				})
 			},
 			error : function() {
 				top.layer.msg('连接服务器失败');
 				top.layer.close(index);
 			}
 		})
+	}
+	
+	function showChannelInfo(id){    
+		
+		$.ajax({
+			url:"/admin/showSingleChannelInfo.action",
+			type:'get',
+	 		data: 'id='+id,
+	 		dataType:"json",
+	 		success:function(data){
+			    layer.open({
+				    type: 1,
+					title:'通道详细信息',
+					area: ['700px','600px'],
+					skin:'layui-layer-molv',
+					shadeClose: true,
+					content: $('#single-page-content')			
+			    });	 		  		 
+			    initChannelDetail(data);
+	 		},
+	 		error:function(){
+	 			top.layer.msg('服务器连接失败');
+	 		}
+		});	
+	}	
+		
+	function initChannelDetail(data){
+		$("#single-page-content tbody").empty();
+		if(data && data.length>0){
+	     	var html = [];
+	     	for(var i =0;i<data.length;i++){
+	     		html.push("<tr>");		     		
+	     		html.push("<td>"+data[i].name+"</td>");	
+	     		html.push("<td>"+data[i].price+"</td>");
+	     		html.push("<td>"+data[i].discount+"</td>");
+	     		html.push("<td>"+data[i].actualPrice+"</td>");
+	     		html.push("<td>"+data[i].level+"</td>");	     		
+	     		html.push("<td>"+data[i].channelName+"</td>");		     		
+	     		html.push("</tr>");
+	     	}	
+	     	$("#single-page-content tbody").append(html.join(""));	
+		}		
 	}
 
 	exports('channel');
