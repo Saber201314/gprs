@@ -6,13 +6,19 @@
 <jsp:include page="/cssjs.jsp"></jsp:include>
 <title></title>
 </head>
+<style>
+body{
+	padding: 10 15px;
+}
+</style>
 <body>
 	
 	<button class="layui-btn layui-btn-mini getallcheck" >删除</button>
 	<a href="publishChannelTemplateCode.action?templateId=${templateId}">
-	<button class="layui-btn layui-btn-mini">添加流量包</button>
+	<button class="layui-btn layui-btn-mini">添加流量包编码</button>
 	</a>
 	<div class="layui-form">
+		<input type="hidden" name="templateId" value="${templateId}"/>
 		<table class="layui-table">
 			<thead>
 				<tr>
@@ -38,8 +44,8 @@
 					</td>
 					<td>${item.location }</td>
 					<td>
-						<c:if test="${item.locationType == 1 }">全国流量</c:if>
-						<c:if test="${item.locationType == 2}">省内流量</c:if>
+						<c:if test="${item.locationType == 0 }">全国流量</c:if>
+						<c:if test="${item.locationType == 1}">省内流量</c:if>
 					</td>
 					<td>${item.amount} </td>
 					<td>编辑</td>

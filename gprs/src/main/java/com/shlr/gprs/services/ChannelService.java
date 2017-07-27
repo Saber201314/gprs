@@ -44,18 +44,20 @@ public class ChannelService implements DruidStatInterceptor{
 	}
 	
 	public Channel findById(Integer id){
-		return ChannelCache.idMap.get(id);
+		return channelMapper.selectByPrimaryKey(id);
 	}
-	
-	
+	public Integer update(Channel channel){
+		return channelMapper.updateByPrimaryKeySelective(channel);
+		
+	}
 	public Map<Integer, Integer> qaueryMonthAmount(){
 		Map<Integer, Integer> monthMap = new HashMap<Integer, Integer>();
 
 	    Calendar calendar = Calendar.getInstance();
-	    calendar.set(5, 1);
-	    calendar.set(11, 0);
-	    calendar.set(12, 0);
-	    calendar.set(13, 0);
+	    calendar.set(Calendar.DATE, 1);
+	    calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
 	    
 	    List<ChargeOrder> qaueryMonthAmount = chargeOrderMapper.qaueryMonthAmount(calendar.getTime());
 	    

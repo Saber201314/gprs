@@ -7,7 +7,9 @@
 </head>
 <style>
 
-
+body{
+	padding: 0 15px;
+}
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
 

@@ -10,20 +10,20 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
-* @author xucong
-* @version 创建时间：2017年4月27日 下午9:11:25
-* 
-*/
-@Table(name="g_gprs_package")
-public class GprsPackage implements Serializable,Comparable<GprsPackage>{
+ * @author xucong
+ * @version 创建时间：2017年4月27日 下午9:11:25
+ * 
+ */
+@Table(name = "g_gprs_package")
+public class GprsPackage implements Serializable, Comparable<GprsPackage> {
 	/**
 	 * 
 	 */
 	@Transient
 	private static final long serialVersionUID = -2157343875027661620L;
-	
+
 	@Id
-	@GeneratedValue(generator="JDBC")
+	@GeneratedValue(generator = "JDBC")
 	private Integer id;
 	private String name;
 	private String alias;
@@ -32,9 +32,9 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 	private Integer type;
 	private String memo;
 	private Date optionTime;
-	private Integer locationType;
+	private Integer range;
 	private String locations;
-	private Integer status = 0;
+	private Integer status;
 	@Transient
 	private Double discount;
 	@Transient
@@ -49,7 +49,7 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 	private String channelName;
 	@Transient
 	private Integer nBill;
-	
+
 	/**
 	 * @return the id
 	 */
@@ -57,18 +57,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return id;
 	}
 
-
-
-
 	/**
-	 * @param id the id to set
+	 * @param id
+	 *            the id to set
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
-
-
 
 	/**
 	 * @return the name
@@ -77,18 +72,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return name;
 	}
 
-
-
-
 	/**
-	 * @param name the name to set
+	 * @param name
+	 *            the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
-
 
 	/**
 	 * @return the alias
@@ -97,18 +87,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return alias;
 	}
 
-
-
-
 	/**
-	 * @param alias the alias to set
+	 * @param alias
+	 *            the alias to set
 	 */
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
-
-
-
 
 	/**
 	 * @return the amount
@@ -117,18 +102,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return amount;
 	}
 
-
-
-
 	/**
-	 * @param amount the amount to set
+	 * @param amount
+	 *            the amount to set
 	 */
 	public void setAmount(Integer amount) {
 		this.amount = amount;
 	}
-
-
-
 
 	/**
 	 * @return the money
@@ -137,18 +117,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return money;
 	}
 
-
-
-
 	/**
-	 * @param money the money to set
+	 * @param money
+	 *            the money to set
 	 */
 	public void setMoney(Double money) {
 		this.money = money;
 	}
-
-
-
 
 	/**
 	 * @return the type
@@ -157,18 +132,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return type;
 	}
 
-
-
-
 	/**
-	 * @param type the type to set
+	 * @param type
+	 *            the type to set
 	 */
 	public void setType(Integer type) {
 		this.type = type;
 	}
-
-
-
 
 	/**
 	 * @return the memo
@@ -177,18 +147,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return memo;
 	}
 
-
-
-
 	/**
-	 * @param memo the memo to set
+	 * @param memo
+	 *            the memo to set
 	 */
 	public void setMemo(String memo) {
 		this.memo = memo;
 	}
-
-
-
 
 	/**
 	 * @return the optionTime
@@ -197,38 +162,21 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return optionTime;
 	}
 
-
-
-
 	/**
-	 * @param optionTime the optionTime to set
+	 * @param optionTime
+	 *            the optionTime to set
 	 */
 	public void setOptionTime(Date optionTime) {
 		this.optionTime = optionTime;
 	}
 
-
-
-
-	/**
-	 * @return the locationType
-	 */
-	public Integer getLocationType() {
-		return locationType;
+	public Integer getRange() {
+		return range;
 	}
 
-
-
-
-	/**
-	 * @param locationType the locationType to set
-	 */
-	public void setLocationType(Integer locationType) {
-		this.locationType = locationType;
+	public void setRange(Integer range) {
+		this.range = range;
 	}
-
-
-
 
 	/**
 	 * @return the locations
@@ -237,18 +185,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return locations;
 	}
 
-
-
-
 	/**
-	 * @param locations the locations to set
+	 * @param locations
+	 *            the locations to set
 	 */
 	public void setLocations(String locations) {
 		this.locations = locations;
 	}
-
-
-
 
 	/**
 	 * @return the status
@@ -257,18 +200,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return status;
 	}
 
-
-
-
 	/**
-	 * @param status the status to set
+	 * @param status
+	 *            the status to set
 	 */
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-
-
-
 
 	/**
 	 * @return the discount
@@ -277,18 +215,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return discount;
 	}
 
-
-
-
 	/**
-	 * @param discount the discount to set
+	 * @param discount
+	 *            the discount to set
 	 */
 	public void setDiscount(Double discount) {
 		this.discount = discount;
 	}
-
-
-
 
 	/**
 	 * @return the paymoney
@@ -297,18 +230,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return paymoney;
 	}
 
-
-
-
 	/**
-	 * @param paymoney the paymoney to set
+	 * @param paymoney
+	 *            the paymoney to set
 	 */
 	public void setPaymoney(Double paymoney) {
 		this.paymoney = paymoney;
 	}
-
-
-
 
 	/**
 	 * @return the level
@@ -317,18 +245,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return level;
 	}
 
-
-
-
 	/**
-	 * @param level the level to set
+	 * @param level
+	 *            the level to set
 	 */
 	public void setLevel(Double level) {
 		this.level = level;
 	}
-
-
-
 
 	/**
 	 * @return the nSel
@@ -337,18 +260,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return nSel;
 	}
 
-
-
-
 	/**
-	 * @param nSel the nSel to set
+	 * @param nSel
+	 *            the nSel to set
 	 */
 	public void setnSel(Integer nSel) {
 		this.nSel = nSel;
 	}
-
-
-
 
 	/**
 	 * @return the channelNames
@@ -357,18 +275,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return channelNames;
 	}
 
-
-
-
 	/**
-	 * @param channelNames the channelNames to set
+	 * @param channelNames
+	 *            the channelNames to set
 	 */
 	public void setChannelNames(List<String> channelNames) {
 		this.channelNames = channelNames;
 	}
-
-
-
 
 	/**
 	 * @return the channelName
@@ -377,18 +290,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return channelName;
 	}
 
-
-
-
 	/**
-	 * @param channelName the channelName to set
+	 * @param channelName
+	 *            the channelName to set
 	 */
 	public void setChannelName(String channelName) {
 		this.channelName = channelName;
 	}
-
-
-
 
 	/**
 	 * @return the nBill
@@ -397,18 +305,13 @@ public class GprsPackage implements Serializable,Comparable<GprsPackage>{
 		return nBill;
 	}
 
-
-
-
 	/**
-	 * @param nBill the nBill to set
+	 * @param nBill
+	 *            the nBill to set
 	 */
 	public void setnBill(Integer nBill) {
 		this.nBill = nBill;
 	}
-
-
-
 
 	@Override
 	public int compareTo(GprsPackage o) {

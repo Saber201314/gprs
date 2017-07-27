@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+  <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+
+    <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+      <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+    </plugin>
+
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                    connectionURL="jdbc:mysql://118.89.103.198:3306/test"
+                    userId="xucong"
+                    password="xc886696">
+    </jdbcConnection>
+
+    <javaModelGenerator targetPackage="com.shlr.gprs.generator.model" targetProject="C:\Users\Administrator\git\gprs\gprs\src\main\java"/>
+
+    <sqlMapGenerator targetPackage="m"  targetProject="C:\Users\Administrator\git\gprs\gprs\src\main\resources"/>
+
+    <javaClientGenerator targetPackage="com.shlr.gprs.generator.mapper" targetProject="C:\Users\Administrator\git\gprs\gprs\src\main\java" type="XMLMAPPER" />
+
+    <table tableName="%" >
+      <generatedKey column="id" sqlStatement="Mysql" />
+    </table>
+  </context>
+</generatorConfiguration>

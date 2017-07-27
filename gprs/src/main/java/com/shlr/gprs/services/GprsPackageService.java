@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageRowBounds;
-import com.shlr.gprs.cache.GprsPackageCache;
 import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.dao.GprsPackageMapper;
 import com.shlr.gprs.domain.GprsPackage;
@@ -27,17 +26,12 @@ import tk.mybatis.mapper.entity.Example;
 @Service
 public class GprsPackageService implements DruidStatInterceptor {
 	@Resource
+	UserService userService;
+	@Resource
 	PricePaperService pricePaperService;
 	@Resource
 	GprsPackageMapper gprsPackageMapper;
 
-	public List<GprsPackage> getPackageList(Integer userid) {
-		Users users = UsersCache.idMap.get(userid);
-		if (users == null) {
-			return new ArrayList<GprsPackage>();
-		}
-		return getPackageListByPaperId(users.getPaperId());
-	}
 	public Integer add(GprsPackage gprsPackage){
 		return gprsPackageMapper.insertSelective(gprsPackage);
 	}
@@ -49,11 +43,12 @@ public class GprsPackageService implements DruidStatInterceptor {
 		
 	}
 	public List<GprsPackage> getPackageListByPaperId(Integer paperId) {
-		List<GprsPackage> packageList = new ArrayList<GprsPackage>();
+		
 		PricePaper pricePaper = pricePaperService.findById(paperId);
 		if (pricePaper == null) {
-			return packageList;
+			return null;
 		}
+		List<GprsPackage> packageList = new ArrayList<GprsPackage>();
 		BigDecimal b3 = new BigDecimal("10");
 		String[] items = pricePaper.getItems().split(",");
 		for (String item : items) {
@@ -76,8 +71,8 @@ public class GprsPackageService implements DruidStatInterceptor {
 	public List<GprsPackage> listAll(){
 		return gprsPackageMapper.selectAll();
 	}
-	public List<GprsPackage> listByPage(Example example,Integer pageNo){
-		List<GprsPackage> selectByExampleAndRowBounds = gprsPackageMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+	public List<GprsPackage> listByPage(Example example,Integer pageNo,Integer pageSize){
+		List<GprsPackage> selectByExampleAndRowBounds = gprsPackageMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*pageSize, pageSize));
 		return selectByExampleAndRowBounds;
 	}
 	

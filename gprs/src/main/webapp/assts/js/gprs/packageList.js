@@ -9,6 +9,40 @@ layui.define([ 'base', ], function(exports) {
 
 	$(function() {
 		initPackageList();
+		form.on('checkbox(allChoose)', function(data) {
+			var child = $('#province input[type="checkbox"]');
+			child.each(function(index, item) {
+				item.checked = data.elem.checked;
+			});
+			form.render('checkbox');
+		});
+	})
+	/*
+	 * 拦截表单提交
+	 * 
+	 * 
+	 */
+	form.on('submit(package-submit)', function(data) {
+		$.ajax({
+			url: "/admin/addPackage.action",
+			type: "post",
+			data : $('form').serialize(),
+			dataType : 'json',
+			cache: false,
+			success: function(data) {
+				if(data && data.success){
+					top.layer.msg(data.msg);
+					window.location.href='/view/admin/package/packageList.jsp';
+				}else{
+					top.layer.msg(data.msg);
+				}
+			},
+			error: function() {
+				top.layer.msg('连接服务器失败');
+				//top.window.location = "/login.jsp";
+			}
+		});
+		return false;
 	})
 	/*
 	 * 拦截表单提交
@@ -50,9 +84,9 @@ layui.define([ 'base', ], function(exports) {
 							html.push('<td>电信</td>');
 						}
 						var locationType=item.locationType;
-						if(locationType == 1){
+						if(locationType == 0){
 							html.push('<td>全国流量</td>');
-						}else if(locationType == 2){
+						}else if(locationType == 1){
 							html.push('<td>省内流量</td>');
 						}
 						html.push('<td>'+item.locations+'</td>');

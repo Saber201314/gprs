@@ -9,10 +9,6 @@ layui.define([ 'base', ], function(exports) {
 
 	$(function() {
 		initChannelList();
-		
-		console.log($('.showChannelInfo'));
-		
-		
 	})
 	/*
 	 * 拦截表单提交
@@ -61,8 +57,8 @@ layui.define([ 'base', ], function(exports) {
 						}else{
 							html.push('<td>启用</td>');
 						}
-						html.push('<td>编辑</td>');
-						html.push('<td><button data-id="'+item.id+'"  class="layui-btn layui-btn-mini showChannelInfo" >详情</button></td>');
+						html.push('<td><a href="/admin/editChannel.action?channelId='+item.id+'"><button class="layui-btn layui-btn-mini">编辑</button></a></td>');
+						html.push('<td><button data-id="'+item.id+'" class="layui-btn layui-btn-mini showChannelInfo" >详情</button></td>');
 						html.push('</tr>');
 					});
 					
@@ -87,7 +83,6 @@ layui.define([ 'base', ], function(exports) {
 	}
 	
 	function showChannelInfo(id){    
-		
 		$.ajax({
 			url:"/admin/showSingleChannelInfo.action",
 			type:'get',
@@ -98,6 +93,7 @@ layui.define([ 'base', ], function(exports) {
 				    type: 1,
 					title:'通道详细信息',
 					area: ['700px','600px'],
+					offset: '100px',
 					skin:'layui-layer-molv',
 					shadeClose: true,
 					content: $('#single-page-content')			

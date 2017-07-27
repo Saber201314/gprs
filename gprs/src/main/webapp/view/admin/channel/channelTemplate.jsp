@@ -5,6 +5,11 @@
 <jsp:include page="/cssjs.jsp"></jsp:include>
 <title></title>
 </head>
+<style>
+body{
+	padding: 0 15px;
+}
+</style>
 <body>
 	<fieldset class="layui-elem-field" style="margin-top: 5px;">
 		<form class="layui-form" action="">
@@ -39,6 +44,7 @@
 			</colgroup>
 			<thead>
 				<tr>
+					<th>编号</th>
 					<th>名称</th>
 					<th>用户名</th>
 					<th>密码</th>

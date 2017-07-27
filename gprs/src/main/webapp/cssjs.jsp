@@ -9,7 +9,8 @@
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"/>
 <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css"/>
-<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+<script src="/assts/js/jquery-1.9.1.min.js"></script>
+<script src='/assts/js/jquery.particleground.min.js'></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   
 <style>

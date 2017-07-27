@@ -9,7 +9,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.PayLog;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.listenner.WebApplicationContextManager;
@@ -25,9 +27,9 @@ public class PayManager {
 	
 	Logger logger=LoggerFactory.getLogger(PayManager.class);
 	
-	private ConcurrentHashMap<Integer, Double> premoneyMap = new ConcurrentHashMap<Integer, Double>();
+	
 	private ConcurrentHashMap<Integer, Double> moneyMap = new ConcurrentHashMap<Integer, Double>();
-	private static LinkedBlockingQueue<Object> paytaskList = new LinkedBlockingQueue<Object>();
+	private LinkedBlockingQueue<Object> paytaskList = new LinkedBlockingQueue<Object>();
 	
 	PayLogService payLogService;
 	UserService userService;
@@ -40,19 +42,20 @@ public class PayManager {
 		static PayManager payManager=new PayManager();
 	}
 	public void init() {
+		long start = System.currentTimeMillis();
+		logger.info("{} initialization started",this.getClass().getSimpleName());
+		
 		payLogService = WebApplicationContextManager.getApplicationContext().getBean(PayLogService.class);
 		userService =  WebApplicationContextManager.getApplicationContext().getBean(UserService.class);
 		List<Users> list = userService.list();
 		for (Users users : list) {
-			moneyMap.put(users.getId(), Double.valueOf(users.getInitMoney()));
-			premoneyMap.put(users.getId(), Double.valueOf(users.getInitMoney()));
+			moneyMap.put(users.getId(), users.getMoney());
 		}
-		logger.info("pay manager inited..........");
 		ThreadManager.getInstance().execute(new Runnable() {
 			public void run() {
 				while (true)
 					try {
-						Object task = PayManager.paytaskList.take();
+						Object task = paytaskList.take();
 						if ((task instanceof PayLog)) {
 							PayManager.getInstance().pay((PayLog) task);
 							continue;
@@ -64,99 +67,66 @@ public class PayManager {
 						}
 					} catch (Exception e) {
 						logger.error("PayManager", e);
-						//System.err.println(e.toString());
 					}
 			}
 		});
+		
+		long end = System.currentTimeMillis();
+		logger.info("{} initialization completed in {} ms ",this.getClass().getSimpleName(),end-start);
 	}
 	/**
-	 * 充值中
+	 * 充值扣费
 	 * 
 	 * @param payLog
 	 */
-	public synchronized void pay(PayLog payLog) {
-		Double userMoney = Double.valueOf(moneyMap.get(payLog.getUserId())
-				- payLog.getMoney());
-		moneyMap.put(payLog.getUserId(), userMoney);
-		userService.updateMoney(payLog.getUserId(), 0.0D - payLog.getMoney());
-		// 消费明细充值中的状态：0
-		payLog.setStatus(0);
-		payLog.setOptionTime(new Date());
-		payLog.setMoney(payLog.getMoney());
+	@Transactional
+	public void pay(PayLog payLog) {
+		Double userMoney = updateAgentBalance(payLog.getUserId(), 0.0D - payLog.getMoney());
 		payLog.setBalance(Math.round(userMoney * 100) / 100.0);
-		payLog.setCreateTime(System.currentTimeMillis());
 		payLogService.saveOrUpdate(payLog);
 	}
 	/**
-	 * 充值失败
+	 * 充值退款
 	 * @param payLog
 	 */
-	public synchronized void backMoney(PayLog payLog) {
-		Double userMoney = Double.valueOf(moneyMap.get(payLog.getUserId())
-				+ payLog.getMoney());
-		moneyMap.put(payLog.getUserId(), userMoney);
+	@Transactional
+	public void backMoney(PayLog payLog) {
 		// 更新代理商余额
-		userService.updateMoney(payLog.getUserId(), payLog.getMoney());
-
-		// 消费明细充值失败的状态：-2
-		payLog.setStatus(-2);
-		payLog.setCreateTime(System.currentTimeMillis());
-		payLogService.saveOrUpdate(payLog);
-
-		// 新增一条记录记为退款状态
-		PayLog newPayLog = new PayLog();
-		newPayLog.setOrderId(payLog.getOrderId());
-		newPayLog.setAgentOrderId(payLog.getAgentOrderId());
-		newPayLog.setAccount(payLog.getAccount());
-		newPayLog.setAgent(payLog.getAgent());
-		newPayLog.setDiscount(payLog.getDiscount());
-		newPayLog.setCreateTime(System.currentTimeMillis());
-		Double profit = payLog.getProfit();
-		if(profit != null){
-			newPayLog.setProfit(0.0D - payLog.getProfit());			
-		}
-		newPayLog.setMobile(payLog.getMobile());
-		newPayLog.setMemo(payLog.getMemo());
-		Double money = payLog.getMoney();
-		if(money != null){
-			newPayLog.setMoney(0.0D - money);			
-		}
-		newPayLog.setType(payLog.getType());
-		newPayLog.setUserId(payLog.getUserId());
-		// 消费明细已经退款的状态：-1
-		newPayLog.setStatus(-1);
-		newPayLog.setOptionTime(new Date());
-
+		Double userMoney = updateAgentBalance(payLog.getUserId(), payLog.getMoney());
 		// 设置消费明细余额
-		newPayLog.setBalance(Math.round(userMoney * 100) / 100.0);
-		payLogService.saveOrUpdate(newPayLog);
+		payLog.setBalance(Math.round(userMoney * 100) / 100.0);
+		payLogService.saveOrUpdate(payLog);
 	}
-	
-	
-	public void addToPay(Object pay) {
-		try {
-			paytaskList.put(pay);
-		} catch (InterruptedException e) {
-			logger.error("error to add paytaskList ", e);
+	public void putAgentToMap(Users users){
+		moneyMap.put(users.getId(), users.getMoney());
+	}
+	public Double getUserMoney(int userId) {
+		Double money = (Double) moneyMap.get(Integer.valueOf(userId));
+		if (money != null) {
+			return money;
 		}
+		return null;
 	}
-	public void chargeSuccess(PayLog payLog){
-		payLog.setStatus(1);
-		payLogService.update(payLog);
-	}
-	public double getUserMoney(int userId) {
-		Double money = (Double) premoneyMap.get(Integer.valueOf(userId));
-		if (money == null) {
-			return 0.0D;
+	public synchronized Double updateAgentBalance(Integer userId,Double money){
+		Double userMoney=null;
+		Integer updateMoney = userService.updateMoney(userId, money);
+		if(updateMoney > 0){
+			userMoney= Double.valueOf(moneyMap.get(userId) + money);
+			moneyMap.put(userId, userMoney);
 		}
-		return money.doubleValue();
+		return userMoney;
 	}
+	//验证余额是否满足扣费
 	public synchronized boolean validBalance(Integer id,Double money){
-		if (getUserMoney(id) < money) {
-			return false;
+		Double userMoney = getUserMoney(id);
+		if(userMoney != null){
+			if (userMoney < money) {
+				return false;
+			}else{
+				return true;
+			}
 		}else{
-			premoneyMap.put(id, getUserMoney(id) - money);
-			return true;
+			return false;
 		}
 	}
 }

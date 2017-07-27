@@ -49,6 +49,8 @@ public class Channel implements Serializable {
 	@Column
 	private Integer status;
 	@Transient
+	private Double inDiscount;
+	@Transient
 	private String templateName;
 
 	public Integer getId() {
@@ -130,13 +132,20 @@ public class Channel implements Serializable {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+	
+	public Double getInDiscount() {
+		return inDiscount;
+	}
+
+	public void setInDiscount(Double inDiscount) {
+		this.inDiscount = inDiscount;
+	}
 
 	public String getTemplateName() {
 		ChannelTemplate channelTemplate = (ChannelTemplate) ChannelTemplateCache.identityMap.get(this.template);
 		if (channelTemplate == null) {
 			return null;
 		}
-
 		return channelTemplate.getName();
 	}
 

@@ -1,13 +1,14 @@
 /**
  * 右键菜单dom
  */
-var rightMenu = "<div id=\"titleClickMenu\" class=\"layui-layer layui-layer-page layui-layer-dir layer-anim\" style=\"color:#009688;z-index: 19891015;display:none;\">"
+var rightMenu = 
+	"<div id=\"titleClickMenu\" class=\"layui-layer layui-layer-page layui-layer-dir layer-anim\" style=\"color:#009688;z-index: 19891015;display:none;\">"
 	+"<div id=\"\" class=\"layui-layer-content\">"
 	+"<ul class=\"layui-layer-wrap\" style=\"display: block;\">"
-	+"<li id=\"closeAll\"><a href=\"#\"><i style=\"color:#009688;line-height: 26px;\" class=\"fa fa-times-circle-o\"></i><cite>关闭全部</cite></a></li>"
-	+"<li id=\"closeOther\"><a href=\"#\"><i style=\"color:#009688;line-height: 26px;\" class=\"fa fa-times-circle\"></i><cite>关闭其他</cite></a></li>"
-	+"<li id=\"openNew\"><a href=\"#\"><i style=\"color:#009688;line-height: 26px;\" class=\"fa fa-external-link\"></i><cite>新窗口打开</cite></a></li>"
-	+"<li id=\"reflesh\"><a href=\"#\"><i style=\"color:#009688;line-height: 26px;\" class=\"fa fa-refresh\"></i><cite>刷新</cite></a></li>"
+	+"<li id=\"closeAll\"><a href=\"#\"><i class=\"layui-icon\">&#x1006;</i><cite>关闭全部</cite></a></li>"
+	+"<li id=\"closeOther\"><a href=\"#\"><i class=\"layui-icon\">&#x1007;</i><cite>关闭其他</cite></a></li>"
+	+"<li id=\"openNew\"><a href=\"#\"><i class=\"layui-icon\">&#xe609;</i><cite>新窗口打开</cite></a></li>"
+	+"<li id=\"reflesh\"><a href=\"#\"><i class=\"layui-icon\">&#x1002;</i><cite>刷新</cite></a></li>"
 	+"</ul>"
 	+"</div>"
 	+"</div>";
@@ -35,7 +36,7 @@ function Tab(mainId) {
 		}
 	};
 	
-	var This = this;
+	/*var This = this;
 	layui.use('element', function(){
 		var element = layui.element();
 		element.on('tab('+mainId+')', function(data) {
@@ -50,7 +51,7 @@ function Tab(mainId) {
 			}
 			
 		});
-	});
+	});*/
 }
 
 /**
@@ -132,19 +133,19 @@ Tab.prototype.closeOther = function(id) {
 /**
  * 添加一个标签
  */
-Tab.prototype.add = function(id,icon,title,url) {
+Tab.prototype.add = function(id,title,url) {
 	var element = layui.element();
 	//如果已经存在 切换显示
 	if($("#title_"+id)[0]) {
-		element.tabChange('content_tab',id);
+		element.tabChange(this.mainId,id);
 		$("#iframe_"+id).attr("src",url);
 		return ;
 	}
 	this.tabsId[this.tabsId.length] = id;
 	
-	element.tabAdd('content_tab', {
-		title:'<span id="title_'+id+'" icon="'+icon+'" title="'+title+'" url="'+url+'" ><i class="'+icon+'" style="color:#009688"></i>'+title+"</span>",
-		content: '<div class="layui-body layui-tab-content site-demo site-demo-body"><div class="layui-main"><iframe id="iframe_'+id+'" frameborder="0" scrolling="no" onload="setIframeHeight(this)" style="width: 100%;" src="'+url+'"/></div></div>',
+	element.tabAdd(this.mainId, {
+		title:'<span id="title_' + id + '"  url="'+url+'"  >' + title + ' </span>',
+		content: '<div class="layui-main"><iframe id="iframe_' + id + '" width="100%" height="100%" style="border:0;" src="/' + url + '" ></iframe></div>',
 		id:id
 	});
 	element.tabChange(this.mainId,id);
@@ -153,9 +154,9 @@ Tab.prototype.add = function(id,icon,title,url) {
 	
 	var This = this;
 	var clickDom = titleDom.parent();
-	clickDom.dblclick(function() {
+/*	clickDom.dblclick(function() {
 		This.reSizeContent();
-	});
+	});*/
 	
 	//如果是右击 显示右击菜单
 	clickDom.mouseup(function(event) {
@@ -240,7 +241,6 @@ function setIframeHeight(iframe) {
 		}
 	}
 }
-
 /**
  * 屏蔽浏览器右击事件
  */

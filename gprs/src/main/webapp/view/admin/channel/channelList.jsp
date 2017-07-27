@@ -5,6 +5,11 @@
 <jsp:include page="/cssjs.jsp"></jsp:include>
 <title></title>
 </head>
+<style>
+body{
+	padding: 0 15px;
+}
+</style>
 <body>
 	<fieldset class="layui-elem-field" style="margin-top: 5px;">
 		<form class="layui-form" action="">
@@ -34,8 +39,8 @@
 			</div>
 		</form>
 	</fieldset>
-	<button class="layui-btn layui-btn-mini " >删除</button>
-	<button class="layui-btn layui-btn-mini addChannel">添加通道</button>
+	<!-- <button class="layui-btn layui-btn-mini " >删除</button>
+	<button class="layui-btn layui-btn-mini addChannel">添加通道</button> -->
 	<div class="layui-form">
 		<table class="layui-table">
 			<thead>
@@ -60,7 +65,7 @@
 		<span id="page-total"></span>
 		<div id="pate"></div>
 	</div>
-	<div id="single-page-content" style="display: none;padding-left: 5px;padding-right: 5px;">
+	<div id="single-page-content" style="display: none; padding-left: 5px;padding-right: 5px;">
 		<table class="layui-table">
 			<colgroup>
 				<col width="150">

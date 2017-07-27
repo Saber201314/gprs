@@ -2,7 +2,7 @@
  * 通用的方法
  * 
  */
-layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
+layui.define(['jquery', 'form','laypage','laydate','layer','element','tree'], function(exports) {
 	var $ = layui.jquery;
 	var form = layui.form();
 	var laypage = layui.laypage;
@@ -22,15 +22,10 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 		});
 		
 	})
-	
-	
-	
-	
-	
-	
-	
 	var obj = {
-		
+		/*
+		 * 初始化省份
+		 */
 		initProvince : function(){
 			var province = [];
 			province.push('北京');
@@ -68,7 +63,9 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 			return province;
 		},
 		
-			
+		/*
+		 * 初始化时间控件
+		 */
 		inittime : function(pattern){
 			/*
 			 * 初始化开始结束时间
@@ -123,9 +120,6 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 							$('#pageNo').val(obj.curr);
 							callback.call(this,isinitpage);
 						}
-
-
-
 					}
 				});
 			}
@@ -137,20 +131,21 @@ layui.define(['jquery', 'form','laypage','laydate'], function(exports) {
 		initagent: function() {
 
 			$.ajax({
-				url: "/admin/query/userListByLevel.action",
+				url: "/admin/query/agentList.action",
 				type: "get",
 				dataType : 'json',
 				cache: false,
 				success: function(data) {
 					if (data && data.success) {
-						var list = data.module;
 						var options = [];
-						$.each(list, function(i, item) {
+						$.each(data.list, function(i, item) {
 							options.push('<option value="' + item.username + '">' + item.name + '</option>');
 						})
 						$('#agent').append(options);
 						form.render('select');
-					} 
+					}else{
+						top.layer.msg(data.msg);
+					}
 				},
 				error: function() {
 					top.layer.msg('连接服务器失败');

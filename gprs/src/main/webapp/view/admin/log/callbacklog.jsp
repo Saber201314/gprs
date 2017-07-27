@@ -4,6 +4,11 @@
 <head>
 <jsp:include page="/cssjs.jsp"></jsp:include>
 </head>
+<style>
+body{
+	padding: 0 15px;
+}
+</style>
 <body>
 	<fieldset class="layui-elem-field" style="margin-top: 5px;">
 		<form class="layui-form" action="">

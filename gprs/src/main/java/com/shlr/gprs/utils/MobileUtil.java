@@ -1,18 +1,24 @@
 package com.shlr.gprs.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.shlr.gprs.utils.okhttp.OkhttpUtils;
 import com.suwoit.json.util.StringUtils;
+import com.xiaoleilu.hutool.util.StrUtil;
 
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class MobileUtil {
-	private static Logger logger = Logger.getLogger(MobileUtil.class);
+	private static Logger logger = LoggerFactory.getLogger(MobileUtil.class);
 	private static String Mobile = "^1(([3][456789])|([5][012789])|([8][23478])|([4][7])|([7][8]))[0-9]{8}$";
 	private static String Unicom = "^1(([3][012])|([4][5])|([5][56])|([8][56])|([7][6]))[0-9]{8}$";
 
@@ -21,58 +27,53 @@ public class MobileUtil {
 				|| (mobile.charAt(0) != '1');
 	}
 
-	public static int checkType(String mobile) {
-		if (mobile.matches(Mobile))
+	public static int checkType(String catName) {
+		if (catName.equals("中国移动")){
 			return 1;
-		if (mobile.matches(Unicom)) {
+		}else if (catName.equals("中国联通")) {
 			return 2;
+		}else{
+			return 3;
 		}
-		return 3;
+		
 	}
 
-	public static String getAddress(String mobile) {
+	public static JSONObject getAddress(String mobile) {
 		if (isNotMobileNO(mobile)) {
-			return "";
+			return null;
 		}
 		Map<String,String> params = new HashMap<String,String>();
 		params.put("tel", mobile);
 		String url = "https://tcc.taobao.com/cc/json/mobile_tel_segment.htm";
 		String response=null;
-		try {
-			
-			response = OkhttpUtils.getInstance().get(url)
-				.params(params, true)
-				.execute().body().string();
-		} catch (IOException e) {
-			
-			
+		int count = 5 ;
+		while (count>0) {
 			try {
 				response = OkhttpUtils.getInstance().get(url)
-						.params(params, true)
-						.execute().body().string();
-			} catch (IOException e1) {
-				logger.error("mobile interface failed");
-				return "";
+					.params(params, true)
+					.execute().body().string();
+				count = 0;
+			} catch (IOException e) {
+				count--;
 			}
 		}
+		String province ="";
 		if (response!=null) {
-			int len = response.indexOf("province:");
-			if (len == -1) {
-				return "";
-			}
-			response = response.substring(len + 10);
-
-			len = response.indexOf(",");
-			if (len == -1) {
-				return "";
-			}
-			response = response.substring(0, len - 1);
+			String json = response.substring(response.indexOf("{"));
+			JSONObject jsonObj = JSON.parseObject(json);
+			return jsonObj;
 		}
 		
-		return response;
+		return null;
 	}
 
-	public static void main(String[] args) {
-		// System.out.println(checkType("18483228871"));
+	public static void main(String[] args) throws UnsupportedEncodingException {
+//		String address = getAddress("13545141090");
+//		System.out.println(address);
+		
+		
+		String a="æåçç¶æä¸ºåæº";
+		String str = StrUtil.str(a.getBytes("ISO-8859-1"), "UTF-8");
+		System.out.println(str);
 	}
 }

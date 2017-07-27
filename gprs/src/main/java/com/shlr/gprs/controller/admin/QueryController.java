@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -68,15 +69,17 @@ import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.CallbackService;
 import com.shlr.gprs.services.ChannelLogService;
 import com.shlr.gprs.services.ChannelResourceService;
+import com.shlr.gprs.services.ChannelService;
 import com.shlr.gprs.services.ChargeOrderService;
 import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.DecimalUtils;
+import com.shlr.gprs.utils.JSONUtils;
 import com.shlr.gprs.utils.StrUtils;
 import com.shlr.gprs.utils.TimeUtls;
 import com.shlr.gprs.vo.PayLogFmt;
-import com.shlr.gprs.vo.ResultBaseVO;
+import com.shlr.gprs.vo.ChargeResponsVO;
 
 import junit.framework.Assert;
 import net.sf.jxls.transformer.XLSTransformer;
@@ -96,6 +99,8 @@ public class QueryController {
 	
 	@Resource
 	UserService userService;
+	@Resource
+	ChannelService channelService;
 	@Resource
 	ChargeReportService chargeReportService;
 	@Resource
@@ -175,39 +180,21 @@ public class QueryController {
 	 * @param session
 	 * @throws IOException 
 	 */
-	@RequestMapping(value="/query/getCurrentChannelList.action",produces="application/json;charset=utf-8")
+	@RequestMapping(value="/query/getCurrentChannelList.action")
+	@ResponseBody
 	public String getCurrentChannelList(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
-		response.setContentType("application/json;charset=utf-8");
-		Collection<Channel> channelList = ChannelCache.idMap.values();
-		PrintWriter writer = null;
-		try {
-			writer = response.getWriter();
-		} catch (IOException e) {
-			logger.error(" getCurrentChannelList ", e);
-		}
-		if (writer!=null) {
-			writer.println(JSON.toJSONString(channelList));
-		}
-		return null;
+		List<Channel> list = channelService.list();
+		return JSON.toJSONString(list);
 	}
 	
 	
 	
 	
-	@RequestMapping(value="/layout/getCurrentChannelList.action",produces="application/json;charset=utf-8")
+	@RequestMapping(value="/layout/getCurrentChannelList.action")
+	@ResponseBody
 	public String getLayoutCurrentChannelList(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException{
-		response.setContentType("application/json;charset=utf-8");
-		Collection<Channel> channelList = ChannelCache.idMap.values();
-		PrintWriter writer = null;
-		try {
-			writer = response.getWriter();
-		} catch (IOException e) {
-			logger.error(" getCurrentChannelList ", e);
-		}
-		if (writer!=null) {
-			writer.println(JSON.toJSONString(channelList));
-		}
-		return null;
+		List<Channel> list = channelService.list();
+		return JSON.toJSONString(list);
 	}
 	
 	
@@ -348,24 +335,77 @@ public class QueryController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/query/userListByLevel.action")
-	public String userListByLevel(HttpSession session){
-		ResultBaseVO<Object> result=new ResultBaseVO<Object>();
+	@RequestMapping(value="/query/agentList.action")
+	public String userListByLevel(HttpSession session,
+			@RequestParam(value="username",required=false)String username,
+			@RequestParam(value="name",required=false)String name){
+		JSONObject result = new JSONObject();
 		Users currentUser = userService.getCurrentUser(session);
 		if (currentUser == null) {
-			result.addError("请登录");
+			result.put("success", false);
+			result.put("msg", "请登录");
 			return JSON.toJSONString(result);
 		}
-		
 		List<Users> userList=new ArrayList<Users>();
+		
 		if (currentUser.getType() == 1) {
-			userList = userService.listByCondition(new Example(Users.class));
+			Example example = new Example(Users.class);
+			Criteria createCriteria = example.createCriteria();
+			if(!StringUtils.isEmpty(username)){
+				createCriteria.andLike("username", "%"+username+"%");
+			}
+			if(!StringUtils.isEmpty(name)){
+				createCriteria.andLike("name", "%"+name+"%");
+			}
 			
-		} else {
-			userList.add(currentUser);
+			
+			createCriteria.andEqualTo("type", 2);
+			example.setOrderByClause(" id desc");
+			userList = userService.listByExample(example);
+			if(!CollectionUtils.isEmpty(userList)){
+				result.put("success", true);
+				result.put("list", userList);
+			}
+		}else{
+			result.put("success", false);
+			result.put("msg", "您没有权限查看");
 		}
-		result.setModule(userList);
-		return JSON.toJSONString(result);
+		return result.toJSONString();
+	}
+	@RequestMapping(value="/query/page/agentList.action")
+	@ResponseBody
+	public String agentList(HttpSession session,
+			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
+			@RequestParam(value="username",required=false)String username,
+			@RequestParam(value="name",required=false)String name){
+		JSONObject result = new JSONObject();
+		List<Users> userList=new ArrayList<Users>();
+		Users currentUser = userService.getCurrentUser(session);
+		if (currentUser.getType() == 1) {
+			Example example = new Example(Users.class);
+			Criteria createCriteria = example.createCriteria();
+			if(!StringUtils.isEmpty(username)){
+				createCriteria.andLike("username", "%"+username+"%");
+			}
+			if(!StringUtils.isEmpty(name)){
+				createCriteria.andLike("name", "%"+name+"%");
+			}
+			createCriteria.andEqualTo("type", 2);
+			example.setOrderByClause(" id desc");
+			userList = userService.listByExampleAndPage(example, Integer.valueOf(pageNo));
+			Page<Users> page = (Page<Users>) userList;
+			if(!CollectionUtils.isEmpty(userList)){
+				result.put("success", true);
+				result.put("list", userList);
+				result.put("total", page.getTotal());
+				result.put("pages", page.getPages());
+				result.put("pageno", page.getPageNum());
+			}
+		}else{
+			result.put("success", false);
+			result.put("msg", "您没有权限查看");
+		}
+		return JSONUtils.toJsonString(result);
 	}
 	
 	/**
@@ -569,7 +609,7 @@ public class QueryController {
 			
 		}
 		payBillMap.put("account", account);
-		payBillMap.put("name", UsersCache.usernameMap.get(account).getName());		
+		payBillMap.put("name", userService.findByUsername(account).getName());		
 		return JSON.toJSONString(payBillMap);
 	}
 	
@@ -643,15 +683,12 @@ public class QueryController {
 			    Cell cc1 = row.createCell(1);   
 			    cc1.setCellValue(fmt.typefmt(item.getType()));
 			    Cell cc2 = row.createCell(2);   
-			    cc2.setCellValue(item.getOrderId());
 			    Cell cc3 = row.createCell(3);   
 			    cc3.setCellValue(item.getMoney());
 			    Cell cc4 = row.createCell(4);   
 			    cc4.setCellValue(item.getBalance());
 			    Cell cc5 = row.createCell(5);   
-			    cc5.setCellValue(item.getDiscount());
 			    Cell cc6 = row.createCell(6);
-			    cc6.setCellValue(item.getAgentOrderId());
 			    Cell cc7 = row.createCell(7);  
 			    String[] split = item.getMemo().split("，");
 			    cc7.setCellValue(split[0]);

@@ -10,7 +10,5 @@
 </head>
 <body>
 	success
-	
-	${page.total}
 </body>
 </html>

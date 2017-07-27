@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -17,7 +19,8 @@ public class ChannelTemplate implements Serializable{
 	
 	@Transient
 	private static final long serialVersionUID = -491099403357429565L;
-	@Column
+	@Id
+	@GeneratedValue(generator= "JDBC")
 	private Integer id;
 	@Column
 	private String name;

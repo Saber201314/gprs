@@ -54,12 +54,6 @@ public class AgentUserController {
 		List<Users> listByExampleAndPage = userService.listByExampleAndPage(example, Integer.valueOf(pageNo));
 		Page<Users> page=(Page<Users>) listByExampleAndPage;
 		
-		for (Users users : listByExampleAndPage) {
-			PricePaper selectOneByPK = pricePaperService.findById(users.getPaperId());
-			if (selectOneByPK != null) {
-				users.setPaperName(selectOneByPK.getName());
-			}
-		}
 		model.addAttribute("usersList", listByExampleAndPage);
 		model.addAttribute("page", page);
 		return "agent/agent/agentList";

@@ -10,6 +10,35 @@ layui.define([ 'base', ], function(exports) {
 	$(function() {
 		initChannelTemplate();
 	})
+	
+	/*
+	 * 拦截表单提交
+	 * 
+	 * 
+	 */
+	form.on('submit(template-submit)', function(data) {
+		$.ajax({
+			url: "/admin/saveChannelTemplate.action",
+			type: "post",
+			data : $('form').serialize(),
+			dataType : 'json',
+			cache: false,
+			success: function(data) {
+				if(data && data.success){
+					top.layer.msg(data.msg);
+					window.location.href='/view/admin/channel/channelTemplate.jsp';
+				}else{
+					top.layer.msg(data.msg);
+				}
+			},
+			error: function() {
+				top.layer.msg('连接服务器失败');
+				//top.window.location = "/login.jsp";
+			}
+		});
+		return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
+	})
+	
 	/*
 	 * 拦截表单提交
 	 * 
@@ -36,6 +65,7 @@ layui.define([ 'base', ], function(exports) {
 				if (data && data.list.length > 0) {
 					$.each(data.list, function(index, item) {
 						html.push('<tr>');
+						html.push('<td>' + item.id + '</td>');
 						html.push('<td>' + item.name + '</td>');
 						html.push('<td>' + item.account + '</td>');
 						html.push('<td>' + item.password + '</td>');
@@ -50,7 +80,7 @@ layui.define([ 'base', ], function(exports) {
 						newDate.setTime(item.option_time);
 						html.push('<td>' + newDate.toLocaleString() + '</td>');
 						html.push('<td width="150"><a style="color : #009688;" href="/admin/query/channelTemplateCodeList.action?templateId='+item.id+'">流量包编号</a></td>');
-						html.push('<td width="50"><a style="color : #009688;" href="javascript:;">编辑</a></td>');
+						html.push('<td width="50"><a style="color : #009688;" href="/admin/editChannelTemplate.action?id='+item.id+'">编辑</a></td>');
 						html.push('</tr>');
 					});
 					

@@ -18,11 +18,11 @@ public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor {
 			Map<String, Object> attributes) throws Exception {
 		// TODO Auto-generated method stub
 		System.out.println("Before Handshake");
-		 // 解决The extension [x-webkit-deflate-frame] is not supported问题
-        if (request.getHeaders().containsKey("Sec-WebSocket-Extensions")) {
-            request.getHeaders().set("Sec-WebSocket-Extensions",
-                    "permessage-deflate");
-        }
+//		 // 解决The extension [x-webkit-deflate-frame] is not supported问题
+//        if (request.getHeaders().containsKey("Sec-WebSocket-Extensions")) {
+//            request.getHeaders().set("Sec-WebSocket-Extensions",
+//                    "permessage-deflate");
+//        }
 		return super.beforeHandshake(request, response, wsHandler, attributes);
 	}
 	@Override

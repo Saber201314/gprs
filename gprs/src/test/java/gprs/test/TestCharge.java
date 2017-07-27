@@ -1,14 +1,26 @@
 package gprs.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import javax.imageio.ImageIO;
+
+import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.config.Configuration;
+import org.mybatis.generator.config.xml.ConfigurationParser;
+import org.mybatis.generator.exception.XMLParserException;
+import org.mybatis.generator.internal.DefaultShellCallback;
 
 import com.alibaba.fastjson.JSON;
 import com.shlr.gprs.constants.Const;
@@ -27,13 +39,44 @@ public class TestCharge {
 	static Random random=new Random();
 	static OkHttpClient client = null;
 	static String url="http://xucongblog.com:8080";
-	static ExecutorService service=Executors.newFixedThreadPool(50);
-	public static void main(String[] args) throws IOException {
+	static ExecutorService service=Executors.newFixedThreadPool(20);
+	public static void main(String[] args) throws Exception {
 		client=new OkHttpClient.Builder()
-			.connectTimeout(30, TimeUnit.SECONDS)
-			.readTimeout(30, TimeUnit.SECONDS)
-			.writeTimeout(30, TimeUnit.SECONDS)
+			.connectTimeout(2, TimeUnit.SECONDS)
+			.readTimeout(2, TimeUnit.SECONDS)
+			.writeTimeout(2, TimeUnit.SECONDS)
 			.build();
+		
+		
+//		List<String> warnings = new ArrayList<String>();
+//		boolean overwrite = true;
+//		ConfigurationParser cp = new ConfigurationParser(warnings);
+//		Configuration config = cp.parseConfiguration(
+//				TestCharge.class.getResourceAsStream("/generatorConfig.xml"));
+//		DefaultShellCallback callback = new DefaultShellCallback(overwrite);
+//		MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
+//		myBatisGenerator.generate(null);
+		
+		int total = 0;
+		int match = 0;
+		Random random = new Random();
+		NumberFormat numberFormat = NumberFormat.getInstance();
+		// 设置精确到小数点后2位
+		numberFormat.setMaximumFractionDigits(2);
+		for (int i = 0; i < 1000000; i++) {
+			int nextInt = random.nextInt(100);
+			total++;
+			if(nextInt <= 4){
+				match++;
+				String result = numberFormat.format((float) match / (float) total * 100);
+				System.out.println(result+"% 中奖啦"+nextInt);
+			}else{
+				String result = numberFormat.format((float) match / (float) total * 100);
+				System.out.println(result+"% 再接再厉"+nextInt);
+			}
+		}
+		
+		
 		
 		
 //		charge();
@@ -42,41 +85,33 @@ public class TestCharge {
 //		test();
 //		testcharge();http://101.37.32.70
 		
-		fail();
+//		fail();
 	}
 	public static void fail(){
-		Request request=new Request.Builder()
-				.url("http://101.37.32.70") 
-				.get()
-				.header("keep-alive", "close")
-				.build();
-		for (int j = 0; j < 50; j++) {
-			service.execute(new Runnable() {
-				@Override
-				public void run() {
-					while (true) {
-						// TODO Auto-generated method stub
-						try {
-							Response execute = client.newCall(request).execute();
-							
-							if (execute.isSuccessful()) {
-								execute.close();
-								System.out.println(Const.getOrderid());
-							}
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							client=new OkHttpClient.Builder()
-									.connectTimeout(30, TimeUnit.SECONDS)
-									.readTimeout(30, TimeUnit.SECONDS)
-									.writeTimeout(30, TimeUnit.SECONDS)
-									.build();
-						}
-					}
-					
+		List<Integer> protList=new ArrayList<Integer>();
+		String port="80,8080,3128,8081,9080,1080,21,23,443,69,22,25,110,7001,9090,3389,1521,1158,2100,1433,3306";
+		String[] ports=port.split(",");
+		for (int i = 0; i <ports.length; i++) {
+			Request request=new Request.Builder()
+					.url("http://120.26.229.52:"+ports[i]) 
+					.get()
+					.build();
+			// TODO Auto-generated method stub
+			try {
+				Response execute = client.newCall(request).execute();
+				System.out.print(ports[i]);
+				if (execute.isSuccessful()) {
+					System.out.println("  打开");
+					execute.close();
+					protList.add(i);
+				}else{
+					System.out.println("  关闭");
 				}
-			});
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println(ports[i]+"  关闭");
+			}
 		}
-		
 	}
 	public static void testcharge(){
 		Map<String, String> param= new HashMap<String, String>();

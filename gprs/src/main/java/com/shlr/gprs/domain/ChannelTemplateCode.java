@@ -26,8 +26,8 @@ public class ChannelTemplateCode implements Serializable{
 	private Integer templateId;
 	@Column(name="type")
 	private Integer type;
-	@Column(name="location_type")
-	private Integer locationType;
+	@Column(name="range")
+	private Integer range;
 	@Column(name="location")
 	private String location;
 	@Column(name="amount")
@@ -52,11 +52,11 @@ public class ChannelTemplateCode implements Serializable{
 	public void setType(Integer type) {
 		this.type = type;
 	}
-	public Integer getLocationType() {
-		return locationType;
+	public Integer getRange() {
+		return range;
 	}
-	public void setLocationType(Integer locationType) {
-		this.locationType = locationType;
+	public void setRange(Integer range) {
+		this.range = range;
 	}
 	public String getLocation() {
 		return location;

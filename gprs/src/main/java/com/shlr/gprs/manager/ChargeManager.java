@@ -2,7 +2,11 @@ package com.shlr.gprs.manager;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,6 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.tomcat.jni.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -41,7 +46,8 @@ import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.okhttp.HttpUtils;
 import com.shlr.gprs.utils.okhttp.OkhttpUtils;
 import com.shlr.gprs.vo.BackMoneyVO;
-import com.shlr.gprs.vo.ResultBaseVO;
+import com.shlr.gprs.vo.ChargeResponsVO;
+import com.xiaoleilu.hutool.util.StrUtil;
 
 import okhttp3.Response;
 
@@ -50,21 +56,21 @@ import okhttp3.Response;
  */
 
 public class ChargeManager {
-	static Logger logger=LoggerFactory.getLogger(ChargeManager.class);
+	private Logger logger=LoggerFactory.getLogger(ChargeManager.class);
 	
-	static UserService userService;
-	static GprsPackageService gprsPackageService;
-	static ChargeOrderService chargeOrderService;
-	static PayLogService payLogService;
-	static CallbackService callbackService;
-	static PricePaperService pricePaperService;
-	static ChannelTemplateService channelTemplateService;
-	static ChannelService channelService;
+	private UserService userService;
+	private GprsPackageService gprsPackageService;
+	private ChargeOrderService chargeOrderService;
+	private PayLogService payLogService;
+	private CallbackService callbackService;
+	private PricePaperService pricePaperService;
+	private ChannelTemplateService channelTemplateService;
+	private ChannelService channelService;
 
-	public static List<ChannelManager> channelManagerList = new LinkedList<ChannelManager>();
-	public static Map<String, ChargeTemplate> chargeTemplateMap = new HashMap<String, ChargeTemplate>();
+	private List<Channel> channelList = new ArrayList<Channel>();
+	private Map<String, ChargeTemplate> chargeTemplateMap = new HashMap<String, ChargeTemplate>();
 	
-	private static LinkedBlockingQueue<ChargeOrder> ordertaskList = new LinkedBlockingQueue<ChargeOrder>();
+	private LinkedBlockingQueue<ChargeOrder> ordertaskList = new LinkedBlockingQueue<ChargeOrder>();
 
 	public static Boolean moreOperValidMap = false;
 
@@ -73,465 +79,316 @@ public class ChargeManager {
 	}
 
 	public static ChargeManager getInstance() {
-		userService = WebApplicationContextManager.getApplicationContext().getBean(UserService.class);
-		gprsPackageService = WebApplicationContextManager.getApplicationContext().getBean(GprsPackageService.class);
-		chargeOrderService = WebApplicationContextManager.getApplicationContext().getBean(ChargeOrderService.class);
-		payLogService = WebApplicationContextManager.getApplicationContext().getBean(PayLogService.class);
-		callbackService = WebApplicationContextManager.getApplicationContext().getBean(CallbackService.class);
-		pricePaperService = WebApplicationContextManager.getApplicationContext().getBean(PricePaperService.class);
-		channelTemplateService = WebApplicationContextManager.getApplicationContext()
-				.getBean(ChannelTemplateService.class);
-		channelService = WebApplicationContextManager.getApplicationContext().getBean(ChannelService.class);
+		
 		return ChargeManagerHolder.chargeManager;
 	}
-
-	public void init() throws Exception {
+	
+	public void init() {
+		long start = System.currentTimeMillis();
+		logger.info("{} initialization started",this.getClass().getSimpleName());
+		
+		userService = WebApplicationContextManager.getBean(UserService.class);
+		gprsPackageService = WebApplicationContextManager.getBean(GprsPackageService.class);
+		chargeOrderService = WebApplicationContextManager.getBean(ChargeOrderService.class);
+		payLogService = WebApplicationContextManager.getBean(PayLogService.class);
+		callbackService = WebApplicationContextManager.getBean(CallbackService.class);
+		pricePaperService = WebApplicationContextManager.getBean(PricePaperService.class);
+		channelTemplateService = WebApplicationContextManager.getBean(ChannelTemplateService.class);
+		channelService = WebApplicationContextManager.getBean(ChannelService.class);
+		
+		//初始化所有通道模板
 		List<ChannelTemplate> templateList = channelTemplateService.list();
 		for (ChannelTemplate template : templateList) {
 			try {
-				Class cla = Class.forName("com.shlr.gprs.manager.charge.template." + template.getIdentity());
-				Constructor cons;
+				Class<?> cla = Class.forName("com.shlr.gprs.manager.charge.template." + template.getIdentity());
+				Constructor cons ;
 				cons = cla.getConstructor(
-						new Class[] { Integer.TYPE, String.class, String.class, String.class, String.class });
+						new Class[] { Integer.class, String.class, String.class, String.class, String.class });
 				ChargeTemplate service = (ChargeTemplate) cons.newInstance(new Object[] { Integer.valueOf(template.getId()),
 						template.getName(), template.getAccount(), template.getPassword(), template.getSign() });
 				chargeTemplateMap.put(template.getIdentity(), service);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				logger.error("\n"+template.getIdentity()+"-------反射异常-------" + e);
+				logger.error(template.getIdentity()+"-------反射异常-------" , e);
 			}
 		}
-		Map<Integer, Integer> amountMap = channelService.qaueryMonthAmount();
-
-		List<Channel> channelList = channelService.list();
-		for (Channel channel : channelList) {
-			int amount = 0;
-			Integer monthAmount = (Integer) amountMap.get(Integer.valueOf(channel.getId()));
-			if (monthAmount != null) {
-				amount = monthAmount.intValue();
-			}
-			channelManagerList.add(new ChannelManager(channel, amount));
+		List<Channel> list = channelService.list();
+		if(!CollectionUtils.isEmpty(list)){
+			channelList.addAll(list);
 		}
+		
 		ThreadManager.getInstance().execute(new Runnable() {
 			@Override
 			public void run() {
 				while (true) {
 					try {
+						//订单队列 获取订单
 						ChargeOrder chargeOrder = ordertaskList.take();
-						ChargeManager.getInstance().charge(chargeOrder);
+						Integer paystatus = chargeOrder.getPaystatus();
+						if(paystatus == 0){//未扣费订单
+							Users agent = UsersCache.getInstance().getByAccount(chargeOrder.getAccount());
+							boolean validBalance = PayManager.getInstance().validBalance(agent.getId(), chargeOrder.getPayMoney());
+							if(validBalance){//余额足够扣费
+								PayLog payLog = new PayLog();
+								payLog.setUserId(agent.getId());
+								payLog.setAccount(chargeOrder.getAccount());
+								payLog.setAgent(agent.getAgent());
+								// 设置代理商订单号码
+								payLog.setType(2);
+								payLog.setMemo("订单号"+chargeOrder.getId() + "手机号"+chargeOrder.getMobile()+"充值流量"+chargeOrder.getAmount()+"M");
+								payLog.setMoney(chargeOrder.getPayMoney());
+								PayManager.getInstance().pay(payLog);
+								chargeOrder.setPaystatus(1);
+							}else{
+								chargeOrder.setCacheFlag(1);
+								chargeOrder.setError("代理商余额不足");
+								chargeOrderService.saveOrUpdate(chargeOrder);
+								continue;
+							}
+						}
+						// 根据缓存条件缓存订单
+						if(ChannelCache.getInstance().cacheCondition.contains(chargeOrder.getLocation())){
+							//符合地区缓存
+							chargeOrder.setCacheFlag(1);
+							chargeOrder.setError(chargeOrder.getLocation()+"-地区缓存");
+							chargeOrderService.saveOrUpdate(chargeOrder);
+						}else if(ChannelCache.getInstance().cacheCondition.contains(chargeOrder.getSubmitChannel())){
+							//符合通道缓存
+							chargeOrder.setCacheFlag(1);
+							chargeOrder.setError(chargeOrder.getSubmitChannel()+"-通道缓存");
+							chargeOrderService.saveOrUpdate(chargeOrder);
+						}else{
+							//清楚缓存标记
+							chargeOrder.setCacheFlag(0);
+							chargeOrder.setError("");
+							//执行充值
+							ThreadManager.getInstance().execute(new Runnable() {
+								@Override
+								public void run() {
+									realCharge(chargeOrder);
+								}
+							});
+						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		});
-
+		long end = System.currentTimeMillis();
+		logger.info("{} initialization completed in {} ms ",this.getClass().getSimpleName(),end-start);
 	}
-	
-	public void addToCharge(ChargeOrder chargeOrder) throws InterruptedException{
-		ordertaskList.put(chargeOrder);
+	//添加充值队列
+	public void addToCharge(ChargeOrder chargeOrder){
+		try {
+			ordertaskList.put(chargeOrder);
+		} catch (InterruptedException e) {
+			logger.error("添加充值队列异常", e);
+		}
 	}
-
-	public ResultBaseVO<Object> charge(ChargeOrder chargeOrder) {
-		int ignoreCacheCondition = chargeOrder.getIgnoreCacheCondition();
-		// 如果是缓存里面的数据
-		if (ignoreCacheCondition == 1) {
-			// 可能重新分配了流量包
-			int packageId = resignPackageId(chargeOrder);
-			// 如果是从缓存里面提交的数据,没有找到合适流流量包，直接返回失败
-			if (packageId == 0) {
-				updateResult(chargeOrder, false, "已退款");
-			}
-			// 需要重新分配流量包id
-			chargeOrder.setPackageId(packageId);
-		}
-		GprsPackage gprsPackage = gprsPackageService.findById(Integer.valueOf(chargeOrder.getPackageId()));
-		// 验证流量包是否存在
-		ResultBaseVO<Object> resultBaseDO = isPackageAvailable(chargeOrder, gprsPackage);
-		if (!resultBaseDO.isSuccess()) {
-			return resultBaseDO;
-		}
-		List<PayLog> payLogList = new LinkedList<PayLog>();
-		// 验证报价单是否存在
-		ResultBaseVO<Object> validateResult = validateAgentPaper(chargeOrder, payLogList, gprsPackage);
-		if (!validateResult.isSuccess()) {
-			return validateResult;
+	public ChargeResponsVO charge(ChargeOrder chargeOrder) {
+		ChargeResponsVO result=new ChargeResponsVO();
+		//匹配报价  分包
+		result = matchingPricePackageId(chargeOrder);
+		if(!result.isSuccess()){
+			return result;
 		}
 		// 开始分配充值通道
-		resultBaseDO = routeToCharge(chargeOrder);// 如果充值通道直接返回提交失败
-		if (!resultBaseDO.isSuccess()) {
-			// 获取订单路由状态
-			int routeFlag = chargeOrder.getRouteFlag();
-			// 如果需要路由
-			if (routeFlag == 1) {
-				if (failFirstSubmitedOrderRoutable(chargeOrder)) {
-					resultBaseDO.addError(null);
-					resultBaseDO.setSuccess(true);
-				} else {
-					return resultBaseDO;
-				}
-			} else {
-				if (ignoreCacheCondition == 0) {
-					chargeOrder.setError(resultBaseDO.getError());
-					chargeOrderService.saveOrUpdate(chargeOrder);
-				} else {
-					// 如果是从缓存里面提交的数据,接口返回异常时直接失败退款
-					updateResult(chargeOrder, false, "已退款");
-				}
-				return resultBaseDO;
-			}
+		result = matchingChannelToCharge(chargeOrder);// 如果充值通道直接返回提交失败
+		if(!result.isSuccess()){
+			return result;
 		}
-
-		if (chargeOrder.getCurRoutePos() > 2) {
-			return resultBaseDO;
-		}
-
-		if (chargeOrder.getProfit() != null) {
-			chargeOrder.setSubmitStatus(1);
-			chargeOrderService.saveOrUpdate(chargeOrder);
-			return resultBaseDO;
-		}
-
-		// 如果是正常提交的数据
-		if (ignoreCacheCondition == 0) {
-			for (PayLog payLog : payLogList) {
-				payLog.setOrderId(chargeOrder.getId());
-				payLogService.saveOrUpdate(payLog);
-			}
-		}
-		for (PayLog payLog : payLogList) {
-			// 如果是提交的数据产生了费用
-			if (payLog.getMoney() != 0.0D) {
-				// 更新订单实际支付金额
-				Double factMoney = Math.round(payLog.getMoney() * 100) / 100.0;
-				chargeOrder.setDiscountMoney(factMoney);
-				// 获取基本面值
-				Double basicMoney = chargeOrder.getMoney();
-				// 获取上游接入方折扣
-				Double discount = chargeOrder.getDiscount();
-				if (discount != null) {
-					// 利润盈余：下游放出时的扣费金额-上游接入时的扣费金额的(基本面值*接入时的折扣)
-					Double profit = factMoney - basicMoney * discount;
-					// 设置利润盈余
-					chargeOrder.setProfit(Math.round(profit * 100) / 100.0);
-					payLog.setProfit(Math.round(profit * 100) / 100.0);
-				}
-				if (ignoreCacheCondition == 0) {
-					PayManager.getInstance().addToPay(payLog);
-				}
-			}
-		}
-		chargeOrderService.saveOrUpdate(chargeOrder);
-		return resultBaseDO;
-
+		addToCharge(chargeOrder);
+		result.setSuccess(true);
+		result.setMsg("提交成功");
+		result.setOrderId(chargeOrder.getAgentOrderId());
+		return result;
 	}
-
 	/**
-	 * 验证代理商报价单
-	 * 
-	 * @param chargeOrder
-	 * @param payLogList
-	 * @param gprsPackage
-	 * @return
-	 */
-	public ResultBaseVO<Object> validateAgentPaper(ChargeOrder chargeOrder, List<PayLog> payLogList,
-			GprsPackage gprsPackage) {
-		ResultBaseVO<Object> resultBaseDO = new ResultBaseVO<Object>();
-
-		Users agent = UsersCache.usernameMap.get(chargeOrder.getAccount());
-
-		if (agent.getStatus() == -1) {
-			resultBaseDO.addError("用户被锁定！");
-			return resultBaseDO;
-		}
-		if (agent.getValidateTime().getTime() < System.currentTimeMillis()) {
-			resultBaseDO.addError("用户已过有效期！");
-			return resultBaseDO;
-		}
-		PricePaper pricePaper = pricePaperService.findById(Integer.valueOf(agent.getPaperId()));
-		if (pricePaper == null) {
-			resultBaseDO.addError("报价单不存在");
-			return resultBaseDO;
-		}
-		Map<Integer, Double> packageMap = pricePaper.getPackageMap();
-		Double discount = packageMap.get(Integer.valueOf(chargeOrder.getPackageId()));
-		if (discount == null) {
-			resultBaseDO.addError("不支持该流量包");
-			return resultBaseDO;
-		}
-
-		// 设置是否带票
-		Map<Integer, Integer> packageBillMap = pricePaper.getPackageBillMap();
-		if (packageBillMap != null) {
-			Integer payBill = packageBillMap.get(Integer.valueOf(chargeOrder.getPackageId()));
-			chargeOrder.setPayBill(payBill == null ? 0 : payBill);
-		}
-		double paymoney = gprsPackage.getMoney() * discount.doubleValue() / 10.0D;
-//		if (PayManager.getInstance().getUserMoney(agent.getId()) < paymoney) {
-//			// 如果提交的是缓存里面的数据
-//			int ignoreCacheCondition = chargeOrder.getIgnoreCacheCondition();
-//			if (ignoreCacheCondition == 0) {
-//				resultBaseDO.addError("余额不足");
-//				return resultBaseDO;
-//			}
-//		}
-		if (!PayManager.getInstance().validBalance(agent.getId(), paymoney)) {
-			// 如果提交的是缓存里面的数据
-			int ignoreCacheCondition = chargeOrder.getIgnoreCacheCondition();
-			if (ignoreCacheCondition == 0) {
-				resultBaseDO.addError("余额不足");
-				return resultBaseDO;
-			}
-		}
-		if (payLogList != null) {
-			PayLog payLog = new PayLog();
-			payLog.setUserId(agent.getId());
-			payLog.setAccount(agent.getUsername());
-			payLog.setAgent(agent.getAgent());
-			payLog.setDiscount(discount);
-			if (agent.getType() == 1) {
-				chargeOrder.setOutDiscount(10D);
-			} else {
-				chargeOrder.setOutDiscount(discount);
-			}
-			// 设置代理商订单号码
-			payLog.setAgentOrderId(chargeOrder.getAgentorderId());
-			payLog.setType(1);
-			payLog.setMemo(chargeOrder.getMobile() + "，" + chargeOrder.getAmount() + "M");
-			double money = Math.round(paymoney * 100) / 100.0;
-			payLog.setMoney(money);
-
-			double balance = agent.getMoney() - money;
-			payLog.setBalance(Math.round(balance * 100) / 100.0);
-
-			if (paymoney == 0.0D) {
-				payLog.setStatus(1);
-			}
-			payLogList.add(payLog);
-		}
-
-		return resultBaseDO;
-	}
-
-	/**
-	 * 重新分配流量包编码
+	 * 根据用户的报价单匹配流量包ID
 	 * 
 	 * @param chargeOrder
 	 * @return
 	 */
-	public Integer resignPackageId(ChargeOrder chargeOrder) {
-		Users currentUser = UsersCache.usernameMap.get(chargeOrder.getAccount());
-		int packageId = 0;
-		List<GprsPackage> packageList = gprsPackageService.getPackageList(currentUser.getId());
+	public ChargeResponsVO matchingPricePackageId(ChargeOrder chargeOrder) {
+		ChargeResponsVO result = new ChargeResponsVO();
+		Users agent = userService.findByUsername(chargeOrder.getAccount());
+		
+		PricePaper pricePaper = pricePaperService.findByIdWithCache(agent.getPaperId());
+		if(pricePaper == null){
+			result.setSuccess(false);
+			result.setMsg("报价单不存在");
+			return result;
+		}
+		List<GprsPackage> packageList = new ArrayList<GprsPackage>();
+		BigDecimal b3 = new BigDecimal("10");
+		String[] items = pricePaper.getItems().split(",");
+		for (String item : items) {
+			String[] temp = item.split(":");
+			GprsPackage gprsPackage = gprsPackageService.findById(Integer.valueOf(temp[0]));
+			if ((gprsPackage != null) && (gprsPackage.getStatus() == 0)) {
+				BigDecimal discount = new BigDecimal(temp[1]);
+				gprsPackage.setDiscount(discount.doubleValue());
+				BigDecimal money = new BigDecimal(gprsPackage.getMoney());
+				gprsPackage.setPaymoney(money.multiply(discount).divide(b3).doubleValue());
+				packageList.add(gprsPackage);
+			}
+		}
+		GprsPackage gprs = null;
 		int nCount = 0;
 		for (GprsPackage gprsPackage : packageList) {
-			if ((gprsPackage.getAmount() != chargeOrder.getAmount()) || (gprsPackage.getType() != chargeOrder.getType())
-					|| (gprsPackage.getLocationType() != chargeOrder.getLocationType())
+			if ((gprsPackage.getAmount() != chargeOrder.getAmount()) 
+					|| (gprsPackage.getType() != chargeOrder.getType())
+					|| (gprsPackage.getRange() != chargeOrder.getRange())
 					|| ((!gprsPackage.getLocations().equals("全国"))
 							&& (gprsPackage.getLocations().indexOf(chargeOrder.getLocation()) == -1)))
 				continue;
 			nCount++;
-			if (chargeOrder.getRouteFlag() == 1) {
+			if (chargeOrder.getRouteFlag() == 1) {//路由不可用
 				int curRoutePos = chargeOrder.getCurRoutePos();
 				if (curRoutePos == 1 && nCount == 1) {
-					packageId = gprsPackage.getId();
+					gprs = gprsPackage;
 					break;
 				} else if (curRoutePos == 2 && nCount == 2) {
-					packageId = gprsPackage.getId();
+					gprs = gprsPackage;
 					break;
 				} else if (curRoutePos == 3 && nCount == 3) {
-					packageId = gprsPackage.getId();
+					gprs = gprsPackage;
 					break;
 				}
 			} else {
-				packageId = gprsPackage.getId();
+				gprs = gprsPackage;
 				break;
 			}
 		}
-		return packageId;
-	}
-
-	/**
-	 * 验证流量包编码是否有效
-	 * 
-	 * @param chargeOrder
-	 * @param gprsPackage
-	 * @return
-	 */
-	public ResultBaseVO<Object> isPackageAvailable(ChargeOrder chargeOrder, GprsPackage gprsPackage) {
-		ResultBaseVO<Object> result = new ResultBaseVO<Object>();
-		// GprsPackage gprsPackage = gprsPackageService.findById(Integer
-		// .valueOf(chargeOrder.getPackageId()));
-		if ((gprsPackage == null) || (gprsPackage.getStatus() == -1)) {
-			result.addError("流量包不存在");
-			return result;
+		if(gprs != null){
+			chargeOrder.setPackageId(gprs.getId());
+			if (gprs.getStatus() == -1) {
+				result.setSuccess(false);
+				result.setMsg("流量包不存在");
+			}else if (chargeOrder.getType() != gprs.getType()) {
+				result.setSuccess(false);
+				result.setMsg("不支持运营商类型");
+			}else if ((!gprs.getLocations().equals("全国"))
+					&& (gprs.getLocations().indexOf(chargeOrder.getLocation()) == -1)) {
+				result.setSuccess(false);
+				result.setMsg("流量包不支持该地区");
+			}
+			chargeOrder.setMoney(gprs.getMoney());
+			// 设置是否带票
+			Integer paybill = pricePaper.getPackageBillMap().get(chargeOrder.getPackageId());
+			chargeOrder.setPayBill(paybill == null ? 0 : paybill);
+			//设置外放折扣
+			Double outDiscount = pricePaper.getPackageDiscountMap().get(Integer.valueOf(chargeOrder.getPackageId()));
+			chargeOrder.setOutDiscount(outDiscount == null ? 0 : outDiscount);
+			Double paymoney = gprs.getPaymoney();
+			chargeOrder.setPayMoney(paymoney);
+		}else{
+			result.setSuccess(false);
+			result.setMsg("报价没有可用的流量包");
 		}
-		if (chargeOrder.getType() != gprsPackage.getType()) {
-			result.addError("运营商类型错误");
-			return result;
-		}
-		if ((!gprsPackage.getLocations().equals("全国"))
-				&& (gprsPackage.getLocations().indexOf(chargeOrder.getLocation()) == -1)) {
-			result.addError("流量包不支持该地区");
-			return result;
-		}
-		chargeOrder.setLocationType(gprsPackage.getLocationType());
-		chargeOrder.setAmount(gprsPackage.getAmount());
-		chargeOrder.setMoney(gprsPackage.getMoney());
 		return result;
 	}
 
-	private ResultBaseVO<Object> routeToCharge(ChargeOrder chargeOrder) {
-		ResultBaseVO<Object> result = new ResultBaseVO<Object>();
 
-		Map availableMap = new TreeMap();
-		Integer priority;
-		for (ChannelManager channelManager : channelManagerList) {
-			priority = channelManager.getPriority(chargeOrder.getPackageId());
-			if (priority == null) {
+	private ChargeResponsVO matchingChannelToCharge(ChargeOrder chargeOrder) {
+		ChargeResponsVO result = new ChargeResponsVO();
+
+		LinkedList<Channel> matchChannel = new LinkedList<>();
+		for (Channel channel : channelList) {
+			//通道禁用 直接跳过
+			if(channel.getStatus() == -1){
 				continue;
 			}
-			Channel channel = channelService.findById(Integer.valueOf(channelManager.getChannelId()));
-			if ((channel == null) || (channel.getStatus() == -1)) {
-				continue;
-			}
-			if ((channel.getMonth_limit() != 0)
-					&& (channelManager.getTotalAmount() + chargeOrder.getAmount() > channel.getMonth_limit())) {
-				continue;
-			}
-			availableMap.put(priority, channelManager);
-		}
-		if (availableMap.size() == 0) {
-			result.addError("没有可用的通道资源");
-			return result;
-		}
-		Collection<ChannelManager> managerList = availableMap.values();
-
-		ResultBaseVO<?> chargeResult = null;
-
-		// 循环匹配上游通道
-		for (ChannelManager manager : managerList) {
-			Channel channel = channelService.findById(Integer.valueOf(manager.getChannelId()));
-			ChargeTemplate template = (ChargeTemplate) chargeTemplateMap.get(channel.getTemplate());
-			if (template == null) {
-				continue;
-			}
-
-			if ((chargeOrder.getTakeTime() == 1) && (!template.supportTaketime2())) {
-				continue;
-			}
-
-			int ignoreCacheCondition = chargeOrder.getIgnoreCacheCondition();
-
-			// 上游接入的折扣
-			Double discount = manager.getDiscount(chargeOrder.getPackageId());
-			chargeOrder.setDiscount(discount / 10);
-
-			// 如果是正常提交的订单
-			if (ignoreCacheCondition == 0) {
-				// 设置了缓存，则按照缓存的通道和省份，选择性的缓存数据
-				if (!CollectionUtils.isEmpty(ChannelCache.cacheChannelList)) {
-					for (Map<String, Object> map : ChannelCache.cacheChannelList) {
-						String channelName = String.valueOf(map.get("channel"));
-						if (!StringUtils.isEmpty(channelName)) {
-							if (channelName.equals(channel.getName())) {
-								chargeOrder.setCacheFlag(1);
-								chargeOrderService.saveOrUpdate(chargeOrder);
-								return result;
-							}
-						}
-						String location = String.valueOf(map.get("province"));
-						if (!StringUtils.isEmpty(location)) {
-							if (location.equals(chargeOrder.getLocation())) {
-								chargeOrder.setCacheFlag(1);
-								chargeOrderService.saveOrUpdate(chargeOrder);
-								return result;
-							}
-						}
-
+			String packages = channel.getPackages();
+			if(StrUtil.isNotEmpty(packages)){
+				String[] packageItem = packages.split(",");
+				for (String item : packageItem) {
+					String[] pack = item.split(":");
+					Integer packId = Integer.valueOf(pack[0]);
+					Double inDiscount = Double.valueOf(pack[1]);
+					Integer priority = Integer.valueOf(pack[2]);
+					if(packId  == chargeOrder.getPackageId() ){
+						channel.setInDiscount(inDiscount);
+						matchChannel.add(channel);
 					}
 				}
-			} else {
-				// 否则如果是从缓存中提交的订单，则忽略已经设置的缓存条件，直接提交到通道
-				chargeOrder.setCacheFlag(0);
-				chargeOrder.setSubmitChannel(channel.getId());
-				chargeOrder.setSubmitTemplate(template.getTemplateId());
 			}
-			chargeOrderService.saveOrUpdate(chargeOrder);
-			// 开始充值
-			chargeResult = template.charge(chargeOrder);
-
-			// 如果提交成功
-			if (chargeResult.isSuccess()) {
-				manager.addAmount(chargeOrder.getAmount());
-				chargeOrder.setSubmitChannel(channel.getId());
-				chargeOrder.setSubmitTemplate(template.getTemplateId());
-				chargeOrder.setSubmitStatus(1);
-				chargeOrder.setSubmitTime(new Date());
-				return result;
-				// 如果提交失败
-			} else {
-				chargeOrder.setSubmitChannel(channel.getId());
-				chargeOrder.setSubmitTemplate(template.getTemplateId());
-				// 如果从缓存里面提交出来的数据
-				if (ignoreCacheCondition == 1) {
-					chargeOrder.setSubmitStatus(1);
-					chargeOrder.setSubmitTime(new Date());
-				}
-			}
-			if (managerList.size() == 1) {
-				result.addError(chargeResult.getError());
-				return result;
-			}
-			break;
 		}
-
-		result.addError(chargeResult.getError());
+		//根据折扣排序   优先接入折扣较低的通道
+		Collections.sort(matchChannel,new Comparator<Channel>() {
+			@Override
+			public int compare(Channel o1, Channel o2) {
+				// TODO Auto-generated method stub
+				return o1.getInDiscount().compareTo(o2.getInDiscount());
+			}
+		});
+		Channel channel = null;
+		if (CollectionUtils.isEmpty(matchChannel)) {
+			result.setSuccess(false);
+			result.setMsg("没有可用的通道资源");
+			return result;
+		}else{
+			channel = matchChannel.getFirst();//匹配上游折扣最低的一个通道
+		}
+		ChargeTemplate template = (ChargeTemplate) chargeTemplateMap.get(channel.getTemplate());
+		if (template == null) {
+			result.setSuccess(false);
+			result.setMsg("没有可用的通道资源");
+			return result;
+		}
+		//设置提交通道
+		chargeOrder.setSubmitChannel(channel.getId());
+		//设置提交模板
+		chargeOrder.setSubmitTemplate(template.getTemplateId());
+		// 上游接入的折扣
+		chargeOrder.setInDiscount(channel.getInDiscount());
+		// 上游折后价
+		chargeOrder.setDiscountMoney(chargeOrder.getMoney()*chargeOrder.getInDiscount()/10);
 		return result;
 	}
-
-	public void updateResult(ChargeOrder chargeOrder, Boolean success, String msg) {
-		if (chargeOrder.getChargeStatus() != 0) {
-			return;
+	public void realCharge(ChargeOrder chargeOrder){
+		Channel channel = ChannelCache.getInstance().idMap.get(chargeOrder.getSubmitChannel());
+		ChargeTemplate template = chargeTemplateMap.get(channel.getTemplate());
+		ChargeResponsVO result = template.charge(chargeOrder);
+		if(result.isSuccess()){
+			chargeOrder.setChargeStatus(2);
+			chargeOrder.setSubmitContent(result.getMsg());
+		}else{
+			chargeOrder.setChargeStatus(3);
+			chargeOrder.setSubmitContent(result.getMsg());
 		}
-
-		chargeOrder.setChargeStatus(success ? 1 : -1);
-		chargeOrder.setError(success ? null : msg);
-		chargeOrder.setReportTime(System.currentTimeMillis());
+		chargeOrderService.saveOrUpdate(chargeOrder);
+	}
+	private void updateResult(ChargeOrder chargeOrder, Boolean isSuccess, String msg) {
+		chargeOrder.setChargeStatus(isSuccess ? 1 : -1);
+		chargeOrder.setError(isSuccess ? null : msg);
+		chargeOrder.setReportTime(new Date());
 
 		int cacheFlag = chargeOrder.getCacheFlag();
 		// 这里的作用只是失败缓存中的数据
 		if (cacheFlag == 1) {
-			chargeOrderService.forceToFailOrder(chargeOrder.getId(), cacheFlag, success ? 1 : -1, msg);
+			chargeOrderService.forceToFailOrder(chargeOrder.getId(), cacheFlag, isSuccess ? 1 : -1, msg);
 		} else {
 			// 非缓存数据
 			String chargeTaskId = chargeOrder.getChargeTaskId();
 			if (StringUtils.isEmpty(chargeTaskId)) {
 				chargeTaskId = String.valueOf(chargeOrder.getId());
 			}
-			chargeOrderService.updateChargeStatus(chargeTaskId, chargeOrder.getSubmitTemplate(), success ? 1 : -1, msg);
+			chargeOrderService.updateChargeStatus(chargeTaskId, chargeOrder.getSubmitTemplate(), isSuccess ? 1 : -1, msg);
 		}
-		if (!success) {
+		if (!isSuccess) {
 			// 如果充值失败..
 			PayLog payLog = new PayLog();
 			payLog.setType(Integer.valueOf(1));
-			payLog.setOrderId(Integer.valueOf(chargeOrder.getId()));
 			payLog.setStatus(Integer.valueOf(0));
-			List<PayLog> payLogList = payLogService.listByExample(payLog);
-			for (PayLog item : payLogList) {
-				PayManager.getInstance().addToPay(new BackMoneyVO(item));
-			}
+			PayLog payLog2 = payLogService.findOne(payLog);
 		} else {
 			// 充值成功....
 			PayLog payLog = new PayLog();
 			payLog.setType(Integer.valueOf(1));
-			payLog.setOrderId(Integer.valueOf(chargeOrder.getId()));
 			payLog.setStatus(Integer.valueOf(0));
-			List<PayLog> payLogList = payLogService.listByExample(payLog);
-			for (PayLog item : payLogList) {
-				// 充值成功
-				PayManager.getInstance().chargeSuccess(item);
-			}
+			PayLog payLog2 = payLogService.findOne(payLog);
 		}
 		// 回调订单状态
 		if (!StringUtils.isEmpty(chargeOrder.getBackUrl())) {
@@ -539,30 +396,23 @@ public class ChargeManager {
 		}
 	}
 
-	public void updateResult(int templateId, String taskId, boolean success, String msg) {
-		ChargeOrder queryChargeOrderDO = new ChargeOrder();
-		queryChargeOrderDO.setChargeTaskId(taskId);
-		queryChargeOrderDO.setSubmitTemplate(Integer.valueOf(templateId));
+	public void updateResult(int templateId, String taskId, boolean isSuccess, String msg) {
 		List<ChargeOrder> orderlist = chargeOrderService.selectOneByExample(taskId, templateId);
 		if (orderlist.isEmpty()) {
 			return;
 		}
 		ChargeOrder chargeOrder = (ChargeOrder) orderlist.get(0);
-		if (chargeOrder.getChargeStatus() != 0) {
-			return;
-		}
-
-		if (!success) {
-			// 如果订单已经开启了路由
-			int routeFlag = chargeOrder.getRouteFlag();
-			if (routeFlag == 1) {
-				if (failChargedOrderRoutable(chargeOrder)) {
-					return;
-				}
-			}
-		}
+//		if (!isSuccess) {
+//			// 如果订单已经开启了路由
+//			int routeFlag = chargeOrder.getRouteFlag();
+//			if (routeFlag == 1) {
+//				if (failChargedOrderRoutable(chargeOrder)) {
+//					return;
+//				}
+//			}
+//		}
 		// 更新订单状态
-		updateResult(chargeOrder, success, msg);
+		updateResult(chargeOrder, isSuccess, msg);
 	}
 
 	/**
@@ -620,7 +470,7 @@ public class ChargeManager {
 			chargeOrder.setPackageId(chargeOrder.getPackageId2());
 			// 开启路由可搜索
 			chargeOrder.setRouteStatus(1);
-			chargeOrder.setSubmitStatus(1);
+//			chargeOrder.setSubmitStatus(1);
 			return true;
 		} else if (curRoutePos == 2) {
 			chargeOrder.setCurRoutePos(3);
@@ -674,42 +524,53 @@ public class ChargeManager {
 
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("taskId", String.valueOf(chargeOrder.getId()));
-		params.put("orderId", chargeOrder.getAgentorderId());
+		params.put("orderId", chargeOrder.getAgentOrderId());
 		params.put("mobile", chargeOrder.getMobile());
 		params.put("actualPrice", String.valueOf(chargeOrder.getDiscountMoney()));
 		params.put("status", String.valueOf(chargeOrder.getChargeStatus()));
 		params.put("error", chargeOrder.getError());
 		params.put("reportTime", String.valueOf(chargeOrder.getReportTime()));
 
-		String query = "", response = "";
+		String query = "";
 		query = HttpUtils.createFromParams(params);
 		callback.setRequest(query);
-		for (int i = 0; i < 5; i++) {
-			try {
-				Response execute = OkhttpUtils.getInstance()
-						.post(chargeOrder.getBackUrl())
-						.params(params, true)
-						.execute();
-				response = execute.body().string();
-				if (StringUtils.isEmpty(response)) {
-					continue;
-				} else {
-					callback.setResponse(response);
-					if ("ok".equals(response)) {
-						chargeOrder.setReport(1);
-						if (chargeOrder.getCacheFlag() == 1) {
-							chargeOrder.setCacheFlag(0);
-						}
-						break;// 收到ok确认后 不再推送
-					}
-
-				}
-			} catch (Exception e) {
-				// 出现异常就重试
-				continue;
-			}
-		}
-		chargeOrderService.saveOrUpdate(chargeOrder);
 		callbackService.saveOrUpdate(callback);
+		if(null != chargeOrder.getBackUrl() && !"".equals(chargeOrder.getBackUrl())){
+			ThreadManager.getInstance().execute(new Runnable() {
+				@Override
+				public void run() {
+					String response = "";
+					int count = 0;
+					do {
+						try {
+							Response execute = OkhttpUtils.getInstance()
+									.post(chargeOrder.getBackUrl())
+									.params(params, true)
+									.execute();
+							response = execute.body().string();
+							if (StringUtils.isEmpty(response)) {
+								throw new Exception("返回内容为空");
+							} else {
+								callback.setResponse(response);
+								if ("ok".equals(response)) {
+									break;// 收到ok确认后 不再推送
+								}
+							}
+						} catch (Exception e) {
+							// 出现异常就重试
+							logger.error("callback------>>>>> {} 异常------>>>>>>",chargeOrder.getBackUrl(),e.getMessage());
+							count++;
+							try {
+								Thread.sleep(300000);
+							} catch (InterruptedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							continue;
+						}
+					} while (count < 5);
+				}
+			});
+		}
 	}
 }

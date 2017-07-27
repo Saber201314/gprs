@@ -28,7 +28,7 @@ public class PayLogService implements DruidStatInterceptor{
 	
 	
 	public Integer update(PayLog payLog){
-		return payLogMapper.updateByPrimaryKey(payLog);
+		return payLogMapper.updateByPrimaryKeySelective(payLog);
 	}
 	public Integer saveOrUpdate(PayLog payLog){
 		PayLog selectByPrimaryKey = payLogMapper.selectByPrimaryKey(payLog.getId());
@@ -49,35 +49,8 @@ public class PayLogService implements DruidStatInterceptor{
 		return payLogMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*pageSize, pageSize));
 	}
 	
-	public List<PayLog> listByExample(PayLog payLog){
-		Example example = new Example(PayLog.class,true,false);
-		Criteria createCriteria = example.createCriteria();
-		 String account = payLog.getAccount();
-		    if(!StringUtils.isEmpty(account)){
-		    	createCriteria.andEqualTo("account", account);
-		    }
-		    String agent = payLog.getAgent();
-		    if(!StringUtils.isEmpty(agent)){
-		    	createCriteria.andEqualTo("agent", agent);
-		    }    
-		    Integer type = payLog.getType();
-		    if(type != null){
-		    	createCriteria.andEqualTo("type", type);
-		    } 
-		    Integer orderId = payLog.getOrderId();
-		    if(orderId != null){
-		    	createCriteria.andEqualTo("orderId", orderId);
-		    } 
-		    Integer status = payLog.getStatus();
-		    if(status != null){
-		    	createCriteria.andEqualTo("status", status);
-		    }     
-		    String mobile = payLog.getMobile();
-		    if(!StringUtils.isEmpty(mobile)){
-		    	createCriteria.andEqualTo("mobile", mobile);
-		    }
-		    example.setOrderByClause(" id desc");
-		return payLogMapper.selectByExample(example);
+	public PayLog findOne(PayLog payLog){
+		return payLogMapper.selectOne(payLog);
 	}
 	
 	/**

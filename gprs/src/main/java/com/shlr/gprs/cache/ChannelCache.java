@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.shlr.gprs.domain.Channel;
@@ -17,16 +20,35 @@ import com.shlr.gprs.services.ChannelService;
  * 
  */
 public class ChannelCache {
-	public static Map<Integer, Channel> idMap = new HashMap<Integer, Channel>();
-	public static List<Map<String,Object>> cacheChannelList = new ArrayList<Map<String,Object>>();
+	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+	public Map<Integer, Channel> idMap = new HashMap<Integer, Channel>();
+	
+	public ConcurrentHashMap<String, Boolean> cacheCondition = new ConcurrentHashMap<String, Boolean>();
+	
+	public static ChannelCache getInstance(){
+		return ChannelCacheHolder.channelCache;
+	}
+	
+	static class ChannelCacheHolder{
+		static ChannelCache channelCache = new ChannelCache();
+	}
 	
 	/**
 	 * 初始化加载所有通道
 	 */
-	public static void load() {
+	public  void load() {
+		long start = System.currentTimeMillis();
+		logger.info("{} initialization started",this.getClass().getSimpleName());
+		
 		ChannelService channelService = WebApplicationContextManager.getApplicationContext().getBean(ChannelService.class);
 		List<Channel> list = channelService.list();
-		for (Channel channel : list)
-			idMap.put(Integer.valueOf(channel.getId()), channel);
+		for (Channel channel : list){
+			idMap.put(channel.getId(), channel);
+		}
+		
+		long end = System.currentTimeMillis();
+		logger.info("{} initialization completed in {} ms ",this.getClass().getSimpleName(),end-start);
 	}
+	
 }

@@ -35,6 +35,7 @@ public class ChargeOrderService implements DruidStatInterceptor{
 		Criteria createCriteria = example.createCriteria();
 		createCriteria.andEqualTo("chargeTaskId", taskId);
 		createCriteria.andEqualTo("submitTemplate", templateId);
+		createCriteria.andEqualTo("chargeStatus", 0);
 		List<ChargeOrder> selectByExample = chargeOrderMapper.selectByExample(example);
 		return selectByExample;
 		

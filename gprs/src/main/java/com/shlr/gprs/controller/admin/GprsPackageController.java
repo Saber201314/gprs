@@ -39,6 +39,7 @@ public class GprsPackageController {
 	@ResponseBody
 	public String packageList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
+			@RequestParam(value="pageSize",required=false,defaultValue="30")String pageSize,
 			@RequestParam(value="name",required=false)String name,
 			@RequestParam(value="alias",required=false)String alias,
 			@RequestParam(value="amount",required=false)String amount,
@@ -64,12 +65,12 @@ public class GprsPackageController {
 		if(!StringUtils.isEmpty(type)&&!"0".equals(type)){
 			createCriteria.andEqualTo("type", type);
 		}
-		if(!StringUtils.isEmpty(locationType)&&!"0".equals(locationType)){
+		if(!StringUtils.isEmpty(locationType)&&!"-1".equals(locationType)){
 			createCriteria.andEqualTo("locationType", locationType);
 		}
 		createCriteria.andEqualTo("status", 0);
 		example.setOrderByClause(" option_time desc");
-		List<GprsPackage> listByPage = gprsPackageService.listByPage(example, Integer.valueOf(pageNo));
+		List<GprsPackage> listByPage = gprsPackageService.listByPage(example, Integer.valueOf(pageNo),Integer.valueOf(pageSize));
 		Page<GprsPackage> page=(Page<GprsPackage>) listByPage;
 		result.put("list", listByPage);
 		result.put("total", page.getTotal());
@@ -103,7 +104,7 @@ public class GprsPackageController {
 		gprsPackage.setAmount(amount);
 		gprsPackage.setMoney(money);
 		gprsPackage.setType(type);
-		gprsPackage.setLocationType(locationType);
+		gprsPackage.setRange(locationType);
 		if(!StringUtils.isEmpty(all)&&"全国".equals(all)){
 			gprsPackage.setLocations(all);
 		}else{

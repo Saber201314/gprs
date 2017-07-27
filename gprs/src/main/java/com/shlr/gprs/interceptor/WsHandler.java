@@ -1,5 +1,6 @@
 package com.shlr.gprs.interceptor;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,14 +58,19 @@ public class WsHandler implements WebSocketHandler {
 		}
 	}
 	@Override
-	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
 		// TODO Auto-generated method stub
 		sessionMap.remove(session.getId());
 		String name = nameMap.get(session.getId());
 		nameMap.remove(session.getId());
 		for (String key : nameMap.keySet()) {
 			WebSocketSession webSocketSession = sessionMap.get(key);
-			webSocketSession.sendMessage(new TextMessage(name+"离开了聊天室"));
+			try {
+				webSocketSession.sendMessage(new TextMessage(name+"离开了聊天室"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				
+			}
 		}
 	}
 

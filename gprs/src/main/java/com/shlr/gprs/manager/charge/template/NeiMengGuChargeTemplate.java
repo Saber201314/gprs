@@ -27,7 +27,7 @@ import com.shlr.gprs.manager.ThreadManager;
 import com.shlr.gprs.manager.charge.ChargeTemplate;
 import com.shlr.gprs.utils.XMLParser;
 import com.shlr.gprs.utils.okhttp.OkhttpUtils;
-import com.shlr.gprs.vo.ResultBaseVO;
+import com.shlr.gprs.vo.ChargeResponsVO;
 
 /**
 * @author xucong
@@ -119,16 +119,16 @@ public class NeiMengGuChargeTemplate extends ChargeTemplate{
 	}	
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ResultBaseVO<String> charge(ChargeOrder chargeOrder) {
-		ResultBaseVO result = new ResultBaseVO();
+	public ChargeResponsVO charge(ChargeOrder chargeOrder) {
+		ChargeResponsVO result = new ChargeResponsVO();
 
 		String packageCode = getPackageCode(chargeOrder);
 
 		if (StringUtils.isEmpty(packageCode)) {
-			result.addError("没有流量包编码");
+			result.setSuccess(false);
+			result.setMsg("没有流量包编码");
 			return result;
 		}
-
 		String response = null;
 		
 	    long curDateTime = System.currentTimeMillis();
@@ -148,7 +148,8 @@ public class NeiMengGuChargeTemplate extends ChargeTemplate{
 			} catch (Exception e) {
 				token = "";
 		        logger.error("内蒙古移动接口：获取token异常", e);
-		        result.addError("获取token异常");
+		        result.setSuccess(false);
+		        result.setMsg("获取token异常");
 		        return result;
 			}						
 	    }
@@ -168,8 +169,7 @@ public class NeiMengGuChargeTemplate extends ChargeTemplate{
 					100000, 100000,token,SHA256Hex(reqChargeXml+this.key));
 			
 			if (StringUtils.isEmpty(response)) {
-				result.setModule(chargeOrder.getId());
-				result.setOrderId(chargeOrder.getAgentorderId());
+				result.setOrderId(chargeOrder.getAgentOrderId());
 				return result;
 			}
 			
@@ -181,10 +181,11 @@ public class NeiMengGuChargeTemplate extends ChargeTemplate{
 				int leftPos = response.lastIndexOf("=");
 				response = response.substring(leftPos + 1,response.length()-1);	
 				
-				result.setModule(response);
-				result.setOrderId(chargeOrder.getAgentorderId());								
+				result.setMsg(response);
+				result.setOrderId(chargeOrder.getAgentOrderId());								
 			}else {
-				result.addError("通道返回错误，请联系客服人员！");
+				result.setSuccess(false);
+				result.setMsg("通道返回错误，请联系客服人员！");
 			}						
 		} catch (IOException e) {
 			logger.error("内蒙古移动接口：充值接口异常", e);
@@ -193,13 +194,14 @@ public class NeiMengGuChargeTemplate extends ChargeTemplate{
 			channelLogService.saveOrUpdate(channelLog);
 			return result;	*/
 			channelLog.setResponse("接口异常");
-			result.addError("接口异常");
+			result.setSuccess(false);
+			result.setMsg("接口异常");
 		}
 		return result;
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public ResultBaseVO<Object> getChargeStatus() {
+	public ChargeResponsVO getChargeStatus() {
 		ThreadManager.getInstance().execute(new Runnable() {
 			public void run() {
 				ChannelTemplate template = ChannelTemplateCache.identityMap
@@ -266,7 +268,7 @@ public class NeiMengGuChargeTemplate extends ChargeTemplate{
     /**
      * 查询余额
      */
-	public ResultBaseVO<Object> getBalance() {
+	public ChargeResponsVO getBalance() {
 		return null;
 	}
 }

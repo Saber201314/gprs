@@ -8,9 +8,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.cache.ChannelTemplateCache;
 import com.shlr.gprs.cache.ChannelTemplateCodeCache;
-import com.shlr.gprs.cache.GprsPackageCache;
 import com.shlr.gprs.cache.PricePaperCache;
-import com.shlr.gprs.cache.SuiteOrderCache;
 import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.manager.ChargeManager;
 import com.shlr.gprs.manager.PayManager;
@@ -20,32 +18,28 @@ public class InitListener implements ApplicationListener<ContextRefreshedEvent> 
 	Logger logger = LoggerFactory.getLogger(InitListener.class);
 
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		System.out.println("初始化");
+		long start = System.currentTimeMillis();
+		logger.info("GPRS initialization started----------------------");
+		
 		WebApplicationContextManager.init(event.getApplicationContext());
-		UsersCache.load();
-		logger.debug("UserCache inited");
-		ChannelCache.load();
-		logger.debug("ChannelCache inited");
-		ChannelTemplateCache.load();
-		logger.debug("ChannelTemplateCache inited");
-		PayManager.getInstance().init();
-		logger.debug("PayManager inited");
-		SuiteOrderCache.getInstance().load();
-		logger.debug("SuiteOrderCache inited");
-		PricePaperCache.load();
-		logger.debug("PricePaperCache inited");
-//		GprsPackageCache.load();
-//		logger.debug("GprsPackageCache inited");
-		ChannelTemplateCodeCache.load();
-		logger.debug("ChannelTemplateCodeCache inited");
-		try {
-			ChargeManager.getInstance().init();
-			logger.debug("ChargeManager inited");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		UsersCache.getInstance().load();
+		
+		ChannelCache.getInstance().load();
+		
+		ChannelTemplateCache.getInstance().load();
 
+		PayManager.getInstance().init();
+		
+		
+		PricePaperCache.getInstance().load();
+		
+//		GprsPackageCache.load();
+		
+		ChannelTemplateCodeCache.getInstance().load();
+		
+		ChargeManager.getInstance().init();
+		
 //		AdvertiseCache.load();
 
 //		SystemSettingCache.load();
@@ -53,7 +47,8 @@ public class InitListener implements ApplicationListener<ContextRefreshedEvent> 
 //		SuiteCache.load();
 
 //		SuiteOrderManager.getInstance().init();
-
+		long end = System.currentTimeMillis();
+		logger.info("GPRS initialization completed in {} ms----------------------",end-start);
 	}
 
 }

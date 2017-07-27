@@ -19,11 +19,13 @@ public class PricePaperService implements DruidStatInterceptor{
 	@Resource
 	PricePaperMapper pricePaperMapper;
 	
+	public PricePaper findByIdWithCache(Integer id){
+		return PricePaperCache.getInstance().idMap.get(id);
+	}
 	public PricePaper findById(Integer id){
-		return PricePaperCache.idMap.get(id);
+		return pricePaperMapper.selectByPrimaryKey(id);
 	}
 	public List<PricePaper> listAll(){
 		return pricePaperMapper.selectAll();
-		
 	}
 }

@@ -5,6 +5,9 @@
 <title>Insert title here</title>
 </head>
 <style>
+body{
+	padding: 0 15px;
+}
 
 
 .layui-table td, .layui-table th{

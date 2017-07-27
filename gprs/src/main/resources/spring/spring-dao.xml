@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans  xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+<beans  
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
       http://www.springframework.org/schema/beans/spring-beans.xsd
       http://www.springframework.org/schema/context
@@ -8,6 +10,7 @@
 
 	<!-- 本文件整合Spring与Mybatis -->
 	<context:property-placeholder location="classpath:jdbc-dev.properties" />
+	
 	
 	<!-- Druid配置 -->
 	<!-- 数据库连接池相关 -->
@@ -51,18 +54,20 @@
 
 		<!-- 验证连接有效与否的SQL，不同的数据配置不同 -->
 		<property name="validationQuery" value="select 1 " />
-		<property name="filters" value="stat,config,wall" />
+		<property name="filters" value="stat,wall" />
 		<property name="proxyFilters">
 			<list>
+			
 			</list>
 		</property>
 	</bean>
 
-<!-- 	<bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
-		<property name="statementExecutableSqlLogEnable" value="false" />
-		<property name="resultSetLogEnabled" value="false"></property>
-		<property name="statementPrepareAfterLogEnabled" value="false"></property>
-	</bean> -->
+	<bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
+		<property name="dataSourceLogEnabled" value="true" />
+		<!-- <property name="statementExecutableSqlLogEnable" value="true" />
+		<property name="resultSetLogEnabled" value="true"></property>
+		<property name="statementPrepareAfterLogEnabled" value="true"></property> -->
+	</bean>
 
 	<!-- 配置SqlSessionFactory对象 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

@@ -18,6 +18,7 @@ import com.define.util.DefineCollectionUtil;
 import com.github.pagehelper.PageRowBounds;
 import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.dao.UserMapper;
+import com.shlr.gprs.domain.PricePaper;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.vo.UsersVO;
 
@@ -33,6 +34,8 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 public class UserService implements DruidStatInterceptor{
 	@Resource
 	UserMapper userMapper;
+	@Resource
+	PricePaperService pricePaperService;
 	
 	/**
 	 * 根据账号密码查找用户
@@ -56,15 +59,66 @@ public class UserService implements DruidStatInterceptor{
 				return selectByExample.get(0);
 		}
 		return null;
-		
 	}
+	/**
+	 * 验证账号是否存在
+	 * @param username
+	 * @return
+	 */
+	public boolean validateUsername(String username){
+		Users users=new Users();
+		users.setUsername(username);
+		
+		Example example=new Example(Users.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		
+		createCriteria.andEqualTo("username", username);
+		
+		int selectCountByExample = userMapper.selectCountByExample(example);
+		if (selectCountByExample > 0) {
+				return true;
+		}
+		return false;
+	}
+	public Users findByUsername(String username){
+		Users users=new Users();
+		users.setUsername(username);
+		
+		Example example=new Example(Users.class,true,false);
+		Criteria createCriteria = example.createCriteria();
+		
+		createCriteria.andEqualTo("username", username);
+		
+		List<Users> selectByExample = userMapper.selectByExample(example);
+		if (!CollectionUtils.isEmpty(selectByExample)&&selectByExample.size()>0) {
+			return selectByExample.get(0);
+		}
+		return null;
+	}
+	
 	/**
 	 * 获取所有用户
 	 * @return
 	 */
 	public List<Users> list(){
 		return userMapper.selectAll();
-		
+	}
+	/**
+	 * 新增用户
+	 * @param user
+	 * @return
+	 */
+	public Integer add(Users user){
+		return userMapper.insertSelective(user);
+	}
+	/**
+	 * 更新用户信息
+	 * @param user
+	 * @return
+	 */
+	public Integer updateUserByPK(Users user){
+		int updateByPrimaryKey = userMapper.updateByPrimaryKeySelective(user);
+		return updateByPrimaryKey;
 	}
 	/**
 	 * 更新余额
@@ -84,35 +138,55 @@ public class UserService implements DruidStatInterceptor{
 	 * @return
 	 */
 	public Users findById(Integer userid){
-		return UsersCache.idMap.get(userid);
+		return userMapper.selectByPrimaryKey(userid);
 	}
 	/**
 	 * 根据条件查询
 	 * @return
 	 */
-	public List<Users> listByCondition(Example example){
-		
-		return userMapper.selectByExample(example);
+	public List<Users> listByExample(Example example){
+		List<Users> selectByExampleAndRowBounds = userMapper.selectByExample(example);
+		for (Users users : selectByExampleAndRowBounds) {
+			List<PricePaper> listAll = pricePaperService.listAll();
+			for (PricePaper pricePaper : listAll) {
+				if(pricePaper.getId() == users.getPaperId()){
+					users.setPaper(pricePaper);
+				}
+				
+			}
+			
+		}
+		return selectByExampleAndRowBounds;
 	}
 	
 	public List<Users> listByExampleAndPage(Example example,Integer pageNo){
-		return userMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+		List<Users> selectByExampleAndRowBounds = userMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+		List<PricePaper> listAll = pricePaperService.listAll();
+		for (Users users : selectByExampleAndRowBounds) {
+			for (PricePaper pricePaper : listAll) {
+				if(pricePaper.getId() == users.getPaperId()){
+					users.setPaper(pricePaper);
+				}
+				
+			}
+		}
+		return selectByExampleAndRowBounds;
 	}
 	
 	
-	private List<Users> enrichAgentList(List<Users> parentAgentList) {
-		if (DefineCollectionUtil.isEmpty(parentAgentList)) {
-			return null;
-		}
-		List accoutList = new ArrayList();
-		Map parentMap = new HashMap();
-		for (Users user : parentAgentList) {
-			user.setUserList(null);
-			accoutList.add(user.getUsername());
-			parentMap.put(user.getUsername(), user);
-		}
-		UsersVO userVO = new UsersVO();
-		userVO.setAgentList(accoutList);
+//	private List<Users> enrichAgentList(List<Users> parentAgentList) {
+//		if (DefineCollectionUtil.isEmpty(parentAgentList)) {
+//			return null;
+//		}
+//		List accoutList = new ArrayList();
+//		Map parentMap = new HashMap();
+//		for (Users user : parentAgentList) {
+//			user.setUserList(null);
+//			accoutList.add(user.getUsername());
+//			parentMap.put(user.getUsername(), user);
+//		}
+//		UsersVO userVO = new UsersVO();
+//		userVO.setAgentList(accoutList);
 //		List<Users> list = this.userService.queryList(queryUsersDO);
 //		for (Users user : list) {
 //			Users agent = (Users) parentMap.get(user.getAgent());
@@ -123,8 +197,8 @@ public class UserService implements DruidStatInterceptor{
 //			}
 //			tempList.add(user);
 //		}
-		return null;
-	}
+//		return null;
+//	}
 	
 	/**
 	 * 获取当前用户
@@ -138,15 +212,12 @@ public class UserService implements DruidStatInterceptor{
 		if (user==null) {
 			return null;
 		}
-		Users users = UsersCache.idMap.get(user.getId());
+		Users users = findById(user.getId());
 		if (users!=null) {
 			return users;
 		}
 		return null;
 	}
-	public Integer updateUserByPK(Users user){
-		int updateByPrimaryKey = userMapper.updateByPrimaryKey(user);
-		return updateByPrimaryKey;
-	}
+	
 	
 }

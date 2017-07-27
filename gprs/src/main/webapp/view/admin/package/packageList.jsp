@@ -5,7 +5,13 @@
 <jsp:include page="/cssjs.jsp"></jsp:include>
 <title></title>
 </head>
-<body>
+<style>
+body{
+	padding: 0 15px;
+}
+
+</style>
+<body class="layui-form">
 	<fieldset class="layui-elem-field" style="margin-top: 5px;">
 		<form class="layui-form" action="">
 			<input type="hidden" id="pageNo" name="pageNo" value="1" class="layui-input">
@@ -46,9 +52,9 @@
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
 						<select name="locationType" lay-verify="" lay-search>
-							<option value="0">请选择</option>
-							<option value="1">全国流量</option>
-							<option value="2">省内流量</option>
+							<option value="-1">请选择</option>
+							<option value="0">全国流量</option>
+							<option value="1">省内流量</option>
 						</select>
 					</div>
 				</div>
@@ -64,7 +70,8 @@
 	</fieldset>
 	<button class="layui-btn layui-btn-mini getallcheck" >删除</button>
 	<a href="/admin/editPackage.action"><button class="layui-btn layui-btn-mini" >添加流量包</button></a>
-	<div class="layui-form">
+	
+	<div>
 		<table class="layui-table">
 			<thead>
 				<tr>

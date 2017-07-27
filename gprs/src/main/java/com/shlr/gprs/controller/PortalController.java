@@ -27,7 +27,7 @@ import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.MobileUtil;
 import com.shlr.gprs.utils.SecurityCode;
 import com.shlr.gprs.utils.SecurityImageUtil;
-import com.shlr.gprs.vo.ResultBaseVO;
+import com.shlr.gprs.vo.ChargeResponsVO;
 import com.suwoit.json.util.StringUtils;
 
 
@@ -40,7 +40,7 @@ import com.suwoit.json.util.StringUtils;
 public class PortalController {
 	
 	private String mobile;
-	private ResultBaseVO<Object> result;
+	private ChargeResponsVO result;
 	private ByteArrayInputStream imageStream;
 	
 	@Resource
@@ -130,12 +130,12 @@ public class PortalController {
 		
 		if (users.getType() == 1) {
 			result.put("success", true);
-			result.put("url", "n_index.jsp");
+			result.put("url", "/n_index.jsp");
 			return result.toJSONString();
 		}
 		if (users.getType() == 2) {
 			result.put("success", true);
-			result.put("url", "n_index.jsp");
+			result.put("url", "/n_index.jsp");
 			return result.toJSONString();
 		}
 		return result.toJSONString();
@@ -147,16 +147,15 @@ public class PortalController {
 	@RequestMapping(value="/getMobileInfo.action",produces="application/json")
 	@ResponseBody
 	public String getMobileInfo() {
-		this.result = new ResultBaseVO();
+		this.result = new ChargeResponsVO();
 		if (MobileUtil.isNotMobileNO(this.mobile)) {
-			this.result.addError("号码为空。");
-			return "success";
+			this.result.setSuccess(false);
+			this.result.setMsg("号码为空。");
+			return result.toJSONString();
 		}
-		Map map = new HashMap();
-		map.put("type", Integer.valueOf(MobileUtil.checkType(this.mobile)));
-		map.put("location", MobileUtil.getAddress(this.mobile));
-		this.result.setModule(map);
-		return "success";
+		this.result.put("type", Integer.valueOf(MobileUtil.checkType(this.mobile)));
+		this.result.put("location", MobileUtil.getAddress(this.mobile));
+		return result.toJSONString();
 	}
 
 //	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -225,24 +224,28 @@ public class PortalController {
 	}
 	
 	@RequestMapping(value="/admin/layout/changePassword.action")
+	@ResponseBody
 	public String changePassword(HttpServletResponse response, HttpSession session,
 			@RequestParam("password")String password,
 			@RequestParam("newPassword")String newPassword,
 			@RequestParam("repeatPassword")String repeatPassword) throws IOException {
 		Users currentUser = userService.getCurrentUser(session);
-		result=new ResultBaseVO<>();
+		result=new ChargeResponsVO();
 		if (currentUser == null) {
-			this.result.addError("请登录");
-			return "success";
+			result.setSuccess(false);
+			result.setMsg("请登录");
+			return result.toJSONString();
 		}
 		if (!currentUser.getPassword().equals(password)) {
-			this.result.addError("原密码不正确");
-			return "success";
+			result.setSuccess(false);
+			result.setMsg("原密码不正确");
+			return result.toJSONString();
 		}
 		
 		if (!newPassword.equals(repeatPassword)) {
-			this.result.addError("两次密码不一致");
-			return "success";
+			result.setSuccess(false);
+			result.setMsg("两次密码不一致");
+			return result.toJSONString();
 		}
 		
 		currentUser.setPassword(newPassword);
@@ -250,9 +253,10 @@ public class PortalController {
 		
 		if (updateUserByPK > 0) {
 			session.setAttribute("user", currentUser);
+			result.setSuccess(true);
+			result.setMsg("修改成功");
 		}
-		response.getWriter().printf(  JSON.toJSONString(result));
-		return null;
+		return result.toJSONString();
 	}
 	@RequestMapping("/switchStatus")
 	@ResponseBody

@@ -31,7 +31,7 @@ public class PricePaper implements Serializable{
 	private String items;
 	private Integer routable;
 	@Transient
-	private Map<Integer, Double> packageMap;
+	private Map<Integer, Double> packageDiscountMap;
 	@Transient
 	private Map<Integer, Integer> packageBillMap;
 	public Integer getId() {
@@ -88,11 +88,11 @@ public class PricePaper implements Serializable{
 	public void setRoutable(Integer routable) {
 		this.routable = routable;
 	}
-	public Map<Integer, Double> getPackageMap() {
-		return packageMap;
+	public Map<Integer, Double> getPackageDiscountMap() {
+		return packageDiscountMap;
 	}
-	public void setPackageMap(Map<Integer, Double> packageMap) {
-		this.packageMap = packageMap;
+	public void setPackageDiscountMap(Map<Integer, Double> packageDiscountMap) {
+		this.packageDiscountMap = packageDiscountMap;
 	}
 	public Map<Integer, Integer> getPackageBillMap() {
 		return packageBillMap;

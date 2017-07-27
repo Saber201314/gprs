@@ -12,21 +12,25 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public final class WebApplicationContextManager {
 	private static ApplicationContext application = null;
-	
+
 	public static synchronized void init(ServletContext context) {
 		if (application == null) {
 			application = WebApplicationContextUtils.getWebApplicationContext(context);
 		}
 	}
+
 	public static synchronized void init(ApplicationContext context) {
 		if (application == null) {
 			application = context;
 		}
 	}
-	 public static ApplicationContext getApplicationContext()
-	  {
-	    return application;
-	  }
-
+	public static ApplicationContext getApplicationContext() {
+		return application;
+	}
+	
+	public static <T> T getBean(Class<T> clazz) {
+		return getApplicationContext().getBean(clazz);
+	}
+	
 
 }

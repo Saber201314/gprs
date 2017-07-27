@@ -5,6 +5,9 @@ String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
 <style>
+body{
+	padding: 0 15px;
+}
 .profile-user-info {margin-top:3px;}
 .layui-layer{}
 .profile-info-name{width:120px;}

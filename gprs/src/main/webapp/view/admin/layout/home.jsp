@@ -2,6 +2,12 @@
 	pageEncoding="UTF-8"%>
 
 <jsp:include page="/cssjs.jsp"></jsp:include>
+<style>
+body{
+	padding: 0 15px;
+}
+
+</style>
 <div style="margin-top: 5px">
 	<button class="layui-btn layui-btn-mini">通道实时余额</button>
 	<button class="layui-btn layui-btn-mini">新增</button>

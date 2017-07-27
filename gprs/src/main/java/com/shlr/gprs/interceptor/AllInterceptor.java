@@ -34,33 +34,7 @@ public class AllInterceptor implements HandlerInterceptor   {
 	
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		HttpSession session = request.getSession();
-		
-		
-		String requestURI = request.getRequestURI();
-		if (requestURI.startsWith("/WEB-INF/common")) {
-			return true;
-		}else if(requestURI.startsWith("/res")){
-			return true;
-		}else if(requestURI.startsWith("/assts")){
-			return true;
-		}else if (requestURI.startsWith("/common")) {
-			return true;
-		}else if (requestURI.startsWith("/getSecurityCode.action")) {
-			return true;
-		}else if (requestURI.startsWith("/login.action")) {
-			return true;
-		}else{
-//			Users currentUser = service.getCurrentUser(session);
-//			if (currentUser==null) {
-//				response.sendRedirect("/index.jsp");
-//				return false;
-//			}
-			
-			
-			logger.info(" User-Agent  {}",request.getHeader("user-agent"));
-			logger.info(" 访问地址-----  {}         来路地址  {} ",requestURI,request.getRemoteAddr());
-		}
+		logger.info("[{}] - [{}] - [{}] ",request.getRemoteAddr(),request.getMethod(),request.getRequestURI());
 		return true;
 	}
 

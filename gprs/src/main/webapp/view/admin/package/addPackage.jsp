@@ -8,6 +8,10 @@
 <title></title>
 </head>
 <style>
+
+body{
+	padding: 0 15px;
+}
 form {
 	padding-bottom: 5px;
 }
@@ -62,8 +66,8 @@ form {
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
 						<select name="locationType" lay-verify="" lay-search>
-							<option <c:if test="${ packageObj.locationType == 1 }">selected=""</c:if> value="1">全国流量</option>
-							<option <c:if test="${ packageObj.locationType == 2 }">selected=""</c:if> value="2">省内流量</option>
+							<option <c:if test="${ packageObj.locationType == 0 }">selected=""</c:if> value="0">全国流量</option>
+							<option <c:if test="${ packageObj.locationType == 1 }">selected=""</c:if> value="1">省内流量</option>
 						</select>
 					</div>
 				</div>
@@ -109,7 +113,7 @@ form {
 			<div>
 				<div  class="layui-inline">
 					<div class="layui-input-block">
-						<button class="layui-btn" lay-submit="" lay-filter="btn-submit">提交</button>
+						<button class="layui-btn" lay-submit lay-filter="package-submit">提交</button>
 					</div>
 				</div>
 			</div>
@@ -120,7 +124,7 @@ form {
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
-	}).use('addPackage'); //加载入口
+	}).use('packageList'); //加载入口
 	
 </script>
 </html>
