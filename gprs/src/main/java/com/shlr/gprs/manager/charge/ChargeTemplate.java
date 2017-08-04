@@ -8,6 +8,7 @@ import java.util.Random;
 import org.springframework.util.StringUtils;
 
 import com.shlr.gprs.cache.ChannelTemplateCodeCache;
+import com.shlr.gprs.domain.ChannelLog;
 import com.shlr.gprs.domain.ChannelTemplateCode;
 import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.listenner.WebApplicationContextManager;
@@ -53,7 +54,9 @@ public abstract class ChargeTemplate {
 		userService = WebApplicationContextManager.getBean(UserService.class);
 		channelTemplateCodeService = WebApplicationContextManager.getBean(ChannelTemplateCodeService.class);
 	}
-
+	public ChargeTemplate(){
+		
+	}
 	public ChargeTemplate(int templateId, String templateName, String account, String password, String key) {
 		this.templateId = templateId;
 		this.templateName = templateName;
@@ -61,7 +64,8 @@ public abstract class ChargeTemplate {
 		this.password = password;
 		this.key = key;
 	}
-
+	
+	
 	protected void updateResult(String taskId, boolean success, String msg) {
 		ChargeManager.getInstance().updateResult(this.templateId, taskId, success, msg);
 	}
@@ -75,7 +79,7 @@ public abstract class ChargeTemplate {
 			for (ChannelTemplateCode code : codeList) {
 				String location = code.getLocation();
 				if ((code.getType() == chargeOrder.getType())
-						&& (code.getRange() == chargeOrder.getRange())
+						&& (code.getRangeType() == chargeOrder.getRangeType())
 						&& (code.getAmount() == chargeOrder.getAmount())) {
 					if (!StringUtils.isEmpty(location)) {
 						if (location.equals(chargeOrder.getLocation())) {
@@ -88,6 +92,15 @@ public abstract class ChargeTemplate {
 			}
 		}
 		return null;
+	}
+	public void saveChannelLog(ChargeOrder chargeOrder,String body){
+		ChannelLog channelLog = new ChannelLog();
+		channelLog.setTemplateId(this.templateId);
+		channelLog.setTemplateName(this.templateName);
+		channelLog.setMobile(chargeOrder.getMobile());
+		channelLog.setOrderId(chargeOrder.getChargeTaskId());
+		channelLog.setResponse(body);
+		channelLogService.save(channelLog);
 	}
 	/**
 	 * 生成订单号

@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.shlr.gprs.constants.Const;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.services.UserService;
+import com.shlr.gprs.utils.JSONUtils;
 import com.shlr.gprs.utils.MobileUtil;
 import com.shlr.gprs.utils.SecurityCode;
 import com.shlr.gprs.utils.SecurityImageUtil;
@@ -40,7 +41,6 @@ import com.suwoit.json.util.StringUtils;
 public class PortalController {
 	
 	private String mobile;
-	private ChargeResponsVO result;
 	private ByteArrayInputStream imageStream;
 	
 	@Resource
@@ -147,15 +147,15 @@ public class PortalController {
 	@RequestMapping(value="/getMobileInfo.action",produces="application/json")
 	@ResponseBody
 	public String getMobileInfo() {
-		this.result = new ChargeResponsVO();
+		JSONObject result = new JSONObject();
 		if (MobileUtil.isNotMobileNO(this.mobile)) {
-			this.result.setSuccess(false);
-			this.result.setMsg("号码为空。");
+			result.put("success",false);
+			result.put("msg","号码为空");
 			return result.toJSONString();
 		}
-		this.result.put("type", Integer.valueOf(MobileUtil.checkType(this.mobile)));
-		this.result.put("location", MobileUtil.getAddress(this.mobile));
-		return result.toJSONString();
+		result.put("type", Integer.valueOf(MobileUtil.checkType(this.mobile)));
+		result.put("location", MobileUtil.getAddress(this.mobile));
+		return JSONUtils.toJsonString(result);
 	}
 
 //	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -230,22 +230,22 @@ public class PortalController {
 			@RequestParam("newPassword")String newPassword,
 			@RequestParam("repeatPassword")String repeatPassword) throws IOException {
 		Users currentUser = userService.getCurrentUser(session);
-		result=new ChargeResponsVO();
+		ChargeResponsVO result=new ChargeResponsVO();
 		if (currentUser == null) {
 			result.setSuccess(false);
 			result.setMsg("请登录");
-			return result.toJSONString();
+			return JSONUtils.toJsonString(result);
 		}
 		if (!currentUser.getPassword().equals(password)) {
 			result.setSuccess(false);
 			result.setMsg("原密码不正确");
-			return result.toJSONString();
+			return JSONUtils.toJsonString(result);
 		}
 		
 		if (!newPassword.equals(repeatPassword)) {
 			result.setSuccess(false);
 			result.setMsg("两次密码不一致");
-			return result.toJSONString();
+			return JSONUtils.toJsonString(result);
 		}
 		
 		currentUser.setPassword(newPassword);
@@ -256,9 +256,9 @@ public class PortalController {
 			result.setSuccess(true);
 			result.setMsg("修改成功");
 		}
-		return result.toJSONString();
+		return JSONUtils.toJsonString(result);
 	}
-	@RequestMapping("/switchStatus")
+	@RequestMapping("/api_status")
 	@ResponseBody
 	public String setSwitchStatus(@RequestParam(value="status",required=false)String switchstatus){
 		String result="";

@@ -1,5 +1,6 @@
 package com.shlr.gprs.dao;
 
+import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.annotation.MapperScan;
 
 import com.shlr.gprs.domain.Channel;
@@ -13,5 +14,5 @@ import tk.mybatis.mapper.common.Mapper;
 */
 @MapperScan
 public interface ChannelMapper extends Mapper<Channel> {
-
+	Integer updateChannelStatus(@Param("id")Integer id,@Param("status")Integer status);
 }

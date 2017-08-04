@@ -37,7 +37,7 @@ form{
 				<div class="layui-inline">
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-block">
-						<select id="locationType" name="locationType" >
+						<select id="rangeType" name="rangeType" >
 							<option value="0">全国流量</option>
 							<option value="1">省内流量</option>
 						</select>

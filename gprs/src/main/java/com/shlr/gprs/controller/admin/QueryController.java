@@ -143,7 +143,6 @@ public class QueryController {
 			resume +=Float.valueOf(chargeReport.getResumePrice()); 
 			remain +=Float.valueOf(chargeReport.getRemainPrice()); 
 		}
-		
 		ChargeReport total=new ChargeReport();
 		total.setAccount("合计");
 		total.setResumePrice(String.valueOf(resume));
@@ -198,137 +197,8 @@ public class QueryController {
 	}
 	
 	
-	/**
-	 * 充值记录
-	 * @param request
-	 * @param response
-	 * @param session
-	 * @param pageNo
-	 * @param account
-	 * @param mobile
-	 * @param location
-	 * @param from
-	 * @param to
-	 * @param type
-	 * @param amount
-	 * @param locationType
-	 * @param submitStatus
-	 * @param submitChannel
-	 * @param cacheFlag
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value="/chargeOrderList.action")
-	public String chargeOrderList(HttpServletRequest request, HttpServletResponse response, HttpSession session,
-			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
-			@RequestParam(value="mobile",required=false)String mobile,@RequestParam(value="location",required=false)String location,
-			@RequestParam(value="from",required=false)String from,@RequestParam(value="to",required=false)String to,
-			@RequestParam(value="type",required=false)Integer type,@RequestParam(value="amount",required=false)Integer amount,
-			@RequestParam(value="locationType",required=false)String locationType,@RequestParam(value="submitStatus",required=false)String submitStatus,
-			@RequestParam(value="submitChannel",required=false)String submitChannel,@RequestParam(value="cacheFlag",required=false)String cacheFlag) throws IOException{
-		
-		Users currentUser = userService.getCurrentUser(session);
-		if ((currentUser == null) || (currentUser.getType() != 1)) {
-			return "index";
-		}
-		
-		Example example = new Example(ChargeOrder.class,true,false);
-		Criteria createCriteria = example.createCriteria();
-		if (!StringUtils.isEmpty(account)&&!"-1".equals(account)) {
-			createCriteria.andEqualTo("account", account);
-		}
-		if (!StringUtils.isEmpty(mobile)) {
-			createCriteria.andEqualTo("mobile", mobile);
-		}
-		if (!StringUtils.isEmpty(location)&&!"请选择".equals(location)) {
-			createCriteria.andEqualTo("location", location);
-		}
-		if (!StringUtils.isEmpty(from)&&!StringUtils.isEmpty(to)) {
-			createCriteria.andBetween("optionTime", from, to);
-		}
-		if (!StringUtils.isEmpty(type)&& 0 != type) {
-			createCriteria.andEqualTo("type", type);
-		}
-		if (!StringUtils.isEmpty(amount)&& 0 != amount) {
-			createCriteria.andEqualTo("amount", amount);
-		}
-		if (!StringUtils.isEmpty(locationType)&&!"0".equals(locationType)) {
-			createCriteria.andEqualTo("locationType", locationType);
-		}
-		if (!StringUtils.isEmpty(submitStatus)&&!"-1".equals(submitStatus)) {
-			if ("0".equals(submitStatus)) {
-				createCriteria.andEqualTo("submitStatus", 0);
-			}else if ("1".equals(submitStatus)) {
-				createCriteria.andEqualTo("submitStatus", 1);
-				createCriteria.andEqualTo("chargeStatus", 0);
-			}else if ("2".equals(submitStatus)) {
-				createCriteria.andEqualTo("submitStatus", 1);
-				createCriteria.andEqualTo("chargeStatus", 1);
-			}else if ("3".equals(submitStatus)) {
-				createCriteria.andEqualTo("submitStatus", 1);
-				createCriteria.andEqualTo("chargeStatus", -1);
-			}
-		}
-		if (!StringUtils.isEmpty(submitChannel)&&!"-1".equals(submitChannel)) {
-			createCriteria.andEqualTo("submitChannel", submitChannel);
-		}
-		if (StringUtils.isEmpty(cacheFlag)) {
-			createCriteria.andEqualTo("cacheFlag", 0);
-		}else{
-			createCriteria.andEqualTo("cacheFlag", cacheFlag);
-		}
-		example.setOrderByClause("  option_time desc");
-		List<ChargeOrder> listByPage = chargeOrderService.listByExampleAndPage(example, pageNo);
-		Page<ChargeOrder> page=(Page<ChargeOrder>) listByPage;
-		JSONObject result=new JSONObject();
-		result.put("pages", page.getPages());
-		result.put("total", page.getTotal());
-		result.put("pageno", page.getPageNum());
-		result.put("list", listByPage);
-		response.getWriter().print(result.toJSONString());
-		return null;
-	}
-	@RequestMapping(value="/chargeOrderCacheList.action")
-	public String chargeOrderCacheList(HttpServletResponse response,HttpSession session,
-			@RequestParam(value="pageNo")Integer pageNo,@RequestParam(value="account",required=false)String account,
-			@RequestParam(value="mobile",required=false)String mobile,@RequestParam(value="location",required=false)String location,
-			@RequestParam(value="from",required=false)String from,@RequestParam(value="to",required=false)String to,
-			@RequestParam(value="type",required=false)Integer type,@RequestParam(value="amount",required=false)Integer amount,
-			@RequestParam(value="locationType",required=false)String locationType,@RequestParam(value="submitStatus",required=false)String submitStatus,
-			@RequestParam(value="submitChannel",required=false)String submitChannel,@RequestParam(value="cacheFlag",required=false)String cacheFlag) throws IOException{
-		Users currentUser = userService.getCurrentUser(session);
-		if ((currentUser == null) || (currentUser.getType() != 1)) {
-			return "redirect:/index.jsp";
-		}
-		Example example = new Example(ChargeOrder.class,true,false);
-		
-		Criteria createCriteria = example.createCriteria();
-		if (!StringUtils.isEmpty(mobile)) {
-			createCriteria.andEqualTo("mobile", mobile);
-		}
-		if (!StringUtils.isEmpty(location)&&!"请选择".equals(location)) {
-			createCriteria.andEqualTo("location", location);
-		}
-		if (!StringUtils.isEmpty(from)&&!StringUtils.isEmpty(to)) {
-			createCriteria.andBetween("optionTime", from, to);
-		}
-		if (!StringUtils.isEmpty(type)&& 0 != type) {
-			createCriteria.andEqualTo("type", type);
-		}
-		if (!StringUtils.isEmpty(amount)&& 0 != amount) {
-			createCriteria.andEqualTo("amount", amount);
-		}
-		if (!StringUtils.isEmpty(locationType)&&!"0".equals(locationType)) {
-			createCriteria.andEqualTo("locationType", locationType);
-		}
-		createCriteria.andEqualTo("cacheFlag", 1);
-		example.setOrderByClause("  id desc");
-		List<ChargeOrder> listByExampleAndPage = chargeOrderService.listByExampleAndPage(example, 1);
-		JSONObject result=new JSONObject();
-		result.put("list", listByExampleAndPage);
-		response.getWriter().print(result.toJSONString());
-		return null;
-	}
+	
+	
 	/**
 	 * 根据用户级别获取用户列表
 	 * @param session
@@ -424,21 +294,14 @@ public class QueryController {
 	@ResponseBody
 	public String payLogList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
-			@RequestParam(value="mobile",required=false)String mobile,
+			@RequestParam(value="memo",required=false)String memo,
 			@RequestParam(value="account",required=false)String account,
 			@RequestParam(value="from",required=false)String from,
 			@RequestParam(value="to",required=false)String to,
-			@RequestParam(value="status",required=false,defaultValue="-3")String status,
+			@RequestParam(value="type")String type,
 			Model model){
 		Users currentUser = userService.getCurrentUser(session);
-		if(currentUser == null){
-			return "index";		
-		}
-		int type = currentUser.getType();
-		//如果不是系统管理员或者不是总代理
-		if (type != 1 && type != 2) {
-			return "index";			
-		}
+		int agnetType = currentUser.getType();
 		Example example=new Example(PayLog.class,true,false);
 		Criteria createCriteria = example.createCriteria();
 		Calendar calendar=Calendar.getInstance();
@@ -465,18 +328,18 @@ public class QueryController {
 			dto=TimeUtls.timeStr2DateByDefault(to);
 		}
 		createCriteria.andBetween("optionTime", dfrom, dto);
-		if (StringUtils.isEmpty(account) && type != 1) {
+		if (StringUtils.isEmpty(account) && agnetType != 1) {
 			createCriteria.andEqualTo("account", currentUser.getUsername());
-		}else if(!StringUtils.isEmpty(account)&& !"-1".equals(account)  && type == 1){
+		}else if(!StringUtils.isEmpty(account)&& agnetType == 1){
 			createCriteria.andEqualTo("account", account);
 		}
-		if (!StringUtils.isEmpty(status)&&!"-3".equals(status)) {
-			createCriteria.andEqualTo("status", status);
+		if (!StringUtils.isEmpty(type)&&!"-1".equals(type)) {
+			createCriteria.andEqualTo("type", type);
 		}
-		if (!StringUtils.isEmpty(mobile)) {
-			createCriteria.andLike("memo", mobile+"%");
+		if (!StringUtils.isEmpty(memo)) {
+			createCriteria.andLike("memo", "%"+memo+"%");
 		}
-		example.setOrderByClause(" create_time desc");
+		example.setOrderByClause(" option_time desc,id desc");
 		
 		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
 		Page<PayLog> page=(Page<PayLog>) listByExampleAndPage;
@@ -882,8 +745,4 @@ public class QueryController {
 		style.setFillForegroundColor(HSSFColor.YELLOW.index);
 		
 	}
-
-
-
-
 }

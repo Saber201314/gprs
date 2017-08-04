@@ -36,7 +36,7 @@ public class GprsPackageService implements DruidStatInterceptor {
 		return gprsPackageMapper.insertSelective(gprsPackage);
 	}
 	public Integer update(GprsPackage gprsPackage){
-		return gprsPackageMapper.updateByPrimaryKey(gprsPackage);
+		return gprsPackageMapper.updateByPrimaryKeySelective(gprsPackage);
 	}
 	public Integer del(List<Integer> ids){
 		return gprsPackageMapper.delPackage(ids);

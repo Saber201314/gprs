@@ -39,78 +39,60 @@ public class TestChargeTemplate extends ChargeTemplate {
 		super(templateId, templateName, account, password, key);
 		// TODO Auto-generated constructor stub
 	}
-
 	@Override
 	public ChargeResponsVO charge(ChargeOrder chargeOrder) {
 		ChargeResponsVO result = new ChargeResponsVO();
 		String packageCode = getPackageCode(chargeOrder);
-
 		if (StringUtils.isEmpty(packageCode)) {
+			chargeOrder.setChargeStatus(3);
+			chargeOrder.setError("未找到流量包编码");
 			result.setSuccess(false);
 			result.setMsg("没有流量包编码");
 			return result;
 		}
-		SimpleDateFormat timessdf = new SimpleDateFormat("yyyyMMddHHmmss");
-		
 		String requestid = super.genTaskId();
-		String url = "http://localhost:8081/gprs-new/test";
-		String api_key = this.password;
-		String timestamp = timessdf.format(new Date());
-		String packageid = chargeOrder.getAmount().toString();
-		String mobiles = chargeOrder.getMobile();
-		String messageid = requestid;
-
-		String apisecret = MD5Utils.getMd5(this.key).toLowerCase();
-		String sign = MD5Utils.getMd5(api_key + apisecret + timestamp + mobiles + packageid).toLowerCase();
-		
+		String url = "http://118.89.103.198:8080/gprs-new/test.charge";
 		HttpParams params = new HttpParams();
-		params.put("appkey", api_key);
-		params.put("timestamp", timestamp);
-		params.put("packageid", packageid);
-		params.put("mobiles", mobiles);
-		params.put("messageid", messageid);
-		params.put("sign", sign);
-
+		params.put("mobiles", chargeOrder.getMobile());
+		params.put("callbackurl", "http://58.246.140.150/test.notify");
+		params.put("agentOrderId", requestid);
 		Response response = null;
+		String body = null;
 		try {
 			response = OkhttpUtils.getInstance()
 				.get(url)
 				.params(params)
 				.execute();
-		} catch (IOException e1) {
+			body = response.body().string();
+			chargeOrder.setSubmitTime(new Date());
+			if(!StrUtil.isEmpty(body)){
+				JSONObject jsonObject = JSON.parseObject(body);
+				Integer code = jsonObject.getInteger("code");
+				String message = jsonObject.getString("message");
+				String orderid = jsonObject.getString("orderid");
+				String agentOrderId = jsonObject.getString("agentOrderId");
+				if (code == 0) {
+					chargeOrder.setChargeTaskId(agentOrderId);
+					chargeOrder.setUpOrderId(orderid);
+					chargeOrder.setChargeStatus(2);
+					chargeOrder.setSubmitContent(message);
+					result.setOrderId(chargeOrder.getAgentOrderId());
+				} else {
+					chargeOrder.setChargeStatus(3);
+					chargeOrder.setSubmitContent(message);
+					result.setSuccess(false);
+					result.setMsg(message);
+				}
+				super.saveChannelLog(chargeOrder,body);
+			}else{
+				chargeOrder.setChargeStatus(1);
+				chargeOrder.setError("提交未知");
+			}
+		} catch (Exception e1) {
 			e1.printStackTrace();
 			chargeOrder.setChargeStatus(1);
+			chargeOrder.setSubmitContent(e1.getMessage());
 			chargeOrder.setError("提交未知");
-		}
-		String body = null;
-		try {
-			body = response.body().string();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(!StrUtil.isEmpty(body)){
-			JSONObject jsonObject = JSON.parseObject(body);
-			Integer code = jsonObject.getInteger("code");
-			String message = jsonObject.getString("message");
-			String orderid = jsonObject.getString("orderid");
-			
-			if (code == 0) {
-				chargeOrder.setChargeTaskId(orderid);
-				result.setOrderId(chargeOrder.getAgentOrderId());
-			} else {
-				result.setSuccess(false);
-				result.setMsg(message);
-			}
-			ChannelLog channelLog = new ChannelLog();
-			channelLog.setTemplateId(this.templateId);
-			channelLog.setTemplateName(this.templateName);
-			channelLog.setMobile(chargeOrder.getMobile());
-			channelLog.setOrderId(chargeOrder.getChargeTaskId());
-			channelLog.setResponse(body);
-			channelLogService.save(channelLog);
-		}else{
-			
 		}
 		
 		return result;

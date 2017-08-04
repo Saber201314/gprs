@@ -30,7 +30,6 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		String requestURI = request.getRequestURI();
-		logger.info("拦截请求----",requestURI);
 		Users currentUser = service.getCurrentUser(request.getSession());
 		if(currentUser==null){
 			if(requestURI.endsWith(".jsp")){

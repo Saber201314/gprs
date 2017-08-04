@@ -24,10 +24,12 @@ public interface ChargeOrderMapper extends Mapper<ChargeOrder>{
 			@Param("report_time")Long report_time);
 	Integer updateChargeStatus(
 			@Param("charge_status")Integer charge_status,
-			@Param("error")String error,
-			@Param("report_time")Long report_time,
+			@Param("report_content")String report_content,
+			@Param("report_time")Date report_time,
 			@Param("charge_task_id")String charge_task_id,
 			@Param("submit_template")Integer submit_template);
+	
+	Integer updateCacheFlag(@Param("ids")List<Integer> ids);
 	
 	List<ChargeOrder> qaueryMonthAmount(@Param("submit_time")Date submit_time);
 	

@@ -44,7 +44,7 @@ public class GprsPackageController {
 			@RequestParam(value="alias",required=false)String alias,
 			@RequestParam(value="amount",required=false)String amount,
 			@RequestParam(value="type",required=false)String type,
-			@RequestParam(value="locationType",required=false)String locationType){
+			@RequestParam(value="rangeType",required=false)String rangeType){
 		JSONObject result=new JSONObject();
 		Users currentUser = userService.getCurrentUser(session);
 		if ((currentUser == null) || (currentUser.getType() != 1)) {
@@ -65,8 +65,8 @@ public class GprsPackageController {
 		if(!StringUtils.isEmpty(type)&&!"0".equals(type)){
 			createCriteria.andEqualTo("type", type);
 		}
-		if(!StringUtils.isEmpty(locationType)&&!"-1".equals(locationType)){
-			createCriteria.andEqualTo("locationType", locationType);
+		if(!StringUtils.isEmpty(rangeType)&&!"-1".equals(rangeType)){
+			createCriteria.andEqualTo("rangeType", rangeType);
 		}
 		createCriteria.andEqualTo("status", 0);
 		example.setOrderByClause(" option_time desc");
@@ -87,7 +87,7 @@ public class GprsPackageController {
 			@RequestParam(value="amount")Integer amount,
 			@RequestParam(value="money")Double money,
 			@RequestParam(value="type")Integer type,
-			@RequestParam(value="locationType")Integer locationType,
+			@RequestParam(value="rangeType")Integer rangeType,
 			@RequestParam(value="all",required=false)String all,
 			@RequestParam(value="provinces")List<String> provinces,
 			@RequestParam(value="memo",required=false)String memo){
@@ -104,7 +104,7 @@ public class GprsPackageController {
 		gprsPackage.setAmount(amount);
 		gprsPackage.setMoney(money);
 		gprsPackage.setType(type);
-		gprsPackage.setRange(locationType);
+		gprsPackage.setRangeType(rangeType);
 		if(!StringUtils.isEmpty(all)&&"全国".equals(all)){
 			gprsPackage.setLocations(all);
 		}else{
@@ -124,10 +124,10 @@ public class GprsPackageController {
 		}
 		if (num == 1) {
 			result.put("success", true);
-			result.put("msg", "添加成功");
+			result.put("msg", "操作成功");
 		}else{
 			result.put("success", false);
-			result.put("msg", "添加失败");
+			result.put("msg", "操作失败");
 		}
 		return result.toJSONString();
 	}

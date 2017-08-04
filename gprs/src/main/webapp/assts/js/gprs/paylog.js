@@ -61,55 +61,40 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 						$(".layui-table tbody").append(html.join("")); 
 						$.each(data.list,function(index,item){
 							html.push('<tr>');
+							html.push('<td>'+item.id+'</td>');
+							
 							html.push('<td>'+item.account+'</td>');
 							
 							if( item.type == 1){
-								html.push('<td>流量充值</td>');
+								html.push('<td><span class="lable-chargeOrBuckle">冲扣值</span></td>');
 							}else if(item.type == 2){
-								html.push('<td>流量池费用</td>');
+								html.push('<td><span class="lable-pay">充值扣款</span></td>');
 							}else{
-								html.push('<td>未知</td>');
-							}
-							html.push('<td>'+item.orderId+'</td>');
-							html.push('<td>'+item.discount+'</td>');
-							if(item.status == 1){
-								html.push('<td><span class="lable-success">-'+item.money+'元</span></td>');
-							}else if(item.status == 0){
-								html.push('<td><span class="lable-charging">-'+item.money+'元</span></td>');
-							}else if(item.status == -1){
-								html.push('<td><span class="lable-fail">+'+(0-item.money)+'元</span></td>');
-							}else if(item.status == -2){
-								html.push('<td><span class="lable-nosubmit">-'+item.money+'元</span></td>');
-							}
-							if(item.status == 1){
-								html.push('<td><span class="lable-success">'+item.balance+'元</span></td>');
-							}else if(item.status == 0){
-								html.push('<td><span class="lable-charging">'+item.balance+'元</span></td>');
-							}else if(item.status == -1){
-								html.push('<td><span class="lable-fail">'+item.balance+'元</span></td>');
-							}else if(item.status == -2){
-								html.push('<td><span class="lable-nosubmit">'+item.balance+'元</span></td>');
+								html.push('<td><span class="lable-refund">失败退款</span></td>');
 							}
 							
-																				
-							
-							html.push('<td>'+item.profit+'元</td>');
-							html.push('<td>'+item.agentOrderId+'</td>');
+							if(item.type == 1){
+								html.push('<td><span class="lable-chargeOrBuckle">'+item.money+'元</span></td>');
+							}else if(item.type == 2){
+								html.push('<td><span class="lable-pay">'+item.money+'元</span></td>');
+							}else if(item.type == 3){
+								html.push('<td><span class="lable-refund">'+(item.money)+'元</span></td>');
+							}
+//							if(item.status == 1){
+//								html.push('<td><span class="lable-success">'+item.balance+'元</span></td>');
+//							}else if(item.status == 0){
+//								html.push('<td><span class="lable-charging">'+item.balance+'元</span></td>');
+//							}else if(item.status == -1){
+//								html.push('<td><span class="lable-fail">'+item.balance+'元</span></td>');
+//							}else if(item.status == -2){
+//								html.push('<td><span class="lable-nosubmit">'+item.balance+'元</span></td>');
+//							}
+							html.push('<td>'+item.balance+'元</td>');
 							html.push('<td>'+item.memo+'</td>');
 							
 							var newDate = new Date();
 							newDate.setTime(item.optionTime);
 							html.push('<td>'+newDate.toLocaleString()+'</td>');
-							
-							if(item.status == 1){
-								html.push('<td><span class="lable-success">充值成功</span></td>');
-							}else if(item.status == 0){
-								html.push('<td><span class="lable-charging">充值中</span></td>');
-							}else if(item.status == -1){
-								html.push('<td><span class="lable-fail">已退款</span></td>');
-							}else if(item.status == -2){
-								html.push('<td><span class="lable-nosubmit">充值失败</span></td>');
-							}
 							html.push('</tr>');
 						})
 						$(".layui-table tbody").append(html.join("")); 

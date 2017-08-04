@@ -32,7 +32,7 @@ public class GprsPackage implements Serializable, Comparable<GprsPackage> {
 	private Integer type;
 	private String memo;
 	private Date optionTime;
-	private Integer range;
+	private Integer rangeType;
 	private String locations;
 	private Integer status;
 	@Transient
@@ -170,12 +170,13 @@ public class GprsPackage implements Serializable, Comparable<GprsPackage> {
 		this.optionTime = optionTime;
 	}
 
-	public Integer getRange() {
-		return range;
+
+	public Integer getRangeType() {
+		return rangeType;
 	}
 
-	public void setRange(Integer range) {
-		this.range = range;
+	public void setRangeType(Integer rangeType) {
+		this.rangeType = rangeType;
 	}
 
 	/**

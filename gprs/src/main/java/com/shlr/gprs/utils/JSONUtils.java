@@ -10,6 +10,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 public class JSONUtils {
 	
 	public static String toJsonString(Object obj){
-		return JSON.toJSONString(obj, SerializerFeature.WriteNullStringAsEmpty,SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect);
+		return JSON.toJSONString(obj, SerializerFeature.WriteNullStringAsEmpty,
+				SerializerFeature.WriteMapNullValue,SerializerFeature.DisableCircularReferenceDetect);
 	}
 }

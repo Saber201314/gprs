@@ -12,9 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.coyote.http11.Http11AprProcessor;
 
+import com.shlr.gprs.domain.PayLog;
 import com.shlr.gprs.manager.ThreadManager;
 import com.shlr.gprs.utils.okhttp.HttpHeaders;
 import com.shlr.gprs.utils.okhttp.OkhttpUtils;
+import com.shlr.gprs.vo.BackMoneyVO;
+import com.shlr.gprs.vo.ChargeOrBuckleVO;
 
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -25,39 +28,12 @@ import okhttp3.Response;
 * 
 */
 public class TestJavaMail {
-	static ConcurrentHashMap<Integer, Double> money = new ConcurrentHashMap<Integer, Double>();
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		
-		money.put(1, 100D);
-		for (int i = 0; i < 10; i++) {
-			ThreadManager.getInstance().execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					Double double1 = money.get(1);
-					System.out.println(double1);
-					money.put(1, double1-1);
-				}
-			});
-		}
-		for (int i = 0; i < 5; i++) {
-			ThreadManager.getInstance().execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					Double double1 = money.get(1);
-					System.out.println(double1);
-					money.put(1, double1+1);
-				}
-			});
-		}
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("---->>>>>>>"+money.get(1));
-		
+			PayLog payLog = new  PayLog();
+			BackMoneyVO  backMoneyVO = new BackMoneyVO();
+			ChargeOrBuckleVO buckleVO = new ChargeOrBuckleVO();
+			System.out.println(payLog instanceof BackMoneyVO);
+			System.out.println(backMoneyVO instanceof BackMoneyVO);
+			System.out.println(buckleVO instanceof PayLog);
 	}
 }

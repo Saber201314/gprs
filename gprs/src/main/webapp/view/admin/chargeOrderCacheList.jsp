@@ -9,10 +9,9 @@ body{
 	padding: 0 15px;
 }
 
-
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
-
+    white-space: nowrap;  
 }
 td .status{
 	padding: 5px 10px;
@@ -191,10 +190,10 @@ body .ui-tooltip{
 				<div class="layui-inline">
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
-						<select name="locationType" lay-verify="" lay-search>
-							<option value="0">请选择</option>
-							<option value="1">全国流量</option>
-							<option value="2">省内流量</option>
+						<select name="rangeType" lay-verify="" lay-search>
+							<option value="-1">请选择</option>
+							<option value="0">全国流量</option>
+							<option value="1">省内流量</option>
 						</select>
 					</div>
 				</div>
@@ -216,10 +215,8 @@ body .ui-tooltip{
 			</div>
 		</form>
 	</fieldset>
-	<button class="layui-btn layui-btn-mini " >缓存管理</button>
-	<button class="layui-btn layui-btn-mini getallcheck" >批量提交</button>
-	<button class="layui-btn layui-btn-mini getallcheck" >停止提交</button>
-	<button class="layui-btn layui-btn-mini getallcheck" >批量失败</button>
+	<button class="layui-btn layui-btn-mini reMatchPackage">重新分包</button>
+	<button class="layui-btn layui-btn-mini stopTask">终止任务</button>
 	<button class="layui-btn layui-btn-mini" >导出Excel</button>
 	
 	<div class="layui-form">
@@ -228,16 +225,15 @@ body .ui-tooltip{
 				<tr>
 					<th><input type="checkbox" name="" lay-skin="primary"
 						lay-filter="allChoose"></th>
+					<th>编号</th>	
 					<th>代理商</th>
 					<th>手机号码</th>
 					<th>号码类型</th>
 					<th width = "70">流量类型</th>
 					<th>流量值</th>
-					<th>基础价格</th>
-					<th>扣费金额</th>
-					<th>充值时间</th>
+					<th>订单生成时间</th>
 					<th>充值方式</th>
-					<th width="80">充值结果</th>
+					<th>异常描述</th>
 					<th>接入</th>
 					<th>外放</th>
 					<th>带票</th>
@@ -260,7 +256,7 @@ body .ui-tooltip{
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
-	}).use('charge-order-admin'); //加载入口
+	}).use('chargeOrderCacheList'); //加载入口
 	
 </script>
 </html>

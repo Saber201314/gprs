@@ -33,7 +33,7 @@ public class UsersCache {
 	
 	public void load() {
 		long start = System.currentTimeMillis();
-		logger.info("{} initialization started",this.getClass().getSimpleName());
+		logger.info("======>>>>>> {} initialization started",this.getClass().getSimpleName());
 		
 		UserService userService = (UserService) WebApplicationContextManager.getApplicationContext().getBean(UserService.class);
 		List<Users> list =userService.list();
@@ -41,9 +41,8 @@ public class UsersCache {
 			idMap.put(Integer.valueOf(users.getId()), users);
 			usernameMap.put(users.getUsername(), users);
 		}
-		
 		long end = System.currentTimeMillis();
-		logger.info("{} initialization completed in {} ms ",this.getClass().getSimpleName(),end-start);
+		logger.info("======<<<<<<{} initialization completed in {} ms ",this.getClass().getSimpleName(),end-start);
 	}
 	public void updateCache(Users users){
 		idMap.put(users.getId(), users);

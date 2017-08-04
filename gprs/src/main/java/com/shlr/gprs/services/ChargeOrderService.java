@@ -30,12 +30,16 @@ public class ChargeOrderService implements DruidStatInterceptor{
 		return chargeOrderMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
 	}
 	
-	public List<ChargeOrder> selectOneByExample(String taskId,Integer templateId){
+	public List<ChargeOrder> listByExample(Example example){
+		return chargeOrderMapper.selectByExample(example);
+	}
+	
+	public List<ChargeOrder> findOneByTaskIdAndTemplateId(String taskId,Integer templateId){
 		Example example=new Example(ChargeOrder.class,true,false);
 		Criteria createCriteria = example.createCriteria();
 		createCriteria.andEqualTo("chargeTaskId", taskId);
 		createCriteria.andEqualTo("submitTemplate", templateId);
-		createCriteria.andEqualTo("chargeStatus", 0);
+		createCriteria.andEqualTo("chargeStatus", 2);
 		List<ChargeOrder> selectByExample = chargeOrderMapper.selectByExample(example);
 		return selectByExample;
 		
@@ -51,15 +55,13 @@ public class ChargeOrderService implements DruidStatInterceptor{
 		}
 		return result;
 	}
-	
-	public Integer forceToFailOrder(Integer id, Integer cacheFlag, Integer status,	String error){
-		
-		return chargeOrderMapper.forceToFailOrder(id, cacheFlag, status, error, new Date().getTime());
-		
+	public Integer updateCacheFlag(List<Integer> ids){
+		return chargeOrderMapper.updateCacheFlag(ids);
 	}
-	public Integer updateChargeStatus(String id, Integer templateId, Integer status,String error){
+	//更新充值状态
+	public Integer updateChargeStatus(String id, Integer templateId,Date reportTime, Integer status,String error){
 		
-		return chargeOrderMapper.updateChargeStatus(status, error, new Date().getTime(), id, templateId);
+		return chargeOrderMapper.updateChargeStatus(status, error, reportTime, id, templateId);
 		
 	}
 

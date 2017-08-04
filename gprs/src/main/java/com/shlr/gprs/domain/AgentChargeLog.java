@@ -30,8 +30,6 @@ public class AgentChargeLog implements Serializable{
 	@Column
 	private Double money;
 	@Column
-	private Double balance;
-	@Column
 	private Integer payType;
 	@Column
 	private String optionUser;
@@ -70,12 +68,6 @@ public class AgentChargeLog implements Serializable{
 	}
 	public void setMoney(Double money) {
 		this.money = money;
-	}
-	public Double getBalance() {
-		return balance;
-	}
-	public void setBalance(Double balance) {
-		this.balance = balance;
 	}
 	public Integer getPayType() {
 		return payType;

@@ -26,8 +26,8 @@ public class ChannelTemplate implements Serializable{
 	private String name;
 	@Column
 	private String identity;
-	@Column(name="option_time")
-	private Date option_time;
+	@Column
+	private Date optionTime;
 	@Column
 	private String account;
 	@Column
@@ -53,11 +53,11 @@ public class ChannelTemplate implements Serializable{
 	public void setIdentity(String identity) {
 		this.identity = identity;
 	}
-	public Date getOption_time() {
-		return option_time;
+	public Date getOptionTime() {
+		return optionTime;
 	}
-	public void setOption_time(Date option_time) {
-		this.option_time = option_time;
+	public void setOptionTime(Date optionTime) {
+		this.optionTime = optionTime;
 	}
 	public String getAccount() {
 		return account;

@@ -28,7 +28,7 @@ public class ChargeOrder {
 	
 	private Integer type;//运营商类型   1 移动 2联通 3电信
 	
-	private Integer range;//流量类型 0 全国 1省内     (我们放给下游是1和2，加了1，根据上游自行减1)
+	private Integer rangeType;//流量类型 0 全国 1省内     (我们放给下游是1和2，加了1，根据上游自行减1)
 	
 	private String location;//地区 
 	
@@ -78,7 +78,7 @@ public class ChargeOrder {
 	
 	private Integer batchId;//
 	
-	private Integer paystatus;//支付状态
+	private Integer paystatus = 0;//支付状态
 	
 	private Double hongbao;//
 	
@@ -88,7 +88,7 @@ public class ChargeOrder {
 	
 	private String agentOrderId;//下游代理商地单号
 	
-	private Integer cacheFlag;//缓存标志  1 缓存中 0 正常数据
+	private Integer cacheFlag = 0;//缓存标志  1 缓存中 0 正常数据
 	
 	private String upOrderId;//上游订单号  
 	
@@ -178,13 +178,12 @@ public class ChargeOrder {
 		this.type = type;
 	}
 
-	
-	public Integer getRange() {
-		return range;
+	public Integer getRangeType() {
+		return rangeType;
 	}
 
-	public void setRange(Integer range) {
-		this.range = range;
+	public void setRangeType(Integer rangeType) {
+		this.rangeType = rangeType;
 	}
 
 	/**

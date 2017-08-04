@@ -10,6 +10,7 @@ import com.shlr.gprs.cache.ChannelTemplateCache;
 import com.shlr.gprs.cache.ChannelTemplateCodeCache;
 import com.shlr.gprs.cache.PricePaperCache;
 import com.shlr.gprs.cache.UsersCache;
+import com.shlr.gprs.manager.CallbackManager;
 import com.shlr.gprs.manager.ChargeManager;
 import com.shlr.gprs.manager.PayManager;
 
@@ -34,7 +35,7 @@ public class InitListener implements ApplicationListener<ContextRefreshedEvent> 
 		
 		PricePaperCache.getInstance().load();
 		
-//		GprsPackageCache.load();
+		CallbackManager.getInstance().init();
 		
 		ChannelTemplateCodeCache.getInstance().load();
 		

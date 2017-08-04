@@ -43,14 +43,14 @@ body{
 					<label class="layui-form-label">充值方式</label>
 					<div class="layui-input-inline">
 						<select name=payType>
-							<option value="1">对公账号收款</option>
-							<option value="2">对公支付宝收款</option>
-							<option value="3">对私账号收款</option>
-							<option value="4">对私支付宝收款</option>
-							<option value="5">账号金额转移</option>
-							<option value="6">授权信用加款</option>	
-							<option value="8">账号测试加款</option>	
-							<option value="9">其他原因充扣款</option>
+							<option value="1">公账收款</option>
+						    <option value="2">公支付宝</option>
+						    <option value="3">私账</option>
+						    <option value="4">转移</option>
+						    <option value="5">授信</option>
+						    <option value="6">未到账退款</option>
+						    <option value="7">测试加款</option>
+						    <option value="8">其他原因充扣款</option>
 						</select>
 					</div>
 				</div>

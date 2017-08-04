@@ -44,8 +44,8 @@ body{
 					</td>
 					<td>${item.location }</td>
 					<td>
-						<c:if test="${item.locationType == 0 }">全国流量</c:if>
-						<c:if test="${item.locationType == 1}">省内流量</c:if>
+						<c:if test="${item.rangeType == 0 }">全国流量</c:if>
+						<c:if test="${item.rangeType == 1}">省内流量</c:if>
 					</td>
 					<td>${item.amount} </td>
 					<td>编辑</td>

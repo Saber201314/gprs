@@ -21,6 +21,40 @@ layui.define([ 'base', ], function(exports) {
 		initChannelList();
 		return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
 	})
+	
+	form.on('switch(status)', function(data){
+		var id = $(data.elem).data("id");
+		var status = "";
+		if(data.elem.checked){
+			status = "on"
+		}else{
+			status = "off"
+		}
+		layer.confirm('是否切换状态', {
+			  btn: ['确定','取消'] //按钮
+			}, function(){
+				$.ajax({
+					url : '/admin/changeChannelStatus.action?channelId='+id+'&statusFlag='+status,
+					type : 'get',
+					dataType : 'json',
+					success : function(data){
+						layer.closeAll();
+						if(data && data.success){
+							top.layer.msg("修改成功");
+							initChannelList();
+						}else{
+							top.layer.msg("修改失败");
+						}
+					},
+					error : function(){
+						top.layer.msg("连接服务器失败");
+					}
+				})
+			}, function(){
+				data.elem.checked = !data.elem.checked;
+				form.render("checkbox");
+			});
+	});
 	function initChannelList() {
 		index = top.layer.load();
 		$(".layui-table tbody").html('');
@@ -36,7 +70,8 @@ layui.define([ 'base', ], function(exports) {
 				if (data && data.list.length > 0) {
 					$.each(data.list, function(index, item) {
 						html.push('<tr>');
-						html.push('<td><input type="checkbox"  data-id="'+item.id+'" lay-skin="primary"/></td>');
+						//html.push('<td><input type="checkbox"  data-id="'+item.id+'" lay-skin="primary"/></td>');
+						html.push('<td>' + item.id + '</td>');
 						html.push('<td>' + item.name + '</td>');
 						html.push('<td>' + item.alias + '</td>');
 						html.push('<td>' + item.templateName + '</td>');
@@ -53,11 +88,11 @@ layui.define([ 'base', ], function(exports) {
 						html.push('<td>'+item.memo+'</td>');
 						var status = item.status;
 						if(status == 0){
-							html.push('<td>禁用</td>');
-						}else{
-							html.push('<td>启用</td>');
+							html.push('<td><input type="checkbox" checked data-id="'+item.id+'" name="status" lay-skin="switch" lay-filter="status" lay-text="开启|暂停"></td>');
+						}else if(status == -1){
+							html.push('<td><input type="checkbox"  data-id="'+item.id+'" name="status" lay-skin="switch" lay-filter="status" lay-text="开启|暂停"></td>');
 						}
-						html.push('<td><a href="/admin/editChannel.action?channelId='+item.id+'"><button class="layui-btn layui-btn-mini">编辑</button></a></td>');
+						html.push('<td> <a href="/admin/editChannel.action?channelId='+item.id+'">  <button class="layui-btn layui-btn-mini">编辑</button> </a></td>');
 						html.push('<td><button data-id="'+item.id+'" class="layui-btn layui-btn-mini showChannelInfo" >详情</button></td>');
 						html.push('</tr>');
 					});

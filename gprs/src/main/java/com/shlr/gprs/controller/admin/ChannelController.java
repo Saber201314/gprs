@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
+import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.cache.ChannelTemplateCache;
 import com.shlr.gprs.cache.ChannelTemplateCodeCache;
 import com.shlr.gprs.domain.Channel;
@@ -38,6 +39,8 @@ import com.shlr.gprs.services.ChannelTemplateCodeService;
 import com.shlr.gprs.services.ChannelTemplateService;
 import com.shlr.gprs.services.GprsPackageService;
 import com.shlr.gprs.services.UserService;
+import com.shlr.gprs.utils.JSONUtils;
+import com.xiaoleilu.hutool.util.StrUtil;
 
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -188,6 +191,9 @@ public class ChannelController {
 				for(int i = 0;i<packageArr.length;i++){
 					Map<String,Object> map = new HashMap<String,Object>();					
 					String pack = packageArr[i];
+					if(StrUtil.isBlank(pack)){
+						continue;
+					}
 					int firstLen = pack.indexOf(":");
 					map.put("id", pack.substring(0, firstLen));
 					int lastLen = pack.lastIndexOf(":");					
@@ -300,7 +306,7 @@ public class ChannelController {
 	@RequestMapping("/addTemplateCode.action")
 	@ResponseBody
 	public String addTemplateCode(HttpSession session,Integer templateId,Integer type,
-			Integer locationType,String location,Integer amount,String code){
+			Integer rangeType,String location,Integer amount,String code){
 		Users currentUser = userService.getCurrentUser(session);
 		if (currentUser == null || currentUser.getType() != 1) {
 			return null;
@@ -308,7 +314,7 @@ public class ChannelController {
 		ChannelTemplateCode channelTemplateCode=new ChannelTemplateCode();
 		channelTemplateCode.setTemplateId(templateId);
 		channelTemplateCode.setType(type);
-		channelTemplateCode.setRange(locationType);
+		channelTemplateCode.setRangeType(rangeType);
 		channelTemplateCode.setLocation(location);
 		channelTemplateCode.setAmount(amount);
 		channelTemplateCode.setCode(code);
@@ -345,5 +351,24 @@ public class ChannelController {
 			result.put("msg", "删除失败");
 		}
 		return result.toJSONString();
+	}
+	@RequestMapping("/changeChannelStatus.action")
+	@ResponseBody
+	public String changeChannelStatus(Integer channelId,String statusFlag){
+		JSONObject result = new JSONObject();
+		Integer num = 0;
+		if(StrUtil.isNotBlank(statusFlag) && "on".equals(statusFlag)){
+			num = channelService.updateStatus(channelId, 0);
+			ChannelCache.getInstance().cacheCondition.remove(channelId.toString());
+		}else if(StrUtil.isNotBlank(statusFlag) && "off".equals(statusFlag)){
+			num = channelService.updateStatus(channelId, -1);
+			ChannelCache.getInstance().cacheCondition.put(channelId.toString(), true);
+		}
+		if(num > 0){
+			result.put("success", true);
+		}else{
+			result.put("success", false);
+		}
+		return JSONUtils.toJsonString(result);
 	}
 }

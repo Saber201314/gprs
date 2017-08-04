@@ -11,6 +11,7 @@ body{
 
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
+	font-size: 12px;
 
 }
 td .status{
@@ -25,24 +26,28 @@ td .unprofit{
 	color:#FF5722;
 	font-weight: bold;
 }
-.lable-nosubmit{
-	padding: 4px 10px;
+.lable-unknown{
+	padding: 4px 4px;
 	color: #fff;
-	background-color: #c2c2c2;
+	border-radius : 2px;
+	background-color: #F7B824;
 }
-.lable-charging{
-	padding: 4px 10px;
+.lable-submitsuccess{
+	padding: 4px 4px;
 	color: #fff;
+	border-radius : 2px;
 	background-color: #01AAED;
 }
-.lable-success{
-	padding: 4px 10px;
+.lable-chargesuccess{
+	padding: 4px 4px;
 	color: #fff;
+	border-radius : 2px;
 	background-color: #5FB878;
 }
 .lable-fail{
-	padding: 4px 10px;
+	padding: 4px 4px;
 	color: #fff;
+	border-radius : 2px;
 	background-color: #FF5722;
 }
 
@@ -208,22 +213,23 @@ body .ui-tooltip{
 				<div class="layui-inline">
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
-						<select name="locationType" lay-verify="" lay-search>
-							<option value="0">请选择</option>
-							<option value="1">全国流量</option>
-							<option value="2">省内流量</option>
+						<select name="rangeType" lay-verify="" lay-search>
+							<option value="-1">请选择</option>
+							<option value="0">全国流量</option>
+							<option value="1">省内流量</option>
 						</select>
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">充值状态</label>
 					<div class="layui-input-inline">
-						<select name="submitStatus" lay-verify="" lay-search>
+						<select name="chargeStatus" lay-verify="" lay-search>
 							<option value="-1">请选择</option>
-							<option value="0">未提交</option>
-							<option value="1">充值中</option>
-							<option value="2">充值成功</option>
-							<option value="3">充值失败</option>
+							<option value="1">未知</option>
+							<option value="2">提交成功</option>
+							<option value="3">提交失败</option>
+							<option value="4">充值成功</option>
+							<option value="5">充值失败</option>
 						</select>
 					</div>
 				</div>
@@ -257,22 +263,26 @@ body .ui-tooltip{
 				<tr>
 					<th><input type="checkbox" name="" lay-skin="primary"
 						lay-filter="allChoose"></th>
+					<th>编号</th>
 					<th>代理商</th>
 					<th>手机号码</th>
 					<th>号码类型</th>
 					<th width = "70">流量类型</th>
 					<th>流量值</th>
 					<th>基础价格</th>
-					<th>扣费金额</th>
-					<th>充值时间</th>
+					<th width="70">状态</th>
+					<th style="width: 70px;">订单生成时间</th>
+					<th>提交时间</th>
+					<th>提交返回内容</th>
 					<th>回调时间</th>
+					<th>回调内容</th>
 					<th>充值方式</th>
-					<th width="80">充值结果</th>
-					<th>异常信息</th>
-					<th width="70">充值通道</th>
+					<th style="width: 70px;">充值通道</th>
 					<th>接入</th>
+					<th>折后价</th>
 					<th>外放</th>
 					<th>带票</th>
+					<th>扣费金额</th>
 					<th>盈利</th>
 					<th>操作</th>
 				</tr>
@@ -292,7 +302,7 @@ body .ui-tooltip{
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
-	}).use('charge-order-admin'); //加载入口
+	}).use('chargeOrderList'); //加载入口
 	
 </script>
 </html>

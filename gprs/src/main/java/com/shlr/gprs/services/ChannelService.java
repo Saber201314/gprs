@@ -50,6 +50,9 @@ public class ChannelService implements DruidStatInterceptor{
 		return channelMapper.updateByPrimaryKeySelective(channel);
 		
 	}
+	public Integer updateStatus(Integer id,Integer status){
+		return channelMapper.updateChannelStatus(id, status);
+	}
 	public Map<Integer, Integer> qaueryMonthAmount(){
 		Map<Integer, Integer> monthMap = new HashMap<Integer, Integer>();
 

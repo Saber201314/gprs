@@ -22,17 +22,11 @@ public class ChannelTemplateCode implements Serializable{
 	@Id
 	@GeneratedValue(generator="JDBC")
 	private Integer id;
-	@Column(name="template_id")
 	private Integer templateId;
-	@Column(name="type")
 	private Integer type;
-	@Column(name="range")
-	private Integer range;
-	@Column(name="location")
+	private Integer rangeType;
 	private String location;
-	@Column(name="amount")
 	private Integer amount;
-	@Column(name="code")
 	private String code;
 	public Integer getId() {
 		return id;
@@ -52,11 +46,11 @@ public class ChannelTemplateCode implements Serializable{
 	public void setType(Integer type) {
 		this.type = type;
 	}
-	public Integer getRange() {
-		return range;
+	public Integer getRangeType() {
+		return rangeType;
 	}
-	public void setRange(Integer range) {
-		this.range = range;
+	public void setRangeType(Integer rangeType) {
+		this.rangeType = rangeType;
 	}
 	public String getLocation() {
 		return location;

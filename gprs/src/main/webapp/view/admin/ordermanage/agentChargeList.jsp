@@ -11,6 +11,7 @@ body{
 
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
+	font-size: 12px;
 
 }
 td .status{
@@ -125,17 +126,16 @@ body .ui-tooltip{
 				<div class="layui-inline">
 					<label class="layui-form-label">支付方式</label>
 					<div class="layui-input-inline">
-						<select name="">
-							<option>请选择</option>
-							<option value="1">对公账号收款</option>
-						    <option value="2">对公支付宝收款</option>
-						    <option value="3">对私账号收款</option>
-						    <option value="4">对私支付宝收款</option>
-						    <option value="5">账号金额转移</option>
-						    <option value="6">授权信用加款</option>
-						    <option value="7">充值未到账退款</option>
-						    <option value="8">账号测试加款</option>
-						    <option value="9">其他原因充扣款</option>
+						<select name="payType">
+							<option value="-1">请选择</option>
+							<option value="1">公账收款</option>
+						    <option value="2">公支付宝</option>
+						    <option value="3">私账</option>
+						    <option value="4">转移</option>
+						    <option value="5">授信</option>
+						    <option value="6">未到账退款</option>
+						    <option value="7">测试加款</option>
+						    <option value="8">其他原因充扣款</option>
 						</select>
 					</div>
 				</div>
@@ -159,12 +159,11 @@ body .ui-tooltip{
 				<tr>
 					<th>编号</th>
 					<th>账号</th>
-					<th>代理商</th>
 					<th>充值金额</th>
-					<th>充值后余额</th>
 					<th>充值方式</th>
 					<th>充值时间</th>
 					<th>备注</th>
+					<th>操作人</th>
 					<th>操作</th>
 				</tr>
 			</thead>

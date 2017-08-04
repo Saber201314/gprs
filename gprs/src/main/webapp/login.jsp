@@ -101,6 +101,7 @@ layui.use(['jquery','layer','form'],function(){
 						window.location = data.url;
 					}else{
 						layer.msg(data.error_msg);
+						document.getElementById('securitycode').src='/getSecurityCode.action?temp='+Math.random();
 					}
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown,data) {

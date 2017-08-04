@@ -21,7 +21,7 @@ layui.define([ 'base', ], function(exports) {
 	form.on('submit(btn-submit)', function(data) {
 		var templateId=$('input[name="templateId"]').val();
 		$.ajax({
-			url: "/admin//addTemplateCode.action",
+			url: "/admin/addTemplateCode.action",
 			type: "post",
 			data : $('form').serialize(),
 			dataType : 'json',

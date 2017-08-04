@@ -33,6 +33,7 @@ import com.shlr.gprs.services.PricePaperService;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.DateConvert;
 import com.shlr.gprs.utils.JSONUtils;
+import com.shlr.gprs.vo.ChargeOrBuckleVO;
 import com.xiaoleilu.hutool.crypto.SecureUtil;
 import com.xiaoleilu.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.xiaoleilu.hutool.util.HexUtil;
@@ -119,19 +120,25 @@ public class UserController {
 	public String chargeAgentBalance(HttpSession session,
 			AgentChargeLog agentChargeLog){
 		JSONObject resut = new JSONObject();
-		Double userMoney = PayManager.getInstance().updateAgentBalance(agentChargeLog.getUserId(), agentChargeLog.getMoney());
-		if(userMoney!=null){
-			Users currentUser = userService.getCurrentUser(session);
-			Users agent = userService.findById(agentChargeLog.getUserId());
-			agentChargeLog.setAgent(agent.getAgent());
-			agentChargeLog.setAccount(agent.getUsername());
-			agentChargeLog.setBalance(userMoney);
-			agentChargeLog.setOptionUser(currentUser.getUsername());
-		}
+		
+		Users currentUser = userService.getCurrentUser(session);
+		Users agent = userService.findById(agentChargeLog.getUserId());
+		agentChargeLog.setAgent(agent.getAgent());
+		agentChargeLog.setAccount(agent.getUsername());
+		agentChargeLog.setOptionUser(currentUser.getUsername());
+		
+		ChargeOrBuckleVO chargeOrBuckleVO = new ChargeOrBuckleVO();
+		chargeOrBuckleVO.setUserId(agent.getId());
+		chargeOrBuckleVO.setAccount(agentChargeLog.getAccount());
+		chargeOrBuckleVO.setAgent(agentChargeLog.getAgent());
+		chargeOrBuckleVO.setMoney(agentChargeLog.getMoney());
+		chargeOrBuckleVO.setType(1);
+		chargeOrBuckleVO.setMemo("为代理商"+agentChargeLog.getAccount()+"冲扣值"+agentChargeLog.getMoney()+"元");
+		PayManager.getInstance().addToPay(chargeOrBuckleVO);
+		
 		Integer add = agentChargeLogService.add(agentChargeLog);
-		if(add > 0 && userMoney!=null){
+		if(add > 0 ){
 			resut.put("success", true);
-			resut.put("usermoney", userMoney);
 			resut.put("money", agentChargeLog.getMoney());
 		}else{
 			resut.put("success", false);

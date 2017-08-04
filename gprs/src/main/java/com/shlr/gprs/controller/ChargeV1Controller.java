@@ -1,5 +1,6 @@
 package com.shlr.gprs.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -19,10 +20,12 @@ import com.shlr.gprs.cache.UsersCache;
 import com.shlr.gprs.constants.Const;
 import com.shlr.gprs.domain.ChargeOrder;
 import com.shlr.gprs.domain.GprsPackage;
+import com.shlr.gprs.domain.MobileArea;
 import com.shlr.gprs.domain.Users;
 import com.shlr.gprs.manager.ChargeManager;
 import com.shlr.gprs.services.ChargeOrderService;
 import com.shlr.gprs.services.GprsPackageService;
+import com.shlr.gprs.services.MobileAreaService;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.MD5Utils;
 import com.shlr.gprs.utils.MailUtils;
@@ -43,6 +46,8 @@ public class ChargeV1Controller {
 	GprsPackageService gprsPackageService;
 	@Resource
 	ChargeOrderService chargeOrderService;
+	@Resource
+	MobileAreaService mobileAreaService;
 
 	@RequestMapping(value="/v1/charge.action")
 	@ResponseBody
@@ -84,6 +89,7 @@ public class ChargeV1Controller {
 		resign.append("username=").append(username);
 		resign.append("&mobile=").append(mobile);
 		resign.append("&amount=").append(amount);
+		resign.append("&range=").append(range);
 		resign.append("&key=").append(currentUser.getApiKey());
 		String md5sign = DigestUtil.md5Hex(resign.toString());
 		if (!md5sign.equals(sign.toLowerCase())) {
@@ -91,12 +97,12 @@ public class ChargeV1Controller {
 			result.setMsg("签名不正确");
 			return JSON.toJSONString(result);
 		}
-		JSONObject address = MobileUtil.getAddress(mobile);
+		MobileArea findByMobile = mobileAreaService.findByMobile(mobile.substring(0, 7));
 		String location = "";
 		String catNmae = "";
-		if(address != null){
-			location = address.getString("province");
-			catNmae = address.getString("catName");
+		if(findByMobile != null){
+			location = findByMobile.getProvince();
+			catNmae = findByMobile.getServiceProvider();
 		}
 		if (StringUtils.isEmpty(location)) {
 			result.setSuccess(false);
@@ -118,12 +124,13 @@ public class ChargeV1Controller {
 		chargeOrder.setAccount(currentUser.getUsername());//代理商账号
 		chargeOrder.setMobile(mobile);//手机号
 		chargeOrder.setType(MobileUtil.checkType(catNmae));//运营商
-		chargeOrder.setRange(range);//流量类型
+		chargeOrder.setRangeType(range);//流量类型
 		chargeOrder.setLocation(location);//归属地
 		chargeOrder.setSubmitType(5);//接口充值
 		chargeOrder.setAmount(amount);//流量包大小
 		chargeOrder.setBackUrl(backUrl);//回调地址
 		chargeOrder.setAgentOrderId(orderId);//下游订单号
+		chargeOrder.setOptionTime(new Date());
 //		List<GprsPackage> packageList = gprsPackageService.getPackageList(currentUser.getId());
 //		// 获取用户的报价单是否需要路由
 //		Integer routable = PricePaperCache.idMap.get(currentUser.getPaperId()).getRoutable();

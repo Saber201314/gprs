@@ -29,7 +29,7 @@ public class PayLog implements Serializable{
 	private String agent;//代理商等级
 	private Double money;//扣费金额
 	private Double balance;//余额
-	private Integer type;//流量类型
+	private Integer type;//扣费类型   1 冲扣值  2 充值扣费  3 失败退款
 	private String memo;//备注
 	private Date optionTime;//扣费时间
 	private Integer status = 0;

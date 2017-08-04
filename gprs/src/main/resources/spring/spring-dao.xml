@@ -57,13 +57,12 @@
 		<property name="filters" value="stat,wall" />
 		<property name="proxyFilters">
 			<list>
-			
 			</list>
 		</property>
 	</bean>
 
 	<bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
-		<property name="dataSourceLogEnabled" value="true" />
+		<property name="dataSourceLogEnabled" value="false" />
 		<!-- <property name="statementExecutableSqlLogEnable" value="true" />
 		<property name="resultSetLogEnabled" value="true"></property>
 		<property name="statementPrepareAfterLogEnabled" value="true"></property> -->

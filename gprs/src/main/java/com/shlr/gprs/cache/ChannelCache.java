@@ -1,6 +1,5 @@
 package com.shlr.gprs.cache;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.listenner.WebApplicationContextManager;
@@ -45,6 +43,9 @@ public class ChannelCache {
 		List<Channel> list = channelService.list();
 		for (Channel channel : list){
 			idMap.put(channel.getId(), channel);
+			if(channel.getStatus() == -1){
+				cacheCondition.put(channel.getId().toString(), true);
+			}
 		}
 		
 		long end = System.currentTimeMillis();

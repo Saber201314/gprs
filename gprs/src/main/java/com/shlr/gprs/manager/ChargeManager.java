@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.tomcat.jni.File;
@@ -100,10 +101,10 @@ public class ChargeManager {
 		List<ChannelTemplate> templateList = channelTemplateService.list();
 		for (ChannelTemplate template : templateList) {
 			try {
-				Class<?> cla = Class.forName("com.shlr.gprs.manager.charge.template." + template.getIdentity());
+				Class cla = Class.forName("com.shlr.gprs.manager.charge.template." + template.getIdentity());
 				Constructor cons ;
 				cons = cla.getConstructor(
-						new Class[] { Integer.class, String.class, String.class, String.class, String.class });
+						new Class[] { Integer.TYPE, String.class, String.class, String.class, String.class });
 				ChargeTemplate service = (ChargeTemplate) cons.newInstance(new Object[] { Integer.valueOf(template.getId()),
 						template.getName(), template.getAccount(), template.getPassword(), template.getSign() });
 				chargeTemplateMap.put(template.getIdentity(), service);
@@ -133,11 +134,10 @@ public class ChargeManager {
 								payLog.setUserId(agent.getId());
 								payLog.setAccount(chargeOrder.getAccount());
 								payLog.setAgent(agent.getAgent());
-								// 设置代理商订单号码
-								payLog.setType(2);
 								payLog.setMemo("订单号"+chargeOrder.getId() + "手机号"+chargeOrder.getMobile()+"充值流量"+chargeOrder.getAmount()+"M");
-								payLog.setMoney(chargeOrder.getPayMoney());
-								PayManager.getInstance().pay(payLog);
+								payLog.setMoney(0.0D - chargeOrder.getPayMoney());
+								payLog.setType(2);
+								PayManager.getInstance().addToPay(payLog);
 								chargeOrder.setPaystatus(1);
 							}else{
 								chargeOrder.setCacheFlag(1);
@@ -146,13 +146,14 @@ public class ChargeManager {
 								continue;
 							}
 						}
+						ConcurrentHashMap<String, Boolean> cacheCondition = ChannelCache.getInstance().cacheCondition;
 						// 根据缓存条件缓存订单
-						if(ChannelCache.getInstance().cacheCondition.contains(chargeOrder.getLocation())){
+						if(ChannelCache.getInstance().cacheCondition.containsKey(chargeOrder.getLocation())){
 							//符合地区缓存
 							chargeOrder.setCacheFlag(1);
 							chargeOrder.setError(chargeOrder.getLocation()+"-地区缓存");
 							chargeOrderService.saveOrUpdate(chargeOrder);
-						}else if(ChannelCache.getInstance().cacheCondition.contains(chargeOrder.getSubmitChannel())){
+						}else if(ChannelCache.getInstance().cacheCondition.containsKey(chargeOrder.getSubmitChannel().toString())){
 							//符合通道缓存
 							chargeOrder.setCacheFlag(1);
 							chargeOrder.setError(chargeOrder.getSubmitChannel()+"-通道缓存");
@@ -193,7 +194,7 @@ public class ChargeManager {
 		if(!result.isSuccess()){
 			return result;
 		}
-		// 开始分配充值通道
+		// 匹配充值通道
 		result = matchingChannelToCharge(chargeOrder);// 如果充值通道直接返回提交失败
 		if(!result.isSuccess()){
 			return result;
@@ -239,7 +240,7 @@ public class ChargeManager {
 		for (GprsPackage gprsPackage : packageList) {
 			if ((gprsPackage.getAmount() != chargeOrder.getAmount()) 
 					|| (gprsPackage.getType() != chargeOrder.getType())
-					|| (gprsPackage.getRange() != chargeOrder.getRange())
+					|| (gprsPackage.getRangeType() != chargeOrder.getRangeType())
 					|| ((!gprsPackage.getLocations().equals("全国"))
 							&& (gprsPackage.getLocations().indexOf(chargeOrder.getLocation()) == -1)))
 				continue;
@@ -296,14 +297,13 @@ public class ChargeManager {
 
 		LinkedList<Channel> matchChannel = new LinkedList<>();
 		for (Channel channel : channelList) {
-			//通道禁用 直接跳过
-			if(channel.getStatus() == -1){
-				continue;
-			}
 			String packages = channel.getPackages();
 			if(StrUtil.isNotEmpty(packages)){
 				String[] packageItem = packages.split(",");
 				for (String item : packageItem) {
+					if(StrUtil.isEmpty(item)){
+						continue;
+					}
 					String[] pack = item.split(":");
 					Integer packId = Integer.valueOf(pack[0]);
 					Double inDiscount = Double.valueOf(pack[1]);
@@ -345,74 +345,81 @@ public class ChargeManager {
 		chargeOrder.setInDiscount(channel.getInDiscount());
 		// 上游折后价
 		chargeOrder.setDiscountMoney(chargeOrder.getMoney()*chargeOrder.getInDiscount()/10);
+		chargeOrder.setProfit(chargeOrder.getPayMoney()-chargeOrder.getDiscountMoney());
+		chargeOrderService.saveOrUpdate(chargeOrder);
 		return result;
 	}
 	public void realCharge(ChargeOrder chargeOrder){
 		Channel channel = ChannelCache.getInstance().idMap.get(chargeOrder.getSubmitChannel());
 		ChargeTemplate template = chargeTemplateMap.get(channel.getTemplate());
 		ChargeResponsVO result = template.charge(chargeOrder);
-		if(result.isSuccess()){
-			chargeOrder.setChargeStatus(2);
-			chargeOrder.setSubmitContent(result.getMsg());
-		}else{
-			chargeOrder.setChargeStatus(3);
-			chargeOrder.setSubmitContent(result.getMsg());
+		if(!result.isSuccess()){
+			if(chargeOrder.getChargeStatus() != 1){
+				BackMoneyVO backMoneyVO = new BackMoneyVO();
+				Users byAccount = UsersCache.getInstance().getByAccount(chargeOrder.getAccount());
+				backMoneyVO.setUserId(byAccount.getId());
+				backMoneyVO.setAccount(byAccount.getUsername());
+				backMoneyVO.setAgent(byAccount.getAgent());
+				backMoneyVO.setType(3);
+				backMoneyVO.setMoney(chargeOrder.getPayMoney());
+				backMoneyVO.setMemo("为订单号"+chargeOrder.getId()+"手机号"+chargeOrder.getMobile()+"失败返还"+chargeOrder.getPayMoney()+"元");
+				PayManager.getInstance().addToPay(backMoneyVO);
+			}
 		}
 		chargeOrderService.saveOrUpdate(chargeOrder);
 	}
-	private void updateResult(ChargeOrder chargeOrder, Boolean isSuccess, String msg) {
-		chargeOrder.setChargeStatus(isSuccess ? 1 : -1);
-		chargeOrder.setError(isSuccess ? null : msg);
+	private void updateOrderStatus(ChargeOrder chargeOrder, Boolean isSuccess, String msg) {
+		chargeOrder.setChargeStatus(isSuccess ? 4 : 5);
+		chargeOrder.setReportContent(msg);
 		chargeOrder.setReportTime(new Date());
 
-		int cacheFlag = chargeOrder.getCacheFlag();
-		// 这里的作用只是失败缓存中的数据
-		if (cacheFlag == 1) {
-			chargeOrderService.forceToFailOrder(chargeOrder.getId(), cacheFlag, isSuccess ? 1 : -1, msg);
-		} else {
-			// 非缓存数据
-			String chargeTaskId = chargeOrder.getChargeTaskId();
-			if (StringUtils.isEmpty(chargeTaskId)) {
-				chargeTaskId = String.valueOf(chargeOrder.getId());
-			}
-			chargeOrderService.updateChargeStatus(chargeTaskId, chargeOrder.getSubmitTemplate(), isSuccess ? 1 : -1, msg);
-		}
-		if (!isSuccess) {
-			// 如果充值失败..
-			PayLog payLog = new PayLog();
-			payLog.setType(Integer.valueOf(1));
-			payLog.setStatus(Integer.valueOf(0));
-			PayLog payLog2 = payLogService.findOne(payLog);
-		} else {
-			// 充值成功....
-			PayLog payLog = new PayLog();
-			payLog.setType(Integer.valueOf(1));
-			payLog.setStatus(Integer.valueOf(0));
-			PayLog payLog2 = payLogService.findOne(payLog);
+		Integer updateChargeStatus = chargeOrderService.updateChargeStatus(chargeOrder.getChargeTaskId(),
+				chargeOrder.getSubmitTemplate(),chargeOrder.getReportTime(),
+				chargeOrder.getChargeStatus(), chargeOrder.getReportContent());
+		
+		if(updateChargeStatus > 0 && !isSuccess && chargeOrder.getPaystatus() == 1){
+			BackMoneyVO backMoneyVO = new BackMoneyVO();
+			backMoneyVO.setAccount(chargeOrder.getAccount());
+			backMoneyVO.setUserId(UsersCache.getInstance().getByAccount(chargeOrder.getAccount()).getId());
+			backMoneyVO.setAgent(UsersCache.getInstance().getByAccount(chargeOrder.getAccount()).getAgent());
+			backMoneyVO.setType(3);
+			backMoneyVO.setMoney(chargeOrder.getPayMoney());
+			backMoneyVO.setMemo("订单号"+chargeOrder.getId()+"手机号"+chargeOrder.getMobile()+"失败退款"+chargeOrder.getPayMoney());
+			PayManager.getInstance().addToPay(backMoneyVO);
 		}
 		// 回调订单状态
 		if (!StringUtils.isEmpty(chargeOrder.getBackUrl())) {
-			callback(chargeOrder);
+			CallbackManager.getInstance().addToCallback(chargeOrder);
 		}
 	}
-
-	public void updateResult(int templateId, String taskId, boolean isSuccess, String msg) {
-		List<ChargeOrder> orderlist = chargeOrderService.selectOneByExample(taskId, templateId);
+	public void updateResult(int templateId, String taskId, boolean isSuccess, String reportContent) {
+		List<ChargeOrder> orderlist = chargeOrderService.findOneByTaskIdAndTemplateId(taskId, templateId);
 		if (orderlist.isEmpty()) {
 			return;
 		}
 		ChargeOrder chargeOrder = (ChargeOrder) orderlist.get(0);
-//		if (!isSuccess) {
-//			// 如果订单已经开启了路由
-//			int routeFlag = chargeOrder.getRouteFlag();
-//			if (routeFlag == 1) {
-//				if (failChargedOrderRoutable(chargeOrder)) {
-//					return;
-//				}
-//			}
-//		}
 		// 更新订单状态
-		updateResult(chargeOrder, isSuccess, msg);
+		updateOrderStatus(chargeOrder, isSuccess, reportContent);
+	}
+	public void terminaOrder(ChargeOrder chargeOrder){
+		chargeOrder.setChargeStatus(3);
+		chargeOrder.setSubmitTime(new Date());
+		chargeOrder.setSubmitContent("手动终止");
+		Integer saveOrUpdate = chargeOrderService.saveOrUpdate(chargeOrder);
+		if(saveOrUpdate > 0 && chargeOrder.getPaystatus() == 1){
+			BackMoneyVO backMoneyVO = new BackMoneyVO();
+			backMoneyVO.setAccount(chargeOrder.getAccount());
+			backMoneyVO.setUserId(UsersCache.getInstance().getByAccount(chargeOrder.getAccount()).getId());
+			backMoneyVO.setAgent(UsersCache.getInstance().getByAccount(chargeOrder.getAccount()).getAgent());
+			backMoneyVO.setType(3);
+			backMoneyVO.setMoney(chargeOrder.getPayMoney());
+			backMoneyVO.setMemo("订单号"+chargeOrder.getId()+"手机号"+chargeOrder.getMobile()+"失败退款"+chargeOrder.getPayMoney());
+			PayManager.getInstance().addToPay(backMoneyVO);
+		}
+		// 回调订单状态
+		if (!StringUtils.isEmpty(chargeOrder.getBackUrl())) {
+			CallbackManager.getInstance().addToCallback(chargeOrder);
+		}
 	}
 
 	/**
@@ -478,7 +485,7 @@ public class ChargeManager {
 				// 如果只配置了2个流量包，第二次路由失败，路由结束，关闭路由，直接返回失败
 				chargeOrder.setRouteFlag(0);
 				chargeOrderService.saveOrUpdate(chargeOrder);
-				updateResult(chargeOrder, false, "已退款");
+				updateOrderStatus(chargeOrder, false, "已退款");
 			} else {
 				int packageId = chargeOrder.getPackageId3();
 				if (packageId != 0) {
@@ -492,7 +499,7 @@ public class ChargeManager {
 			// 路由结束，关闭路由，直接返回失败
 			chargeOrder.setRouteFlag(0);
 			chargeOrderService.saveOrUpdate(chargeOrder);
-			updateResult(chargeOrder, false, "已退款");
+			updateOrderStatus(chargeOrder, false, "已退款");
 		}
 		return false;
 	}
@@ -515,62 +522,5 @@ public class ChargeManager {
 		return false;
 	}
 
-	public void callback(ChargeOrder chargeOrder) {
-		Callback callback = new Callback();
-		callback.setAccount(chargeOrder.getAccount());
-		callback.setMobile(chargeOrder.getMobile());
-		callback.setUrl(chargeOrder.getBackUrl());
-		callback.setOrderId(chargeOrder.getId());
-
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("taskId", String.valueOf(chargeOrder.getId()));
-		params.put("orderId", chargeOrder.getAgentOrderId());
-		params.put("mobile", chargeOrder.getMobile());
-		params.put("actualPrice", String.valueOf(chargeOrder.getDiscountMoney()));
-		params.put("status", String.valueOf(chargeOrder.getChargeStatus()));
-		params.put("error", chargeOrder.getError());
-		params.put("reportTime", String.valueOf(chargeOrder.getReportTime()));
-
-		String query = "";
-		query = HttpUtils.createFromParams(params);
-		callback.setRequest(query);
-		callbackService.saveOrUpdate(callback);
-		if(null != chargeOrder.getBackUrl() && !"".equals(chargeOrder.getBackUrl())){
-			ThreadManager.getInstance().execute(new Runnable() {
-				@Override
-				public void run() {
-					String response = "";
-					int count = 0;
-					do {
-						try {
-							Response execute = OkhttpUtils.getInstance()
-									.post(chargeOrder.getBackUrl())
-									.params(params, true)
-									.execute();
-							response = execute.body().string();
-							if (StringUtils.isEmpty(response)) {
-								throw new Exception("返回内容为空");
-							} else {
-								callback.setResponse(response);
-								if ("ok".equals(response)) {
-									break;// 收到ok确认后 不再推送
-								}
-							}
-						} catch (Exception e) {
-							// 出现异常就重试
-							logger.error("callback------>>>>> {} 异常------>>>>>>",chargeOrder.getBackUrl(),e.getMessage());
-							count++;
-							try {
-								Thread.sleep(300000);
-							} catch (InterruptedException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							continue;
-						}
-					} while (count < 5);
-				}
-			});
-		}
-	}
+	
 }

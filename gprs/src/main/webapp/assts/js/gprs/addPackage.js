@@ -15,14 +15,33 @@ layui.define([ 'base', ], function(exports) {
 			});
 			form.render('checkbox');
 		});
-		form.render('checkbox');
+		form.on('checkbox(province)', function(data) {
+			checkAllProvince();
+			form.render('checkbox');
+		});
 	})
+	function checkAllProvince(){
+		var hasNoChecked = false;
+		var child = $('#province input[type="checkbox"]');
+		child.each(function(index, item) {
+			if(!item.checked){
+				hasNoChecked = true;
+			}
+		});
+		if(hasNoChecked){
+			var allcheck = $('#allcheck')[0];
+			allcheck.checked = false;
+		}else{
+			var allcheck = $('#allcheck')[0];
+			allcheck.checked = true;
+		}
+	}
 	/*
 	 * 拦截表单提交
 	 * 
 	 * 
 	 */
-	form.on('submit(btn-submit)', function(data) {
+	form.on('submit(package-submit)', function(data) {
 		$.ajax({
 			url: "/admin/addPackage.action",
 			type: "post",

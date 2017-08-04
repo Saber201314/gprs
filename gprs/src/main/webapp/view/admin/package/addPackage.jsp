@@ -23,6 +23,7 @@ form {
 			<c:if test="${packageObj != null}">
 				<input id="packageId" type="hidden" name="packageId" value="${ packageObj.id }">
 			</c:if>
+			<input id="packageId" type="hidden" name="status" value="${ packageObj.status }">
 			<div class="layui-form-item">
 				<div class="layui-inline">
 					<label class="layui-form-label">名称</label>
@@ -65,9 +66,9 @@ form {
 				<div class="layui-inline">
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
-						<select name="locationType" lay-verify="" lay-search>
-							<option <c:if test="${ packageObj.locationType == 0 }">selected=""</c:if> value="0">全国流量</option>
-							<option <c:if test="${ packageObj.locationType == 1 }">selected=""</c:if> value="1">省内流量</option>
+						<select name="rangeType" lay-verify="" lay-search>
+							<option <c:if test="${ packageObj.rangeType == 0 }">selected=""</c:if> value="0">全国流量</option>
+							<option <c:if test="${ packageObj.rangeType == 1 }">selected=""</c:if> value="1">省内流量</option>
 						</select>
 					</div>
 				</div>
@@ -75,7 +76,7 @@ form {
 			<div class="layui-form-item" pane="">
 				<label class="layui-form-label">支持地区</label>
 				<div class="layui-input-block">
-					<input type="checkbox" title="全国" <c:if test="${ packageObj.locations == '全国' }">checked=""</c:if> value="全国" name="all" lay-skin="primary"
+					<input type="checkbox" title="全国" <c:if test="${ packageObj.locations == '全国' }">checked=""</c:if> value="全国" id="allcheck" name="all" lay-skin="primary"
 						lay-filter="allChoose">
 				</div>
 			</div>
@@ -83,18 +84,17 @@ form {
 				<label class="layui-form-label"></label>
 				<div class="layui-input-block">
 					<div id="province" style="width: 400px;">
-					
 						<c:forEach var="item" items="${province }">
 							<span style="width : 100px;">
 								<c:choose>
 									<c:when test="${fn:contains(packageObj.locations,item)}">
-										<input type="checkbox" checked="" value="${item}"  data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
+										<input lay-filter="province" type="checkbox" checked="" value="${item}"  data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
 									</c:when>
 									<c:when test="${fn:contains(packageObj.locations,'全国')}">
-										<input type="checkbox" checked="" value="${item}"  data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
+										<input lay-filter="province" type="checkbox" checked="" value="${item}"  data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
 									</c:when>
 									<c:otherwise>
-										<input type="checkbox" value="${item}" data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
+										<input lay-filter="province" type="checkbox" value="${item}" data-id="${item}" name="provinces"  title="${item}" lay-skin="primary"/>
 									</c:otherwise>
 								</c:choose>
 							</span>
@@ -124,7 +124,7 @@ form {
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
-	}).use('packageList'); //加载入口
+	}).use('addPackage'); //加载入口
 	
 </script>
 </html>

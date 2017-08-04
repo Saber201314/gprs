@@ -10,7 +10,7 @@ layui.define([ 'base', ], function(exports) {
 	$(function() {
 		initPackageList();
 		form.on('checkbox(allChoose)', function(data) {
-			var child = $('#province input[type="checkbox"]');
+			var child = $('tbody input[type="checkbox"]');
 			child.each(function(index, item) {
 				item.checked = data.elem.checked;
 			});
@@ -71,6 +71,7 @@ layui.define([ 'base', ], function(exports) {
 					$.each(data.list, function(index, item) {
 						html.push('<tr>');
 						html.push('<td><input type="checkbox"  data-id="'+item.id+'" lay-skin="primary"/></td>');
+						html.push('<td>' + item.id + '</td>');
 						html.push('<td>' + item.name + '</td>');
 						html.push('<td>' + item.alias + '</td>');
 						html.push('<td>' + item.amount + '</td>');
@@ -83,13 +84,13 @@ layui.define([ 'base', ], function(exports) {
 						}else if(type == 3){
 							html.push('<td>电信</td>');
 						}
-						var locationType=item.locationType;
-						if(locationType == 0){
+						var rangeType=item.rangeType;
+						if(rangeType == 0){
 							html.push('<td>全国流量</td>');
-						}else if(locationType == 1){
+						}else if(rangeType == 1){
 							html.push('<td>省内流量</td>');
 						}
-						html.push('<td>'+item.locations+'</td>');
+						html.push('<td style="max-width:50px;">'+item.locations+'</td>');
 						var newDate = new Date();
 						newDate.setTime(item.optionTime);
 						html.push('<td>' + newDate.toLocaleString() + '</td>');
@@ -149,7 +150,6 @@ layui.define([ 'base', ], function(exports) {
 					}
 				})
 			})
-			
 		}else{
 			top.layer.msg('请选择流量包');
 		}

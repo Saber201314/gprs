@@ -12,6 +12,7 @@ body{
 }
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
+	font-size: 12px;
 
 }
 td .status{
@@ -26,22 +27,17 @@ td .unprofit{
 	color:#FF5722;
 	font-weight: bold;
 }
-.lable-nosubmit{
+.lable-chargeOrBuckle{
 	padding: 4px 10px;
 	color: #fff;
-	background-color: #c2c2c2;
+	background-color: #F7B824;
 }
-.lable-charging{
-	padding: 4px 10px;
-	color: #fff;
-	background-color: #01AAED;
-}
-.lable-success{
+.lable-pay{
 	padding: 4px 10px;
 	color: #fff;
 	background-color: #5FB878;
 }
-.lable-fail{
+.lable-refund{
 	padding: 4px 10px;
 	color: #fff;
 	background-color: #FF5722;
@@ -103,21 +99,6 @@ body .ui-tooltip{
 			<div class="layui-form-item">
 				<input type="hidden" id="pageNo" name="pageNo" value="1" class="layui-input">
 				<div class="layui-inline">
-					<label class="layui-form-label">代理商</label>
-					<div class="layui-input-inline">
-						<select id="agent" name="account" lay-filter="agent" lay-search>
-							<option value="-1">请选择</option>
-						</select>
-					</div>
-				</div>
-				<div class="layui-inline">
-					<label class="layui-form-label">手机号码</label>
-					<div class="layui-input-inline">
-						<input type="tel" name="mobile" autocomplete="off"
-							class="layui-input">
-					</div>
-				</div>
-				<div class="layui-inline">
 					<label class="layui-form-label">开始时间</label>
 					<div class="layui-input-inline">
 						<input id="start" name="from" class="layui-input" onclick="">
@@ -130,15 +111,26 @@ body .ui-tooltip{
 					</div>
 				</div>
 				<div class="layui-inline">
-					<label class="layui-form-label">操作状态</label>
+					<label class="layui-form-label">代理商账号</label>
 					<div class="layui-input-inline">
-						<select name="status" lay-verify="" lay-search>
-							<option value="-3">请选择</option>
-							<option value="-2">充值失败</option>
-							<option value="-1">已退款</option>
-							<option value="0">充值中</option>
-							<option value="1">充值成功</option>
+						<input type="text" name="account" class="layui-input"/>
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">消费类型</label>
+					<div class="layui-input-inline">
+						<select name="type" lay-search>
+							<option value="-1">全部</option>
+							<option value="1">冲扣值</option>
+							<option value="2">充值扣费</option>
+							<option value="3">失败退款</option>
 						</select>
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">备注</label>
+					<div class="layui-input-inline">
+						<input type="text" name="memo" class="layui-input"/>
 					</div>
 				</div>
 				<div  class="layui-inline">
@@ -158,17 +150,13 @@ body .ui-tooltip{
 		<table class="layui-table">
 			<thead>
 				<tr>
+					<th>编号</th>
 					<th>代理商</th>
 					<th>类别</th>
-					<th>流水号</th>
-					<th>折扣</th>
 					<th>扣费金额</th>
 					<th>剩余金额</th>
-					<th>盈利金额</th>
-					<th>代理商订单号</th>
 					<th>明细</th>
 					<th>扣费时间</th>
-					<th width="80">操作状态</th>
 				</tr>
 			</thead>
 			<tbody>

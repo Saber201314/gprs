@@ -51,7 +51,7 @@ body{
 				<div class="layui-inline">
 					<label class="layui-form-label">流量类型</label>
 					<div class="layui-input-inline">
-						<select name="locationType" lay-verify="" lay-search>
+						<select name="rangeType" lay-verify="" lay-search>
 							<option value="-1">请选择</option>
 							<option value="0">全国流量</option>
 							<option value="1">省内流量</option>
@@ -77,6 +77,7 @@ body{
 				<tr>
 					<th><input type="checkbox" name="" lay-skin="primary"
 						lay-filter="allChoose"></th>
+					<th>编号</th>
 					<th>名称</th>
 					<th>展示名称</th>
 					<th>流量值(M)</th>

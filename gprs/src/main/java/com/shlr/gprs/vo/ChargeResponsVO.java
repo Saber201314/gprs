@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
  * @version 创建时间：2017年4月2日 下午6:43:00
  * 
  */
-public class ChargeResponsVO extends JSONObject{
+public class ChargeResponsVO{
 	/**
 	 * 
 	 */

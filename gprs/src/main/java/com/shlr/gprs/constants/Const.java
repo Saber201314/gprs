@@ -9,7 +9,7 @@ package com.shlr.gprs.constants;
 public class Const {
 	public static int init=1;
 	
-	private static volatile boolean apiSwitch=false;
+	private static volatile boolean apiSwitch=true;
 
 	public static boolean isApiSwitch() {
 		return apiSwitch;

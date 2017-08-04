@@ -36,8 +36,6 @@ layui.define(['base' ], function(exports) {
 					
 					var html=[];
 					html.push('<div>充值金额：'+data.money+'</div>');
-					html.push('<div>充值后余额：'+data.usermoney+'</div>');
-					
 					top.layer.alert(html.join(""),{icon: 1}, function(index){
 						top.layer.close(index);
 						  window.location.href="/view/admin/agentmanage/agentList.jsp";

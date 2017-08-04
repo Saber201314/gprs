@@ -4,20 +4,14 @@ import com.shlr.gprs.domain.PayLog;
 
 /**
  * @author Administrator
+ * 
  */
 
-public class BackMoneyVO {
-	private PayLog payLog;
+public class BackMoneyVO extends PayLog {
 
-	public BackMoneyVO(PayLog payLog) {
-		this.payLog = payLog;
-	}
-
-	public PayLog getPayLog() {
-		return this.payLog;
-	}
-
-	public void setPayLog(PayLog payLog) {
-		this.payLog = payLog;
-	}
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4998216373228489034L;
+	
 }

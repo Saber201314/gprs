@@ -45,8 +45,9 @@ body{
 		<table class="layui-table">
 			<thead>
 				<tr>
-					<th><input type="checkbox" name="" lay-skin="primary"
-						lay-filter="allChoose"></th>
+					<!-- <th><input type="checkbox" name="" lay-skin="primary"
+						lay-filter="allChoose"></th> -->
+					<th>编号</th>
 					<th>名称</th>
 					<th>展示名称</th>
 					<th>通道模板</th>
