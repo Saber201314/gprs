@@ -31,16 +31,23 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
 			throws Exception {
 		String requestURI = request.getRequestURI();
 		Users currentUser = service.getCurrentUser(request.getSession());
+		response.setCharacterEncoding("UTF-8");
 		if(currentUser==null){
 			if(requestURI.endsWith(".jsp")){
 				response.sendRedirect("/login.jsp");
 			}else if(requestURI.endsWith(".action")){
-				response.setCharacterEncoding("UTF-8");
-				PrintWriter writer = response.getWriter();
-				JSONObject result = new JSONObject();
-				result.put("success", false);
-				result.put("msg", "请登录");
-				writer.write(result.toJSONString());
+				//判断请求是否ajax
+				if("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))){
+					
+					response.setStatus(403);
+					PrintWriter writer = response.getWriter();
+					JSONObject result = new JSONObject();
+					result.put("success", false);
+					result.put("msg", "请登录");
+					writer.write(result.toJSONString());
+				}else{
+					response.sendRedirect("/login.jsp");
+				}
 			}
 			
 			return false;

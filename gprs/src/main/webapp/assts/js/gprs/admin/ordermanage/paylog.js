@@ -26,23 +26,39 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 		base.inittime('YYYY-MM-DD hh:mm:ss');
 		base.initagent();
 		base.initchannel();
-		
 		initPayLogList();
 		
 		
 	});
-
 	
 	/*
-	 * 拦截表单提交
-	 * 
-	 * 
+	 * 查询
 	 */
 	form.on('submit(btn-submit)', function(data) {
 		isinitpage=false;
 		$('#pageNo').val(1);
 		initPayLogList();
 		return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+	})
+	form.on('submit(export-paylog)', function(data){
+		var start = $('#start').val();
+		var end = $('#end').val();
+		var startDate = new Date(start);
+		var endDate = new Date(end);
+		if(startDate.getFullYear() != endDate.getFullYear() || startDate.getMonth() != endDate.getMonth()){
+			top.layer.msg("不能导出超过一个月的记录！");
+			return false;
+		}
+		index = top.layer.confirm('是否按当前条件导出数据?', {
+			  btn: ['确定','取消'] //按钮
+			}, function(){
+				data.form.submit();
+				top.layer.close(index);
+				return true;
+			}, function(){
+				submit = false;
+			});
+		return false
 	})
 	function initPayLogList(){
 		index=layer.load();

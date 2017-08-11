@@ -120,6 +120,9 @@ public class UserService implements DruidStatInterceptor{
 		int updateByPrimaryKey = userMapper.updateByPrimaryKeySelective(user);
 		return updateByPrimaryKey;
 	}
+	public Integer updateUserPassword(Integer id,String password){
+		return userMapper.updatePassword(id,password);
+	}
 	/**
 	 * 更新余额
 	 * @param userId

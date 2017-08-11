@@ -4,12 +4,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <link href="/res/css/layui.css" rel="stylesheet"/>
-<script src="/res/layui.js"></script>
-
-
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"/>
 <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css"/>
 <script src="/assts/js/jquery-1.9.1.min.js"></script>
+<script src="/res/layui.js"></script>
+<script src="/res/echarts.min.js"></script>
+<script src="/res/china.js"></script>
 <script src='/assts/js/jquery.particleground.min.js'></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   

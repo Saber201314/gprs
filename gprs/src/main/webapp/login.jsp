@@ -35,14 +35,14 @@ canvas {  position: absolute; }
 			<div class="layui-form-item">
 				<label class="layui-form-label">账号</label>
 				<div class="layui-input-block">
-					<input type="text" name="username" value="admin" required lay-verify="required"
+					<input type="text" name="username" value="" required lay-verify="required"
 						placeholder="账号" autocomplete="off" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
 				<label class="layui-form-label">密码</label>
 				<div class="layui-input-block">
-					<input type="password" name="password" value="lr2017.." required
+					<input type="password" name="password" value="" required
 						lay-verify="required" placeholder="密码" autocomplete="off"
 						class="layui-input">
 				</div>
@@ -56,7 +56,7 @@ canvas {  position: absolute; }
 			<div class="layui-form-item">
 				<label class="layui-form-label">验证码</label>
 				<div class="layui-input-block">
-					<input  name="securityCode" required
+					<input id="code"  name="securityCode" required
 						lay-verify="required" placeholder="验证码" autocomplete="off"
 						class="layui-input">
 				</div>
@@ -75,9 +75,9 @@ canvas {  position: absolute; }
 
 	</div>
 
-
+<script src="http://cdn.bootcss.com/blueimp-md5/1.1.0/js/md5.min.js"></script> 
 <script>
-layui.use(['jquery','layer','form'],function(){
+layui.use(['jquery','form'],function(){
 	var $ = layui.jquery;
 	var form = layui.form();
 	
@@ -85,15 +85,11 @@ layui.use(['jquery','layer','form'],function(){
 		document.getElementById('securitycode').src='/getSecurityCode.action?temp='+Math.random();
 	})
 	form.on('submit(login)', function(data) {
-			console.log(data.elem); //被执行事件的元素DOM对象，一般为button对象
-			console.log(data.form); //被执行提交的form对象，一般在存在form标签时才会返回
-			console.log(data.field); //当前容器的全部表单字段，名值对形式：{name: value}
-			//top.layer.msg(JSON.stringify(data.field));
-			var d = $('form').serialize();
+		/* data.field.password = md5(data.field.password); */
 			$.ajax({
 				url : '/login.action',
 				type : "post",
-				data : d,
+				data : data.field,
 				cache : false,
 				success : function(data) {
 					data = JSON.parse(data);
@@ -101,6 +97,7 @@ layui.use(['jquery','layer','form'],function(){
 						window.location = data.url;
 					}else{
 						layer.msg(data.error_msg);
+						$('#code').val("");
 						document.getElementById('securitycode').src='/getSecurityCode.action?temp='+Math.random();
 					}
 				},

@@ -10,6 +10,12 @@
 				where id = #{id}
 	</update>
 	
+	<update id="updatePassword">
+		update g_users 
+			set password= #{password}
+				where id = #{id}
+	</update>
+	
 	<resultMap type="double" id="balance">
 		<result property="money" column="money"/>
 	</resultMap>
@@ -17,4 +23,6 @@
 	<select id="getBalance" resultMap="balance">
 		select money from g_users where id = #{id}
 	</select>
+	
+	
 </mapper>

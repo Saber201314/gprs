@@ -114,6 +114,9 @@ form{
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
+	}).extend({ //设定模块别名
+		base: 'base', //如果test.js是在根目录，也可以不用设定别名
+		addChannelTemplateCode: 'admin/channel/addChannelTemplateCode' //设定别名
 	}).use('addChannelTemplateCode'); //加载入口
 	
 </script>

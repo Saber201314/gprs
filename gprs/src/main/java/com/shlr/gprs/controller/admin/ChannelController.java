@@ -177,12 +177,12 @@ public class ChannelController {
 	 */
 	@RequestMapping("/showSingleChannelInfo.action")
 	@ResponseBody
-	public String showSingleChannelInfo(HttpSession session,@RequestParam(value="id")Integer cid){
+	public String showSingleChannelInfo(HttpSession session,@RequestParam(value="id")Integer id){
 		Users currentUser = userService.getCurrentUser(session);
 		if (currentUser == null || currentUser.getType() != 1) {
 			return null;
 		}
-		Channel channel = this.channelService.findById(cid);
+		Channel channel = this.channelService.findById(id);
 		String packCode = channel.getPackages();
 		List<Map<String,Object>> mapList = new ArrayList<Map<String,Object>>();
 		if(!StringUtils.isEmpty(packCode)){		
@@ -247,6 +247,7 @@ public class ChannelController {
 		if(channel.getId() > 0){
 			Integer update = channelService.update(channel);
 			if(update > 0){
+				ChannelCache.getInstance().updateCache(channel);
 				result.put("success", true);
 				result.put("msg", "保存成功");
 			}else{

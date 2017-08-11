@@ -14,6 +14,7 @@ import com.shlr.gprs.listenner.WebApplicationContextManager;
 import com.shlr.gprs.services.CallbackService;
 import com.shlr.gprs.utils.okhttp.HttpUtils;
 import com.shlr.gprs.utils.okhttp.OkhttpUtils;
+import com.xiaoleilu.hutool.util.StrUtil;
 
 import okhttp3.Response;
 
@@ -84,7 +85,7 @@ public class CallbackManager {
 		String query = "";
 		query = HttpUtils.createFromParams(params);
 		callback.setRequest(query);
-		if(null != chargeOrder.getBackUrl() && !"".equals(chargeOrder.getBackUrl())){
+		if(StrUtil.isNotBlank(chargeOrder.getBackUrl())){
 			ThreadManager.getInstance().execute(new Runnable() {
 				@Override
 				public void run() {

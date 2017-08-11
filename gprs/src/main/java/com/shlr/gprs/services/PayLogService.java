@@ -41,12 +41,14 @@ public class PayLogService implements DruidStatInterceptor{
 		return num;
 	}
 	/**
-	 * 根据条件分页查询指定数量的PayLog,
+	 * 根据条件分页查询PayLog,
 	 * @param example
 	 * @return
 	 */
-	public List<PayLog> listByExample(Example example,Integer pageNo,Integer pageSize){
-		return payLogMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*pageSize, pageSize));
+	public List<PayLog> listByExample(Example example){
+		
+		
+		return payLogMapper.selectByExample(example);
 	}
 	
 	public PayLog findOne(PayLog payLog){
@@ -71,7 +73,6 @@ public class PayLogService implements DruidStatInterceptor{
 	 * @return
 	 */
 	public List<PayLog> selectFirstAndLastPayLogByFrom2To(String account,String from,String to){
-		
 		return payLogMapper.selectFirstAndLastPayLogByFrom2To(account, from, to);
 	}
 	/**

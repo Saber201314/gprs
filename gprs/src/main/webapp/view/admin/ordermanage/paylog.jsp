@@ -95,7 +95,7 @@ body .ui-tooltip{
 
 <body>
 	<fieldset class="layui-elem-field site-demo-button" style="margin-top: 5px;">
-		<form class="layui-form" action="">
+		<form class="layui-form" action="/admin/exportExcelPayLogDatas.action">
 			<div class="layui-form-item">
 				<input type="hidden" id="pageNo" name="pageNo" value="1" class="layui-input">
 				<div class="layui-inline">
@@ -136,6 +136,7 @@ body .ui-tooltip{
 				<div  class="layui-inline">
 					<div class="layui-input-block">
 						<button class="layui-btn" lay-submit="" lay-filter="btn-submit">查询</button>
+						<button class="layui-btn" lay-submit="" lay-filter="export-paylog">导出</button>
 					</div>
 				</div>
 
@@ -143,8 +144,7 @@ body .ui-tooltip{
 			</div>
 		</form>
 	</fieldset>
-	<button class="layui-btn layui-btn-mini generate_bill" >生成账单</button>
-	<button class="layui-btn layui-btn-mini" >导出Excel</button>
+	<!-- <button class="layui-btn layui-btn-mini generate_bill" >生成账单</button> -->
 	
 	<div class="layui-form">
 		<table class="layui-table">
@@ -174,6 +174,9 @@ body .ui-tooltip{
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
+	}).extend({ //设定模块别名
+		base: 'base', //如果test.js是在根目录，也可以不用设定别名
+		paylog: 'admin/ordermanage/paylog' //如果test.js是在根目录，也可以不用设定别名
 	}).use('paylog'); //加载入口
 	
 </script>

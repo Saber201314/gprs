@@ -16,7 +16,6 @@ layui.define(['base' ], function(exports) {
 	
 	$(function(){
 		
-		changeCompatible($("#compatible").val());
 		$('#validateTime').click(function() {
 			laydate(validateTime);
 		})
@@ -51,7 +50,6 @@ layui.define(['base' ], function(exports) {
 		
 	})
 	
-	
 	$('#genApiKey').on("click",function(){
 		
 		top.layer.confirm('是否确定重新生成密钥', {
@@ -81,41 +79,6 @@ layui.define(['base' ], function(exports) {
 	})
 	
 	
-	/*
-	 * 监听select选择
-	 */
-	form.on('select(isSecretKey)', function(data){
-		changeCompatible(data.value)
-	}); 
-	function changeCompatible(value){
-		if(value==1){
-			//设置可用
-			$('input[name="apiPassword"]').attr("disabled",false);
-//			$('input[name="apiKey"]').attr("disabled",false);
-			$('#genApiKey').attr("disabled",false);
-			
-			//设置必填项
-			$('input[name="apiPassword"]').attr("lay-verify","required")
-			
-			//设置背景样式
-			$('input[name="apiPassword"]').css("background-color","#fff")
-//			$('input[name="apiKey"]').css("background-color","#fff")
-			$('#genApiKey').removeClass("layui-btn-disabled");
-		}else{
-			//设置不可用
-			$('input[name="apiPassword"]').attr("disabled",true);
-//			$('input[name="apiKey"]').attr("disabled",true);
-			$('#genApiKey').attr("disabled",true);
-			
-			//取消必填项
-			$('input[name="apiPassword"]').removeAttr("lay-verify");
-			
-			//设置背景样式
-			$('input[name="apiPassword"]').css("background-color","#f1f1f1")
-//			$('input[name="apiKey"]').css("background-color","#f1f1f1")
-			$('#genApiKey').addClass("layui-btn-disabled");
-		}
-	}
 	
 	
 	
@@ -128,7 +91,10 @@ layui.define(['base' ], function(exports) {
 		console.log(data.field)
 		var limits = '';
 		$('input[name="limits"]').each(function(){
-			limits += $(this).val() + ",";
+			var checked=$(this).is(':checked');
+			if(checked){
+				limits += $(this).val() + ",";
+			}
 		})	
 		data.field.limits=limits;
 			

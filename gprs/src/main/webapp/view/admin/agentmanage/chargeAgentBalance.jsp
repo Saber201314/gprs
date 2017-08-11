@@ -69,9 +69,6 @@ body{
 				</div>
 			</div>
 			
-			
-			
-			
 		</div>
 	</fieldset>
 </body>
@@ -79,7 +76,8 @@ body{
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
 	}).extend({ //设定模块别名
-		chargeAgentBalance: 'agentmanage/chargeAgentBalance' //设定别名
+		base: 'base', //如果test.js是在根目录，也可以不用设定别名
+		chargeAgentBalance: 'admin/agentmanage/chargeAgentBalance' //设定别名
 	}).use('chargeAgentBalance'); //加载入口
 	
 </script>

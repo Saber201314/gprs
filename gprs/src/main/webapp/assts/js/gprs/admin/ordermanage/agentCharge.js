@@ -10,7 +10,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 		$('#start').val(laydate.now(0, 'YYYY-MM-DD 00:00:00'));
 		$('#end').val(laydate.now(0, 'YYYY-MM-DD 23:59:59'));
 		base.initagent();
-		base.inittime();
+		base.inittime('YYYY-MM-DD hh:mm:ss');
 		initAgentCharge();
 	})
 	/*
@@ -43,15 +43,6 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 						html.push('<td>'+item.account+'</td>');
 						
 						html.push('<td>'+item.money+'</td>');
-						
-//						<option value="1">公账收款</option>
-//					    <option value="2">公支付宝</option>
-//					    <option value="3">私账</option>
-//					    <option value="4">转移</option>
-//					    <option value="5">授信</option>
-//					    <option value="6">未到账退款</option>
-//					    <option value="7">测试加款</option>
-//					    <option value="8">其他原因充扣款</option>
 						var paytype ="";
 						if(item.payType == 1){
 							paytype = "公账收款";
@@ -79,11 +70,11 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 						html.push('</tr>');
 					})
 					$(".layui-table tbody").append(html.join("")); 
-					base.initpage(data,isinitpage,function(isinit){
-						isinitpage = isinit;
-						initAgentCharge();
-					})
 				}
+				base.initpage(data,isinitpage,function(isinit){
+					isinitpage = isinit;
+					initAgentCharge();
+				})
 			},
 			error : function(){
 				

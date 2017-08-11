@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shlr.gprs.dao.StatisticsChargeOrderMapper">
+	<select id="statisticsChargeOrderByOptionTime" resultType="StatisticsChargeOrder">
+		select 
+			case 
+				when charge_status = 2 then '提交成功'
+			    when charge_status = 3 then '提交失败'
+			    when charge_status = 4 then '充值成功'
+			    when charge_status = 5 then '充值失败'
+			end status,
+			COUNT(id) num,truncate( SUM(pay_money),2) payMoney,truncate( SUM(discount_money),2) disCountMoney  from g_charge_order
+			where option_time BETWEEN  #{start}  and  #{end}	
+			GROUP BY charge_status
+			HAVING charge_status > 1
+	</select>
+</mapper>

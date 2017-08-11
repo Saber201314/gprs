@@ -277,82 +277,41 @@ public class QueryController {
 		}
 		return JSONUtils.toJsonString(result);
 	}
-	
-	/**
-	 * 消费记录
-	 * @param session
-	 * @param pageNo
-	 * @param mobile
-	 * @param account
-	 * @param from
-	 * @param to
-	 * @param status
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value="/query/payLogList.action")
+	@RequestMapping(value="/query/page/adminList.action")
 	@ResponseBody
-	public String payLogList(HttpSession session,
+	public String adminList(HttpSession session,
 			@RequestParam(value="pageNo",required=false,defaultValue="1")String pageNo,
-			@RequestParam(value="memo",required=false)String memo,
-			@RequestParam(value="account",required=false)String account,
-			@RequestParam(value="from",required=false)String from,
-			@RequestParam(value="to",required=false)String to,
-			@RequestParam(value="type")String type,
-			Model model){
+			@RequestParam(value="username",required=false)String username,
+			@RequestParam(value="name",required=false)String name){
+		JSONObject result = new JSONObject();
+		List<Users> userList=new ArrayList<Users>();
 		Users currentUser = userService.getCurrentUser(session);
-		int agnetType = currentUser.getType();
-		Example example=new Example(PayLog.class,true,false);
-		Criteria createCriteria = example.createCriteria();
-		Calendar calendar=Calendar.getInstance();
-		Date dfrom = new Date();
-		Date dto = new Date();
-		if (StringUtils.isEmpty(from)) {
-			calendar.setTime(new Date());
-			calendar.set(Calendar.HOUR_OF_DAY, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			dfrom = calendar.getTime();
+		if (currentUser.getType() == 1) {
+			Example example = new Example(Users.class);
+			Criteria createCriteria = example.createCriteria();
+			if(!StringUtils.isEmpty(username)){
+				createCriteria.andLike("username", "%"+username+"%");
+			}
+			if(!StringUtils.isEmpty(name)){
+				createCriteria.andLike("name", "%"+name+"%");
+			}
+			createCriteria.andEqualTo("type", 1);
+			example.setOrderByClause(" id desc");
+			userList = userService.listByExampleAndPage(example, Integer.valueOf(pageNo));
+			Page<Users> page = (Page<Users>) userList;
+			if(!CollectionUtils.isEmpty(userList)){
+				result.put("success", true);
+				result.put("list", userList);
+				result.put("total", page.getTotal());
+				result.put("pages", page.getPages());
+				result.put("pageno", page.getPageNum());
+			}
 		}else{
-			dfrom=TimeUtls.timeStr2DateByDefault(from);
+			result.put("success", false);
+			result.put("msg", "您没有权限查看");
 		}
-		if (StringUtils.isEmpty(to)) {
-			calendar.setTime(new Date());
-			calendar.set(Calendar.HOUR_OF_DAY, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			calendar.add(Calendar.DAY_OF_MONTH, 1);
-			calendar.set(Calendar.SECOND, -1);
-			dto=calendar.getTime();
-		}else{
-			dto=TimeUtls.timeStr2DateByDefault(to);
-		}
-		createCriteria.andBetween("optionTime", dfrom, dto);
-		if (StringUtils.isEmpty(account) && agnetType != 1) {
-			createCriteria.andEqualTo("account", currentUser.getUsername());
-		}else if(!StringUtils.isEmpty(account)&& agnetType == 1){
-			createCriteria.andEqualTo("account", account);
-		}
-		if (!StringUtils.isEmpty(type)&&!"-1".equals(type)) {
-			createCriteria.andEqualTo("type", type);
-		}
-		if (!StringUtils.isEmpty(memo)) {
-			createCriteria.andLike("memo", "%"+memo+"%");
-		}
-		example.setOrderByClause(" option_time desc,id desc");
-		
-		List<PayLog> listByExampleAndPage = payLogService.listByExampleAndPage(example, Integer.valueOf(pageNo) );
-		Page<PayLog> page=(Page<PayLog>) listByExampleAndPage;
-		
-		JSONObject result=new JSONObject();
-		result.put("list", listByExampleAndPage);
-		result.put("total", page.getTotal());
-		result.put("pages", page.getPages());
-		result.put("pageno", page.getPageNum());
-		
-		return result.toJSONString();
+		return JSONUtils.toJsonString(result);
 	}
-	
 	
 	/**
 	 * 显示账单信息
@@ -534,7 +493,7 @@ public class QueryController {
 		boolean flag=true;
 		do {
 			pageNo++;
-			List<PayLog> listByExample = payLogService.listByExample(example,pageNo,10000);
+			List<PayLog> listByExample = payLogService.listByExample(example);
 			allPages=((Page<PayLog>)listByExample).getPages();
 			bufferList.addAll(listByExample);
 			int size = bufferList.size();
@@ -582,56 +541,6 @@ public class QueryController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		Map<String, Object> bean=new HashMap<String, Object>();
-//		bean.put("bean", listByExample);
-//		bean.put("fmt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-//		bean.put("paylogfmt", new PayLogFmt());
-//		XLSTransformer transformer = new XLSTransformer();  
-//        InputStream in=null;  
-//        OutputStream out=null;  
-//        String templetePath = request.getServletContext().getRealPath("/")+"/templete/paylog_templete.xlsx";
-//        String destFileName= "流量充值记录.xlsx";  
-//        //设置响应  
-//        response.setHeader("Content-Disposition", "attachment;filename=" + new String(destFileName.getBytes(),"iso-8859-1")  );  
-//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charest=UTF-8");  
-//        response.setBufferSize(2048);
-//        try {  
-//            in=new BufferedInputStream(new FileInputStream(templetePath));  
-//            long start=System.currentTimeMillis();
-//            Workbook workbook=transformer.transformXLS(in, bean); 
-//            long end=System.currentTimeMillis();
-//            System.out.println((end-start));
-//            out=response.getOutputStream();  
-//            //将内容写入输出流并把缓存的内容全部发出去  
-//            workbook.write(out);  
-//            out.flush();  
-//        } catch (InvalidFormatException e) {  
-//            e.printStackTrace();  
-//        } catch (Exception e) {  
-//            e.printStackTrace();  
-//        } finally {  
-//            if (in!=null){try {in.close();} catch (IOException e) {}}  
-//            if (out!=null){try {out.close();} catch (IOException e) {}}  
-//        }  
-		
-		
 	}
 	
 	

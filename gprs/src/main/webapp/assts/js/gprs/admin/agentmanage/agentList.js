@@ -42,9 +42,7 @@ layui.define(['base' ], function(exports) {
 						html.push('<td>'+item.money+'</td>')
 						html.push('<td>'+item.preMoney+'</td>')
 						
-						var date= new Date();
-						date.setTime(item.validateTime);
-						html.push('<td>'+date.toLocaleDateString()+'</td>')
+						
 						
 						if(item.paperId > 0){
 							html.push('<td>'+item.paper.name+'</td>')
@@ -52,12 +50,12 @@ layui.define(['base' ], function(exports) {
 							html.push('<td></td>')
 						}
 						
-						
+						var date= new Date();
 						date.setTime(item.validateTime);
-						html.push('<td>'+date.toLocaleDateString()+'</td>')
+						html.push('<td>'+date.Format("yyyy-MM-dd")+'</td>')
 						
 						date.setTime(item.optionTime);
-						html.push('<td>'+date.toLocaleDateString()+'</td>')
+						html.push('<td>'+date.Format("yyyy-MM-dd")+'</td>')
 						
 						html.push('<td><a href="/admin/tochargeAgentBalance.action?userId='+item.id+'"><button class="layui-btn layui-btn-mini">充值</button></a></td>')
 						html.push('<td><a href="/admin/editAgent.action?userId='+item.id+'"><button class="layui-btn layui-btn-mini">编辑</button></a></td>')

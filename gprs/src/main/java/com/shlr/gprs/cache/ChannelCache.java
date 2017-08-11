@@ -47,9 +47,11 @@ public class ChannelCache {
 				cacheCondition.put(channel.getId().toString(), true);
 			}
 		}
-		
 		long end = System.currentTimeMillis();
 		logger.info("{} initialization completed in {} ms ",this.getClass().getSimpleName(),end-start);
+	}
+	public void updateCache(Channel channel){
+		idMap.put(channel.getId(), channel);
 	}
 	
 }

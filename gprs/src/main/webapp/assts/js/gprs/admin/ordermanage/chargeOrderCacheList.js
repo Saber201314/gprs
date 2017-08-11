@@ -18,8 +18,6 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 	 */
 	$(function(){
 		
-		$('#start').val(laydate.now(0, 'YYYY-MM-DD 00:00:00'));
-		$('#end').val(laydate.now(0, 'YYYY-MM-DD 23:59:59'));
 		base.inittime('YYYY-MM-DD hh:mm:ss');
 		base.initagent();
 		base.initchannel();
@@ -159,10 +157,10 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
     			html.push('<td>'+profit+'</td>');
     			
     			//操作按钮
-    			var btnhtml=[];
-    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">详情</button>');
-    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">推送回调</button>');
-				html.push('<td>' +btnhtml.join("")+'</td>');
+//    			var btnhtml=[];
+//    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">详情</button>');
+//    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">推送回调</button>');
+//				html.push('<td>' +btnhtml.join("")+'</td>');
 				html.push('</tr>')
 			}
 			$(".layui-table tbody").append(html.join("")); 
@@ -225,7 +223,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 				})
 			})
 		}else{
-			top.layer.msg('请选择流量包');
+			top.layer.msg('请选择至少一项');
 		}
 	})
 	$('.stopTask').click(function() {
@@ -260,7 +258,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 				})
 			})
 		}else{
-			top.layer.msg('请选择流量包');
+			top.layer.msg('请选择至少一项');
 		}
 		
 		

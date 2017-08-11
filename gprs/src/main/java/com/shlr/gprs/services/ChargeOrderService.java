@@ -9,7 +9,9 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageRowBounds;
+import com.shlr.gprs.dao.AgentChargeOrderMapper;
 import com.shlr.gprs.dao.ChargeOrderMapper;
+import com.shlr.gprs.domain.AgentChargeOrder;
 import com.shlr.gprs.domain.ChargeOrder;
 
 import tk.mybatis.mapper.entity.Example;
@@ -25,15 +27,20 @@ public class ChargeOrderService implements DruidStatInterceptor{
 	
 	@Resource
 	ChargeOrderMapper chargeOrderMapper;
+	@Resource
+	AgentChargeOrderMapper agentChargeOrderMapper;
 	
 	public List<ChargeOrder> listByExampleAndPage(Example example,Integer pageNo){
 		return chargeOrderMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
 	}
 	
+	public List<AgentChargeOrder> listAgentByExampleAndPage(Example example,Integer pageNo){
+		return agentChargeOrderMapper.selectByExampleAndRowBounds(example, new PageRowBounds((pageNo-1)*30, 30));
+	}
+	
 	public List<ChargeOrder> listByExample(Example example){
 		return chargeOrderMapper.selectByExample(example);
 	}
-	
 	public List<ChargeOrder> findOneByTaskIdAndTemplateId(String taskId,Integer templateId){
 		Example example=new Example(ChargeOrder.class,true,false);
 		Criteria createCriteria = example.createCriteria();

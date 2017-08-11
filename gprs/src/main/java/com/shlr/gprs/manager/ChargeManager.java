@@ -200,8 +200,8 @@ public class ChargeManager {
 			return result;
 		}
 		addToCharge(chargeOrder);
-		result.setSuccess(true);
 		result.setMsg("提交成功");
+		result.setTaskId(chargeOrder.getId().toString());
 		result.setOrderId(chargeOrder.getAgentOrderId());
 		return result;
 	}

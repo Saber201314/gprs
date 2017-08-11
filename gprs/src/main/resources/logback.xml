@@ -4,16 +4,16 @@ scan：当此属性设置为true时，配置文件如果发生改变，将会被
 scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒当scan为true时，此属性生效。默认的时间间隔为1分钟。
 debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
 -->
-<configuration scan="false" scanPeriod="60 seconds" debug="false">
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
     <!-- 定义日志的根目录 -->
-    <property name="LOG_HOME" value="/mnt/log" />
+    <property name="LOG_HOME" value="/mnt/logs" />
     <!-- 定义日志文件名称 -->
     <property name="appName" value="gprs"></property>
     <!-- ch.qos.logback.core.ConsoleAppender 表示控制台输出 -->
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <Encoding>UTF-8</Encoding>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">  
-            <level>INFO</level>  
+            <level>DEBUG</level>  
             <onMatch>ACCEPT</onMatch>  
             <onMismatch>DENY</onMismatch>  
         </filter>
@@ -61,78 +61,59 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
         </layout>
     </appender>
     
-    <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->  
     <appender name="info_log" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <Encoding>UTF-8</Encoding>
-        <!-- 指定日志文件的名称 -->  
         <file>${LOG_HOME}/info.log</file>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">  
             <level>INFO</level>  
             <onMatch>ACCEPT</onMatch>  
             <onMismatch>DENY</onMismatch>  
         </filter>
-        <!--
-      	 当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名
-        TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动。
-        -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!--
-            	滚动时产生的文件的存放位置及文件名称 %d{yyyy-MM-dd}：按天进行日志滚动 
-            	%i：当文件大小超过maxFileSize时，按照i进行文件滚动
-            -->
             <fileNamePattern>${LOG_HOME}/info-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- 
-			            可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件。假设设置每天滚动，
-			            且maxHistory是365，则只保存最近365天的文件，删除之前的旧文件。注意，删除旧文件是，
-			            那些为了归档而创建的目录也会被删除。
-            -->
             <MaxHistory>30</MaxHistory>
         </rollingPolicy>
-        <!--
-       		 日志输出格式：%d表示日期时间，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %logger{50} 表示logger名字最长50个字符，否则按照句点分割。 %msg：日志消息，%n是换行符
-        -->     
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] - [%-5level] [%logger : %line ] - %msg%n</pattern>
         </layout>
     </appender>
     
-    <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->  
     <appender name="error_log" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <Encoding>UTF-8</Encoding>
-        <!-- 指定日志文件的名称 -->  
         <file>${LOG_HOME}/error.log</file>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">  
             <level>ERROR</level>  
             <onMatch>ACCEPT</onMatch>  
             <onMismatch>DENY</onMismatch>  
         </filter>
-        <!--
-      	 当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名
-        TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动。
-        -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!--
-            	滚动时产生的文件的存放位置及文件名称 %d{yyyy-MM-dd}：按天进行日志滚动 
-            %i：当文件大小超过maxFileSize时，按照i进行文件滚动
-            -->
             <fileNamePattern>${LOG_HOME}/error-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- 
-			            可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件。假设设置每天滚动，
-			            且maxHistory是365，则只保存最近365天的文件，删除之前的旧文件。注意，删除旧文件是，
-			            那些为了归档而创建的目录也会被删除。
-            -->
             <MaxHistory>30</MaxHistory>
         </rollingPolicy>
-        <!--
-       		 日志输出格式：%d表示日期时间，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %logger{50} 表示logger名字最长50个字符，否则按照句点分割。 %msg：日志消息，%n是换行符
-        -->     
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] - [%-5level] [%logger : %line ] - %msg%n</pattern>
         </layout>
-        
     </appender>
-
-
+	
+	<appender name="notify_log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Encoding>UTF-8</Encoding>
+        <file>${LOG_HOME}/notify.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">  
+            <level>INFO</level>  
+            <onMatch>ACCEPT</onMatch>  
+            <onMismatch>DENY</onMismatch>  
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/notify-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] - [%-5level] [%logger : %line ] - %msg%n</pattern>
+        </layout>
+    </appender>
+	<logger name="notify" additivity="false">
+        <appender-ref ref="notify_log"/>  
+     </logger>
     <root>
         <appender-ref ref="stdout" />
         <appender-ref ref="debug_log" />

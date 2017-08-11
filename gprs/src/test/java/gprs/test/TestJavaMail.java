@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.coyote.http11.Http11AprProcessor;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.shlr.gprs.domain.PayLog;
 import com.shlr.gprs.manager.ThreadManager;
 import com.shlr.gprs.utils.okhttp.HttpHeaders;
@@ -28,12 +30,13 @@ import okhttp3.Response;
 * 
 */
 public class TestJavaMail {
-	public static void main(String[] args) throws UnsupportedEncodingException {
-			PayLog payLog = new  PayLog();
-			BackMoneyVO  backMoneyVO = new BackMoneyVO();
-			ChargeOrBuckleVO buckleVO = new ChargeOrBuckleVO();
-			System.out.println(payLog instanceof BackMoneyVO);
-			System.out.println(backMoneyVO instanceof BackMoneyVO);
-			System.out.println(buckleVO instanceof PayLog);
+	public static void main(String[] args) throws IOException {
+			Response execute = OkhttpUtils.getInstance()
+				.post("http://ip.taobao.com/service/getIpInfo.php")
+				.headers("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
+				.params("ip","58.246.140.150")
+				.execute();
+			JSONObject jsonObject = JSON.parseObject(execute.body().string());
+			System.out.println();
 	}
 }

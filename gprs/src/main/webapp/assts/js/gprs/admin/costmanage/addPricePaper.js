@@ -20,35 +20,34 @@ layui.define([ 'base', ], function(exports) {
 		//全选择
 		$('.checkAll').click(function(){
 			var errorFlag = false ;
-			$('.level').each(function(index,item){
+			$('.discount').each(function(index,item){
 				if( item.value == "" ){
 					errorFlag = true;
 					return;
 				}
 			})
 			if(!errorFlag){
-				$('input[type="checkbox"]').each(function(index,item){
+				$('.packActive').each(function(index,item){
 					item.checked = true ;
 					var tr = $(item).parent().parent();
 					var packId = $(item).data("id");
 					var discount = tr.find('.discount').val();
-					var level = tr.find('.level').val();
-					addPackCode(packId,discount,level);
+					var checked = tr.find('.paybill').is(':checked');
+					addPackCode(packId,discount,checked);
 				})
 				form.render('checkbox');
 			}else{
-				top.layer.msg("优先级还没有设置！！");
+				top.layer.msg("折扣还没有设置！！");
 			}
 		})
 		//全取消
 		$('.cancelAll').click(function(){
-			$('input[type="checkbox"]').each(function(index,item){
+			$('.packActive').each(function(index,item){
 				item.checked = false ;
 				var tr = $(item).parent().parent();
 				var packId = $(item).data("id");
 				var discount = tr.find('.discount').val();
-				var level = tr.find('.level').val();
-				removePackCode(packId,discount,level);
+				removePackCode(packId);
 			})
 			form.render('checkbox');
 		})
@@ -59,7 +58,7 @@ layui.define([ 'base', ], function(exports) {
 			    formType: 0 //prompt风格，支持0-2
 			}, function(discount){			
 				if (isNaN(discount)){
-					top.layer.msg("优先级必须为数字！")
+					top.layer.msg("折扣必须为数字！")
 					return;
 			    } 
 				$('.discount').each(function(){
@@ -68,38 +67,26 @@ layui.define([ 'base', ], function(exports) {
 				top.layer.closeAll();			    								    
 			});
 		})
-		//设置优先级
-		$('.setAllLevel').click(function(){
-			top.layer.prompt({
-			    title: '请输入优先级',
-			    formType: 0 //prompt风格，支持0-2
-			}, function(level){			
-				if (isNaN(level)){
-					top.layer.msg("优先级必须为数字！")
-					return;
-			    }else{
-			    	if(level.indexOf(".")>0){
-			    		top.layer.msg("优先级必须为整数！")
-			    		return;
-			    	}
-			    }
-				$('.level').each(function(){
-					$(this).val(level);
-				});	
-				top.layer.closeAll();			    								    
-			});
-		})
 		//详情
 		$('.showDetail').click(function(){
 			var id = $('input[name="id"]').val();
-			showChannelInfo(id);
+			if(id!=""){
+				showPircePaperInfo(id);
+			}
 		})
 		
 		
 		
 		
 	})
-	
+	form.on('checkbox(allPaybill)', function(data) {
+			var child = $(data.elem).parents('table').find(
+					'tbody .paybill');
+			child.each(function(index, item) {
+				item.checked = data.elem.checked;
+			});
+			form.render('checkbox');
+		});
 	/*
 	 * 拦截表单提交
 	 * 
@@ -108,7 +95,7 @@ layui.define([ 'base', ], function(exports) {
 	
 	form.on('submit(channel-submit)', function(data) {
 		$.ajax({
-			url : "/admin/saveChannel.action",
+			url : "/admin/savePricePaper.action",
 			type : "post",
 			data : data.field,
 			dataType : "json",
@@ -129,33 +116,35 @@ layui.define([ 'base', ], function(exports) {
 		var tr = $(data.elem).parent().parent();
 		var packId = $(data.elem).data("id");
 		var discount = tr.find('.discount').val();
-		var level = tr.find('.level').val();
+		var checked = tr.find('.paybill').is(':checked');
 		if(data.elem.checked){
-			if( level == ''){
-				top.layer.msg("优先级还没有设置！！");
+			if( discount == ''){
+				top.layer.msg("折扣还没有设置！！");
 				data.elem.checked = false;
 				form.render("checkbox");
 				return;
 			}else{
-				if(isNaN(level)){
-					top.layer.msg("优先级必须是数字");
-				}else{
-					if(level.indexOf(".")>0){
-			    		top.layer.msg("优先级必须为整数！")
-			    		return;
-			    	}
+				if(isNaN(discount)){
+					top.layer.msg("折扣必须是数字");
+					return;
 				}
 				//设置流量包
-				addPackCode(packId,discount,level);
+				addPackCode(packId,discount,checked);
 			}
 		}else{
 			//取消流量包
-			removePackCode(packId,discount,level);
+			removePackCode(packId);
 		}
 	});
-	function addPackCode(packId,discount,level){
+	function addPackCode(packId,discount,checked){
 		var packCode = $('#packCode').val();
 		var packCodeArray = packCode.split(",");
+		var paybill = "";
+		if(checked){
+			paybill = "1";
+		}else{
+			paybill = "0";
+		}
 		var isExist = false;
 		$.each(packCodeArray,function(index,item){
 			var codeItemArray = item.split(":");
@@ -164,11 +153,11 @@ layui.define([ 'base', ], function(exports) {
 			}
 		})
 		if(!isExist){
-			packCodeArray.push(packId+":"+discount+":"+level);
+			packCodeArray.push(packId+":"+discount+":"+paybill);
 		}
 		$('#packCode').val(packCodeArray.join(","));
 	}
-	function removePackCode(packId,discount,level){
+	function removePackCode(packId){
 		var packCode = $('#packCode').val();
 		var packCodeArray = packCode.split(",");
 		
@@ -181,15 +170,6 @@ layui.define([ 'base', ], function(exports) {
 				}
 			}
 		}
-//		$.each(packCodeArray,function(index,item){
-//			var codeItemArray = item.split(":");
-//			if(codeItemArray[0] == packId){
-//				var index = packCodeArray.indexOf(item);
-//				if( index > -1){
-//					packCodeArray.splice(index,1);
-//				}
-//			}
-//		})
 		$('#packCode').val(packCodeArray.join(","));
 	}
 	
@@ -212,24 +192,35 @@ layui.define([ 'base', ], function(exports) {
 					var packArray = packCode.split(",");
 					$.each(data.list, function(index, item) {
 						html.push('<tr>')
+						html.push('<td>'+item.id+'</td>')
 						html.push('<td>'+item.name+'</td>')
 						
 						var isExist = false;
 						var packInfo ;
 						$.each(packArray ,function(index,pitem){
-							packInfo =  pitem.split(":");
-							if(packInfo[0] == item.id){
-								isExist = true;
+							if(pitem != ""){
+								packInfo =  pitem.split(":");
+								if(packInfo[0] == item.id){
+									isExist = true;
+									return false;
+								}
 							}
+							
 						})
 						if(isExist){
-							html.push('<td><input type="checkbox" data-id="'+item.id+'" lay-filter="packActive" checked name="" lay-skin="primary"></td>')
+							
+							html.push('<td><input type="checkbox" data-id="'+item.id+'" lay-filter="packActive" checked class="packActive" lay-skin="primary"></td>')
 							html.push('<td><input width="50" type="text"  value="'+packInfo[1]+'" class="layui-input pack-input discount"></td>')
-							html.push('<td><input width="50" type="number"  value="'+packInfo[2]+'" class="layui-input pack-input level"></td>')
+							if(packInfo[2] == 1){
+								html.push('<td><input type="checkbox" class="paybill"  lay-skin="primary"  checked=""></td>')
+							}else{
+								html.push('<td><input type="checkbox" class="paybill"  lay-skin="primary"></td>')
+							}
+							
 						}else{
-							html.push('<td><input type="checkbox" data-id="'+item.id+'" lay-filter="packActive" name="" lay-skin="primary"></td>')
-							html.push('<td><input width="50" type="text"  value="10" class="layui-input pack-input discount"></td>')
-							html.push('<td><input width="50" type="number"  value=""  class="layui-input pack-input level"></td>')
+							html.push('<td><input type="checkbox" data-id="'+item.id+'" lay-filter="packActive" class="packActive" lay-skin="primary"></td>')
+							html.push('<td><input width="50" type="text"  value="" class="layui-input pack-input discount"></td>')
+							html.push('<td><input type="checkbox" class="paybill"  lay-skin="primary"></td>')
 						}
 						
 						html.push('</tr>')
@@ -251,47 +242,54 @@ layui.define([ 'base', ], function(exports) {
 			}
 		})
 	}
-	function showChannelInfo(id){    
+	function showPircePaperInfo(id){    
 		$.ajax({
-			url:"/admin/showSingleChannelInfo.action",
+			url:"/admin/showPircePaperInfo.action",
 			type:'get',
 	 		data: 'id='+id,
 	 		dataType:"json",
 	 		success:function(data){
 			    layer.open({
 				    type: 1,
-					title:'通道详细信息',
+					title:'报价详细信息',
 					area: ['700px','600px'],
 					offset: '100px',
 					skin:'layui-layer-molv',
 					shadeClose: true,
 					content: $('#single-page-content')			
 			    });	 		  		 
-			    initChannelDetail(data);
+			    initPricePaperDetail(data);
 	 		},
 	 		error:function(){
 	 			top.layer.msg('服务器连接失败');
 	 		}
 		});	
-	}
-	function initChannelDetail(data){
+	}	
+		
+	function initPricePaperDetail(data){
 		$("#single-page-content tbody").empty();
 		if(data && data.length>0){
 	     	var html = [];
 	     	for(var i =0;i<data.length;i++){
-	     		html.push("<tr>");		     		
-	     		html.push("<td>"+data[i].name+"</td>");	
-	     		html.push("<td>"+data[i].price+"</td>");
-	     		html.push("<td>"+data[i].discount+"</td>");
-	     		html.push("<td>"+data[i].actualPrice+"</td>");
-	     		html.push("<td>"+data[i].level+"</td>");	     		
-	     		html.push("<td>"+data[i].channelName+"</td>");		     		
-	     		html.push("</tr>");
+	     		html.push('<tr>');		     		
+	     		html.push('<td>'+data[i].name+'</td>');	
+	     		
+	     		var indiscount = data[i].inDiscount == undefined ? "" : data[i].inDiscount;
+	     		html.push('<td>'+indiscount +'</td>');
+	     		html.push('<td>'+data[i].outDiscount+'</td>');
+	     		if(data[i].payBill == 1){
+	     			html.push('<td>带票</td>');
+	     		}else{
+	     			html.push('<td>不带票</td>');
+	     		}
+	     		var channelName = data[i].channelName == undefined ? "" : data[i].channelName;
+	     		html.push('<td>'+channelName+'</td>');		     		
+	     		html.push('</tr>');
 	     	}	
-	     	$("#single-page-content tbody").append(html.join(""));	
+	     	$("#single-page-content tbody").append(html.join(''));	
 		}		
 	}
 	
-	exports('addChannel');
+	exports('addPricePaper');
 
 })

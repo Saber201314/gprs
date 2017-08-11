@@ -127,18 +127,19 @@ public class PortalController {
 			return result.toJSONString();
 		}
 		session.setAttribute("user", users);
-		
-		if (users.getType() == 1) {
-			result.put("success", true);
-			result.put("url", "/n_index.jsp");
-			return result.toJSONString();
-		}
-		if (users.getType() == 2) {
-			result.put("success", true);
-			result.put("url", "/n_index.jsp");
-			return result.toJSONString();
-		}
+		result.put("success", true);
+		result.put("url", "/index.action");
 		return result.toJSONString();
+	}
+	@RequestMapping(value="/index.action")
+	public String index(HttpSession session,Model model) {
+		Users currentUser = userService.getCurrentUser(session);
+		model.addAttribute("user", currentUser);
+		if(currentUser.getType() == 1){
+			return "admin/n_index";
+		}else{
+			return "agent/agent_index";
+		}
 	}
 	/**
 	 * 获取手机号信息
@@ -223,7 +224,7 @@ public class PortalController {
 		return result.toJSONString();
 	}
 	
-	@RequestMapping(value="/admin/layout/changePassword.action")
+	@RequestMapping(value="/changePassword.action")
 	@ResponseBody
 	public String changePassword(HttpServletResponse response, HttpSession session,
 			@RequestParam("password")String password,
@@ -241,20 +242,21 @@ public class PortalController {
 			result.setMsg("原密码不正确");
 			return JSONUtils.toJsonString(result);
 		}
-		
 		if (!newPassword.equals(repeatPassword)) {
 			result.setSuccess(false);
 			result.setMsg("两次密码不一致");
 			return JSONUtils.toJsonString(result);
 		}
-		
-		currentUser.setPassword(newPassword);
-		Integer updateUserByPK = userService.updateUserByPK(currentUser);
+		Integer updateUserByPK = userService.updateUserPassword(currentUser.getId(), repeatPassword);
 		
 		if (updateUserByPK > 0) {
+			currentUser.setPassword(repeatPassword);
 			session.setAttribute("user", currentUser);
 			result.setSuccess(true);
 			result.setMsg("修改成功");
+		}else{
+			result.setSuccess(false);
+			result.setMsg("修改失败");
 		}
 		return JSONUtils.toJsonString(result);
 	}

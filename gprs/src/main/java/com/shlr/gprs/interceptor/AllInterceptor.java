@@ -35,6 +35,7 @@ public class AllInterceptor implements HandlerInterceptor   {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		logger.info("[{}] - [{}] - [{}] ",request.getRemoteAddr(),request.getMethod(),request.getRequestURI());
+		logger.info("User-Agent :{}",request.getHeader("User-Agent"));
 		return true;
 	}
 

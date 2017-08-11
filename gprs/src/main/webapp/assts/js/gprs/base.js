@@ -2,10 +2,11 @@
  * 通用的方法
  * 
  */
-layui.define(['jquery', 'form','laypage','laydate','layer','element','tree'], function(exports) {
+layui.define(['jquery','layer', 'form','laypage','laydate','element','tree'], function(exports) {
 	var $ = layui.jquery;
 	var form = layui.form();
 	var laypage = layui.laypage;
+	var layer = layui.layer;
 	
 	
 	$(function(){

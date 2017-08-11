@@ -39,7 +39,6 @@ public class ChargeReportService implements DruidStatInterceptor{
 			chargeReport.setResumePrice(String.valueOf(resumePrice));
 			chargeReport.setRemainPrice(String.valueOf(remainPrice));
 			queryCurDayList.add(chargeReport);
-			
 		}
 		return queryCurDayList;
 		

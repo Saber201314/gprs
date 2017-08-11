@@ -8,7 +8,9 @@
 body{
 	padding: 0 15px;
 }
-
+.layui-table th{
+	white-space: nowrap;
+}
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
 	font-size: 12px;
@@ -107,14 +109,6 @@ body .ui-tooltip{
 		<form class="layui-form" action="">
 			<div class="layui-form-item">
 				<input type="hidden" id="pageNo" name="pageNo" value="1" class="layui-input">
-				<div class="layui-inline">
-					<label class="layui-form-label">代理商</label>
-					<div class="layui-input-inline">
-						<select id="agent" name="account" lay-filter="agent" lay-search>
-							<option value="-1">请选择</option>
-						</select>
-					</div>
-				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">手机号码</label>
 					<div class="layui-input-inline">
@@ -220,27 +214,6 @@ body .ui-tooltip{
 						</select>
 					</div>
 				</div>
-				<div class="layui-inline">
-					<label class="layui-form-label">充值状态</label>
-					<div class="layui-input-inline">
-						<select name="chargeStatus" lay-verify="" lay-search>
-							<option value="-1">请选择</option>
-							<option value="1">未知</option>
-							<option value="2">提交成功</option>
-							<option value="3">提交失败</option>
-							<option value="4">充值成功</option>
-							<option value="5">充值失败</option>
-						</select>
-					</div>
-				</div>
-				<div class="layui-inline">
-					<label class="layui-form-label">充值通道</label>
-					<div class="layui-input-inline">
-						<select id="submitChannel" name="submitChannel" lay-filter="submitChannel" lay-search>
-							<option value="-1">请选择</option>
-						</select>
-					</div>
-				</div>
 				<div  class="layui-inline">
 					<div class="layui-input-block">
 						<button class="layui-btn" lay-submit="" lay-filter="btn-submit">查询</button>
@@ -251,40 +224,26 @@ body .ui-tooltip{
 			</div>
 		</form>
 	</fieldset>
-	<button class="layui-btn layui-btn-mini " >缓存管理</button>
+	<!-- <button class="layui-btn layui-btn-mini " >缓存管理</button>
 	<button class="layui-btn layui-btn-mini getallcheck" >批量提交</button>
 	<button class="layui-btn layui-btn-mini getallcheck" >停止提交</button>
 	<button class="layui-btn layui-btn-mini getallcheck" >批量失败</button>
-	<button class="layui-btn layui-btn-mini" >导出Excel</button>
+	<button class="layui-btn layui-btn-mini" >导出Excel</button> -->
 	
 	<div class="layui-form">
 		<table class="layui-table">
 			<thead>
 				<tr>
-					<th><input type="checkbox" name="" lay-skin="primary"
-						lay-filter="allChoose"></th>
 					<th>编号</th>
-					<th>代理商</th>
 					<th>手机号码</th>
 					<th>号码类型</th>
 					<th width = "70">流量类型</th>
 					<th>流量值</th>
-					<th>基础价格</th>
-					<th width="70">状态</th>
-					<th style="width: 70px;">订单生成时间</th>
-					<th>提交时间</th>
-					<th>提交返回内容</th>
-					<th>回调时间</th>
-					<th>回调内容</th>
-					<th>充值方式</th>
-					<th style="width: 70px;">充值通道</th>
-					<th>接入</th>
-					<th>折后价</th>
-					<th>外放</th>
-					<th>带票</th>
 					<th>扣费金额</th>
-					<th>盈利</th>
-					<th>操作</th>
+					<th width="70">状态</th>
+					<th style="width: 70px;">提单时间</th>
+					<th>回调内容</th>
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -302,7 +261,9 @@ body .ui-tooltip{
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
+	}).extend({ //设定模块别名
+		base: 'base', //如果test.js是在根目录，也可以不用设定别名
+		chargeOrderList: 'agent/ordermanage/chargeOrderList' //相对于上述base目录的子目录
 	}).use('chargeOrderList'); //加载入口
-	
 </script>
 </html>

@@ -213,4 +213,11 @@ public class ChargeOrderController {
 		}
 		return JSONUtils.toJsonString(result);
 	}
+	public String statisticsChargeOrder(String start,String end,
+			String agent,Integer channelId){
+		
+		
+		
+		return agent;
+	}
 }

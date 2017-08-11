@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 * @version 创建时间：2017年4月12日 下午9:36:26
 * 
 */
-@Table(name="g_pay_log")
+@Table(name="g_pay_log_2017_1_2")
 public class PayLog implements Serializable{
 	/**
 	 * 

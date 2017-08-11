@@ -51,7 +51,6 @@ body{
 					<th>电话</th>
 					<th>余额</th>
 					<th>透支金额</th>
-				    <th>有效期</th>
 				    <th>报价单</th>
 				    <th>有效期</th>
 					<th>添加时间</th>
@@ -71,7 +70,8 @@ body{
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
 	}).extend({ //设定模块别名
-		agentList: 'agentmanage/agentList' //设定别名
+		base: 'base', //如果test.js是在根目录，也可以不用设定别名
+		agentList: 'admin/agentmanage/agentList' //设定别名
 	}).use('agentList'); //加载入口
 	
 </script>

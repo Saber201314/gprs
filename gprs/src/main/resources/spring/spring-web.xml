@@ -58,6 +58,21 @@ http://www.springframework.org/schema/websocket/spring-websocket.xsd
 			</list>
 		</property>
 	</bean>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">  
+	    <property name="messageConverters">  
+	        <list>  
+	            <ref bean="jsonHttpMessageConverter" />  
+	        </list>  
+	    </property>  
+	</bean>  
+	  
+	<bean id="jsonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">  
+	    <property name="supportedMediaTypes">  
+	        <list>  
+	            <value>application/json;charset=UTF-8</value>  
+	        </list>  
+	    </property>  
+	</bean>
 
 	<!-- 开启SpringMVC注解模式 -->
 	<mvc:annotation-driven />
@@ -106,6 +121,8 @@ http://www.springframework.org/schema/websocket/spring-websocket.xsd
 		</mvc:interceptor>
 		<mvc:interceptor>
 			<mvc:mapping path="/admin/**"/>
+			<mvc:mapping path="/agent/**"/>
+			<mvc:mapping path="/index.action"/>
 			<bean class="com.shlr.gprs.interceptor.LoginCheckInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>

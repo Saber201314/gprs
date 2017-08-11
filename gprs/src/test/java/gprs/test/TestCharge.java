@@ -24,7 +24,10 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 
 import com.alibaba.fastjson.JSON;
 import com.shlr.gprs.constants.Const;
+import com.shlr.gprs.utils.okhttp.OkhttpUtils;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,6 +49,7 @@ public class TestCharge {
 			.readTimeout(2, TimeUnit.SECONDS)
 			.writeTimeout(2, TimeUnit.SECONDS)
 			.build();
+		
 		
 		
 //		List<String> warnings = new ArrayList<String>();

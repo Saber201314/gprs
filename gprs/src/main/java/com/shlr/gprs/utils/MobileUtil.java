@@ -49,7 +49,8 @@ public class MobileUtil {
 		int count = 5 ;
 		while (count>0) {
 			try {
-				response = OkhttpUtils.getInstance().get(url)
+				response = OkhttpUtils.getInstance()
+					.get(url)
 					.params(params, true)
 					.execute().body().string();
 				count = 0;
@@ -72,8 +73,6 @@ public class MobileUtil {
 //		System.out.println(address);
 		
 		
-		String a="æåçç¶æä¸ºåæº";
-		String str = StrUtil.str(a.getBytes("ISO-8859-1"), "UTF-8");
-		System.out.println(str);
+		getAddress("13545141090");
 	}
 }

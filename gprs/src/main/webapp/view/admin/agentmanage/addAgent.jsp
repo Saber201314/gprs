@@ -19,7 +19,7 @@ body{
 		<legend>基础信息</legend>
 		<div class="layui-form" action="">
 			<input type="hidden" name="id" value="${agent.id }"/>
-			<input type="hidden" name="type" value="${agent.type}"/>
+			<input type="hidden" name="type" value="2"/>
 			<div class="layui-form-item">
 				<div class="layui-inline">
 					<label class="layui-form-label">代理账号</label>
@@ -89,36 +89,23 @@ body{
 			</div>
 			<div class="layui-form-item">
 				<div class="layui-inline">
-					<label class="layui-form-label">是否启用密钥</label>
-					<div class="layui-input-inline">
-						<input type="hidden" id="compatible" value="${agent.compatible}"/>
-						<select name="compatible" lay-filter="isSecretKey">
-							<option <c:if test="${agent.compatible == 0 }">selected</c:if> value="0">不启用</option>
-							<option <c:if test="${agent.compatible == 1 }">selected</c:if> value="1">启用</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<div class="layui-inline">
-					<label class="layui-form-label">接口密码</label>
-					<div class="layui-input-inline">
-						<input name="apiPassword" disabled="disabled" lay-verify="required" 
-							style="background-color: #f1f1f1"  value="${agent.apiPassword}"
-							class="layui-input">
-					</div>
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<div class="layui-inline">
 					<label class="layui-form-label">密钥</label>
 					<div class="layui-input-inline" style="width: 280">
 						<input name="apiKey" disabled="disabled" lay-verify="required"   style="background-color: #f1f1f1"  value="${agent.apiKey}"
 							class="layui-input">
-						
 					</div>
 					<div class="layui-inline">
-						<button id="genApiKey" disabled="disabled" class="layui-btn layui-btn-disabled">生成密钥</button>
+						<button id="genApiKey" class="layui-btn">生成密钥</button>
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label">IP白名单</label>
+					<div class="layui-input-inline" style="width: 280">
+						<textarea name="whiteIp"placeholder="为空不限制IP,多个IP分行填写" 
+							lay-verify="required" rows="4" cols="50" class="" 
+							style="border:1px solid #e6e6e6;background-color: #fff;border-radius:2px;padding:5 10px;">${agent.whiteIp}</textarea>
 					</div>
 				</div>
 			</div>
@@ -154,7 +141,8 @@ body{
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
 	}).extend({ //设定模块别名
-		addAgent: 'agentmanage/addAgent' //设定别名
+		base: 'base', //如果test.js是在根目录，也可以不用设定别名
+		addAgent: 'admin/agentmanage/addAgent' //设定别名
 	}).use('addAgent'); //加载入口
 	
 </script>

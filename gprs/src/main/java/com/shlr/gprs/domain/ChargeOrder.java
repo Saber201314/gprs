@@ -74,6 +74,8 @@ public class ChargeOrder {
 	
 	private String memo;//备注
 	
+	private String ip;
+	
 	private String error;//错误信息
 	
 	private Integer batchId;//
@@ -438,6 +440,13 @@ public class ChargeOrder {
 	 */
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	/**

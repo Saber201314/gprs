@@ -37,6 +37,7 @@ import com.shlr.gprs.vo.ChargeOrBuckleVO;
 import com.xiaoleilu.hutool.crypto.SecureUtil;
 import com.xiaoleilu.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.xiaoleilu.hutool.util.HexUtil;
+import com.xiaoleilu.hutool.util.StrUtil;
 
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -72,6 +73,9 @@ public class UserController {
 	public String editAgent(Integer userId,Model model){
 		Users user = userService.findById(userId);
 		List<PricePaper> listAll = pricePaperService.listAll();
+		if(StrUtil.isNotBlank(user.getWhiteIp())){
+			user.setWhiteIp(user.getWhiteIp().replace("%0D%0A", "\n"));
+		}
 		model.addAttribute("agent", user);
 		model.addAttribute("paperList", listAll);
 		return "admin/agentmanage/addAgent";
@@ -81,8 +85,34 @@ public class UserController {
 	public String saveAgent(HttpSession session, @ModelAttribute Users user){
 		JSONObject result = new JSONObject();
 		Integer num = 0;
-		
-		user.setType(2);
+		if(StrUtil.isNotBlank(user.getWhiteIp())){
+			user.setWhiteIp(user.getWhiteIp().replace("\n", "%0D%0A"));
+		}
+		if(user.getId() != null && user.getId() > 0){
+			num = userService.updateUserByPK(user);
+		}else{
+			Users currentUser = userService.getCurrentUser(session);
+			user.setAgent(currentUser.getUsername());
+			num = userService.add(user);
+		}
+		if(num > 0){
+			result.put("success", true);
+		}else{
+			result.put("success", false);
+		}
+		return result.toJSONString();
+	}
+	@RequestMapping("/editAdmin.action")
+	public String editAdmin(Integer userId,Model model){
+		Users user = userService.findById(userId);
+		model.addAttribute("admin", user);
+		return "admin/sys/addAdmin";
+	}
+	@RequestMapping("/saveAdmin.action")
+	@ResponseBody
+	public String saveAdmin(HttpSession session, @ModelAttribute Users user){
+		JSONObject result = new JSONObject();
+		Integer num = 0;
 		if(user.getId() != null && user.getId() > 0){
 			num = userService.updateUserByPK(user);
 		}else{

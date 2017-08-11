@@ -235,10 +235,11 @@ body .ui-tooltip{
 					<th>充值方式</th>
 					<th>异常描述</th>
 					<th>接入</th>
+					<th>折后价</th>
 					<th>外放</th>
 					<th>带票</th>
+					<th>扣费金额</th>
 					<th>盈利</th>
-					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -256,6 +257,9 @@ body .ui-tooltip{
 <script type="text/javascript">
 	layui.config({
 		base : '/assts/js/gprs/' //你的模块目录
+	}).extend({ //设定模块别名
+		base: 'base', //如果test.js是在根目录，也可以不用设定别名
+		chargeOrderCacheList: 'admin/ordermanage/chargeOrderCacheList' //相对于上述base目录的子目录
 	}).use('chargeOrderCacheList'); //加载入口
 	
 </script>
