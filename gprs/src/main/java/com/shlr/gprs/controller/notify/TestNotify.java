@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.shlr.gprs.constants.LogEnum;
 import com.shlr.gprs.manager.ChargeManager;
@@ -71,20 +72,25 @@ public class TestNotify {
 			}
 			logger.info("{} <<<<<=====  {}   {}",request.getRemoteAddr(),request.getRequestURI(),jsonString);
 //			JSONObject jsonbody = JSON.parseObject(body);
+			//[{"TaskID":652602,"Mobile":"15010316298","Status":4,"ReportTime":"2015-12-20T16:35:54.3","ReportCode":"2：成功"}]
+			JSONArray parseArray = JSON.parseArray(jsonString);
 			
-			JSONObject jsonObject =JSON.parseObject(jsonString);
-			Integer code = jsonObject.getInteger("code");
-			String orderId = jsonObject.getString("orderId");
-			String msg = jsonObject.getString("msg");
-			if ("0".equals(code)) {
-				ChargeManager.getInstance().updateResult(1, orderId, true, code+":"+msg);
-			} else if("1".equals(code)) {
-				ChargeManager.getInstance().updateResult(1, orderId, false, code+":"+msg);
-			}
+			System.out.println(jsonString);
+//			for (int i = 0 ,size = parseArray.size() ; i < size; i++) {
+//				JSONObject jsonObject = parseArray.getJSONObject(i);
+//				Integer code = jsonObject.getInteger("code");
+//				String orderId = jsonObject.getString("orderId");
+//				String msg = jsonObject.getString("msg");
+//				if ("0".equals(code)) {
+//					ChargeManager.getInstance().updateResult(1, orderId, true, code+":"+msg);
+//				} else if("1".equals(code)) {
+//					ChargeManager.getInstance().updateResult(1, orderId, false, code+":"+msg);
+//				}
+//			}
 
 		} catch (Exception e) {
 			logger.error(this.getClass().toString(), e);
 		}
-		return "200";
+		return "ok";
 	}
 }

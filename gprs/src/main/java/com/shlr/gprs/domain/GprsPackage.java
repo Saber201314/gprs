@@ -322,7 +322,6 @@ public class GprsPackage implements Serializable, Comparable<GprsPackage> {
 		if (getAmount() != o.getAmount()) {
 			return getAmount() > o.getAmount() ? 1 : -1;
 		}
-
 		return 0;
 	}
 }

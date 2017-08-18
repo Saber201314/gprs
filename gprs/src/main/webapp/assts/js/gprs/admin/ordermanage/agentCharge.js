@@ -7,6 +7,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 	var isinitpage=false;//是否初始化page信息
 	
 	$(function(){
+		
 		$('#start').val(laydate.now(0, 'YYYY-MM-DD 00:00:00'));
 		$('#end').val(laydate.now(0, 'YYYY-MM-DD 23:59:59'));
 		base.initagent();
@@ -64,12 +65,21 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 						html.push('<td>'+paytype+'</td>')
 						var date = new Date(item.optionTime)
 						html.push('<td>'+date.Format('yyyy-MM-dd hh:mm:ss')+'</td>');
-						html.push('<td>'+item.memo+'</td>');
+						html.push('<td class="zoom" style="max-width : 80px;">'+item.memo+'</td>');
 						html.push('<td>'+item.agent+'</td>');
 						html.push('<td></td>');
 						html.push('</tr>');
 					})
 					$(".layui-table tbody").append(html.join("")); 
+					
+					$('.zoom').find("img").click(function(){
+						layer.open({
+							  type: 1,
+							  skin: 'layui-layer-rim', //加上边框
+							  area: ['auto', 'auto'], //宽高
+							  content: $(this).prop("outerHTML")
+							});
+					})
 				}
 				base.initpage(data,isinitpage,function(isinit){
 					isinitpage = isinit;

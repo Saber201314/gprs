@@ -10,6 +10,7 @@ import com.shlr.gprs.domain.StatisticsChargeOrder;
 
 @MapperScan
 public interface StatisticsChargeOrderMapper {
-	List<StatisticsChargeOrder> statisticsChargeOrderByOptionTime(
-			@Param("start")String start,@Param("end")String end);
+	List<StatisticsChargeOrder> statisticsChargeOrder(
+			@Param("start")String start,@Param("end")String end,
+			@Param("account")String account,@Param("channelId")Integer channelId);
 }

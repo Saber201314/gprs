@@ -11,6 +11,7 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -54,11 +55,11 @@ public class ChargeV1Controller {
 	@Resource
 	MobileAreaService mobileAreaService;
 
-	@RequestMapping(value="/v1/charge.action")
+	@RequestMapping(value="/v1/charge.action",method=RequestMethod.POST)
 	@ResponseBody
 	public String charge(HttpServletRequest request, HttpSession session, 
-			String username, String sign,
-			String mobile, Integer amount, Integer range,@RequestParam(required=false)String backUrl, String orderId) {
+			String account, String mobile,Integer amount, Integer range,
+			String sign, String callbackUrl, String orderId) {
 		ChargeResponsVO result = new ChargeResponsVO();
 		if (!Const.isApiSwitch()) {
 			result.setSuccess(false);
@@ -75,7 +76,7 @@ public class ChargeV1Controller {
 			result.setMsg("流量包大小不正确");
 			return JSON.toJSONString(result);
 		}
-		Users currentUser = userService.findByUsername(username);
+		Users currentUser = userService.findByUsername(account);
 
 		if ((currentUser == null) || (currentUser.getType() != 2)) {
 			result.setSuccess(false);
@@ -83,7 +84,7 @@ public class ChargeV1Controller {
 			return JSON.toJSONString(result);
 		}
 		StringBuffer resign = new StringBuffer();
-		resign.append("username=").append(username);
+		resign.append("account=").append(account);
 		resign.append("&mobile=").append(mobile);
 		resign.append("&amount=").append(amount);
 		resign.append("&range=").append(range);
@@ -132,7 +133,7 @@ public class ChargeV1Controller {
 		chargeOrder.setLocation(location);//归属地
 		chargeOrder.setSubmitType(5);//接口充值
 		chargeOrder.setAmount(amount);//流量包大小
-		chargeOrder.setBackUrl(backUrl);//回调地址
+		chargeOrder.setBackUrl(callbackUrl);//回调地址
 		chargeOrder.setAgentOrderId(orderId);//下游订单号
 		chargeOrder.setOptionTime(new Date());
 		chargeOrder.setIp(request.getRemoteAddr());
@@ -140,7 +141,7 @@ public class ChargeV1Controller {
 		result = ChargeManager.getInstance().charge(chargeOrder);
 		return JSON.toJSONString(result);
 	}
-	@RequestMapping("/v1/balance.action")
+	@RequestMapping(value="/v1/balance.action",method=RequestMethod.POST)
 	@ResponseBody
 	public String getBalance(String account,String sign) {
 		BalanceResponsVO result = new BalanceResponsVO();
@@ -151,7 +152,7 @@ public class ChargeV1Controller {
 			return JSONUtils.toJsonString(result);
 		}
 		StringBuffer resign = new StringBuffer();
-		resign.append("username=").append(account);
+		resign.append("account=").append(account);
 		resign.append("&key=").append(currentUser.getApiKey());
 		String md5sign = DigestUtil.md5Hex(resign.toString());
 		if (!md5sign.equals(sign.toLowerCase())) {
@@ -159,7 +160,13 @@ public class ChargeV1Controller {
 			result.setMsg("签名不正确");
 			return JSON.toJSONString(result);
 		}
+		result.setMsg("查询成功");
 		result.setBalance(currentUser.getMoney());
 		return JSONUtils.toJsonString(result);
+	}
+	@RequestMapping(value="/v1/orderStatus.action",method=RequestMethod.POST)
+	@ResponseBody
+	public String getOrderStatus(String account,String taskId,String orderId,String sign) {
+		return null;
 	}
 }

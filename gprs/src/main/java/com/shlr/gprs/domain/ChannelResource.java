@@ -85,8 +85,7 @@ public class ChannelResource implements Serializable{
 		this.channel_id = channel_id;
 	}
 	public String getChannelName() {
-		Channel channel = (Channel) ChannelCache.getInstance().idMap.get(Integer
-				.valueOf(this.channel_id));
+		Channel channel = (Channel) ChannelCache.getInstance().idMap.get(this.channel_id);
 		if (channel == null) {
 			return null;
 		}

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.shlr.gprs.domain.PricePaper;
 import com.shlr.gprs.listenner.WebApplicationContextManager;
 import com.shlr.gprs.services.PricePaperService;
+import com.xiaoleilu.hutool.util.StrUtil;
 
 /**
  * @author xucong
@@ -61,7 +62,11 @@ public class PricePaperCache {
 		Map<Integer, Integer> bill = new HashMap<Integer, Integer>();
 		String[] items = pricePaper.getItems().split(",");
 		for (String item : items)
+			
 			try {
+				if(StrUtil.isBlank(item)){
+					continue;
+				}
 				String[] temp = item.split(":");
 				discount.put(Integer.valueOf(temp[0]), Double.valueOf(temp[1]));
 				if (temp.length == 2) {

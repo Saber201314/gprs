@@ -51,6 +51,8 @@ public class Channel implements Serializable {
 	@Transient
 	private Double inDiscount;
 	@Transient
+	private Integer priority;
+	@Transient
 	private String templateName;
 
 	public Integer getId() {
@@ -139,6 +141,14 @@ public class Channel implements Serializable {
 
 	public void setInDiscount(Double inDiscount) {
 		this.inDiscount = inDiscount;
+	}
+
+	public Integer getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
 	}
 
 	public String getTemplateName() {

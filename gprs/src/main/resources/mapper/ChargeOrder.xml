@@ -20,7 +20,7 @@
 		  	set charge_status = #{charge_status}, 
 		  	report_content = #{report_content}, 
 		  	report_time = #{report_time}
-		  		where charge_task_id = #{charge_task_id} and submit_template = #{submit_template} and charge_status in(1,2)
+		  		where charge_task_id = #{charge_task_id} and submit_template = #{submit_template} and charge_status  = 2
 	</update>
 	<update id="updateCacheFlag">
 		update g_charge_order 

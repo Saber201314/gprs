@@ -282,6 +282,7 @@ layui.define([ 'base', ], function(exports) {
 	     		}else{
 	     			html.push('<td>不带票</td>');
 	     		}
+	     		html.psuh('<td>'+data[i].priority+'</td>');
 	     		var channelName = data[i].channelName == undefined ? "" : data[i].channelName;
 	     		html.push('<td>'+channelName+'</td>');		     		
 	     		html.push('</tr>');

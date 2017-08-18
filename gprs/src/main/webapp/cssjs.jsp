@@ -1,7 +1,7 @@
 <%@ page language="java" 
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <link href="/res/css/layui.css" rel="stylesheet"/>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"/>
@@ -12,6 +12,7 @@
 <script src="/res/china.js"></script>
 <script src='/assts/js/jquery.particleground.min.js'></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
   
 <style>
 .layui-table th,td{

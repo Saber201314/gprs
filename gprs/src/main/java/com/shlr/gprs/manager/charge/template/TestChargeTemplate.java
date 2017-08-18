@@ -45,6 +45,8 @@ public class TestChargeTemplate extends ChargeTemplate {
 		String packageCode = getPackageCode(chargeOrder);
 		if (StringUtils.isEmpty(packageCode)) {
 			chargeOrder.setChargeStatus(3);
+			chargeOrder.setSubmitTime(new Date());
+			chargeOrder.setSubmitContent("未找到流量包编码");
 			chargeOrder.setError("未找到流量包编码");
 			result.setSuccess(false);
 			result.setMsg("没有流量包编码");
@@ -54,7 +56,7 @@ public class TestChargeTemplate extends ChargeTemplate {
 		String url = "http://118.89.103.198:8080/gprs-new/test.charge";
 		HttpParams params = new HttpParams();
 		params.put("mobiles", chargeOrder.getMobile());
-		params.put("callbackurl", "http://58.246.140.150/test.notify");
+		params.put("callbackurl", "http://58.246.140.150/get.notify");
 		params.put("agentOrderId", requestid);
 		Response response = null;
 		String body = null;
@@ -76,7 +78,6 @@ public class TestChargeTemplate extends ChargeTemplate {
 					chargeOrder.setUpOrderId(orderid);
 					chargeOrder.setChargeStatus(2);
 					chargeOrder.setSubmitContent(message);
-					result.setOrderId(chargeOrder.getAgentOrderId());
 				} else {
 					chargeOrder.setChargeStatus(3);
 					chargeOrder.setSubmitContent(message);
@@ -91,6 +92,7 @@ public class TestChargeTemplate extends ChargeTemplate {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			chargeOrder.setChargeStatus(1);
+			chargeOrder.setSubmitTime(new Date());
 			chargeOrder.setSubmitContent(e1.getMessage());
 			chargeOrder.setError("提交未知");
 		}

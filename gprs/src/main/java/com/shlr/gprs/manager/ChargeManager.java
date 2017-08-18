@@ -12,20 +12,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.tomcat.jni.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.alibaba.druid.sql.visitor.functions.Char;
 import com.shlr.gprs.cache.ChannelCache;
 import com.shlr.gprs.cache.UsersCache;
-import com.shlr.gprs.domain.Callback;
 import com.shlr.gprs.domain.Channel;
 import com.shlr.gprs.domain.ChannelTemplate;
 import com.shlr.gprs.domain.ChargeOrder;
@@ -39,13 +35,10 @@ import com.shlr.gprs.services.CallbackService;
 import com.shlr.gprs.services.ChannelService;
 import com.shlr.gprs.services.ChannelTemplateService;
 import com.shlr.gprs.services.ChargeOrderService;
-import com.shlr.gprs.services.ChargeOrderService;
 import com.shlr.gprs.services.GprsPackageService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.PricePaperService;
 import com.shlr.gprs.services.UserService;
-import com.shlr.gprs.utils.okhttp.HttpUtils;
-import com.shlr.gprs.utils.okhttp.OkhttpUtils;
 import com.shlr.gprs.vo.BackMoneyVO;
 import com.shlr.gprs.vo.ChargeResponsVO;
 import com.xiaoleilu.hutool.util.StrUtil;
@@ -72,6 +65,7 @@ public class ChargeManager {
 	private Map<String, ChargeTemplate> chargeTemplateMap = new HashMap<String, ChargeTemplate>();
 	
 	private LinkedBlockingQueue<ChargeOrder> ordertaskList = new LinkedBlockingQueue<ChargeOrder>();
+	
 
 	public static Boolean moreOperValidMap = false;
 
@@ -170,8 +164,8 @@ public class ChargeManager {
 								}
 							});
 						}
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					} catch (Exception e) {
+						logger.error("充值队列异常", e);
 					}
 				}
 			}
@@ -225,6 +219,9 @@ public class ChargeManager {
 		BigDecimal b3 = new BigDecimal("10");
 		String[] items = pricePaper.getItems().split(",");
 		for (String item : items) {
+			if(StrUtil.isBlank(item)){
+				continue;
+			}
 			String[] temp = item.split(":");
 			GprsPackage gprsPackage = gprsPackageService.findById(Integer.valueOf(temp[0]));
 			if ((gprsPackage != null) && (gprsPackage.getStatus() == 0)) {
@@ -238,12 +235,18 @@ public class ChargeManager {
 		GprsPackage gprs = null;
 		int nCount = 0;
 		for (GprsPackage gprsPackage : packageList) {
-			if ((gprsPackage.getAmount() != chargeOrder.getAmount()) 
-					|| (gprsPackage.getType() != chargeOrder.getType())
-					|| (gprsPackage.getRangeType() != chargeOrder.getRangeType())
-					|| ((!gprsPackage.getLocations().equals("全国"))
-							&& (gprsPackage.getLocations().indexOf(chargeOrder.getLocation()) == -1)))
+			System.out.println(gprsPackage.getAmount()+"="+chargeOrder.getAmount());
+			System.out.println(gprsPackage.getType()+"="+chargeOrder.getType());
+			System.out.println(gprsPackage.getLocations()+"="+chargeOrder.getLocation());
+			if(gprsPackage.getAmount().intValue() != chargeOrder.getAmount().intValue()){//包体不匹配跳过
 				continue;
+			}else if(gprsPackage.getType() != chargeOrder.getType()){//运营商类型不匹配跳过
+				continue;
+			}else if(gprsPackage.getRangeType() != chargeOrder.getRangeType()){//流量类型不匹配跳过
+				continue;
+			}else if(!gprsPackage.getLocations().equals("全国")&& gprsPackage.getLocations().indexOf(chargeOrder.getLocation()) == -1){
+				continue;
+			}
 			nCount++;
 			if (chargeOrder.getRouteFlag() == 1) {//路由不可用
 				int curRoutePos = chargeOrder.getCurRoutePos();
@@ -296,31 +299,34 @@ public class ChargeManager {
 		ChargeResponsVO result = new ChargeResponsVO();
 
 		LinkedList<Channel> matchChannel = new LinkedList<>();
-		for (Channel channel : channelList) {
-			String packages = channel.getPackages();
-			if(StrUtil.isNotEmpty(packages)){
-				String[] packageItem = packages.split(",");
-				for (String item : packageItem) {
-					if(StrUtil.isEmpty(item)){
-						continue;
-					}
-					String[] pack = item.split(":");
-					Integer packId = Integer.valueOf(pack[0]);
-					Double inDiscount = Double.valueOf(pack[1]);
-					Integer priority = Integer.valueOf(pack[2]);
-					if(packId  == chargeOrder.getPackageId() ){
-						channel.setInDiscount(inDiscount);
-						matchChannel.add(channel);
+		ChannelCache.getInstance().idMap.forEach((k,channel)->{
+				String packages = channel.getPackages();
+				if(StrUtil.isNotEmpty(packages)){
+					String[] packageItem = packages.split(",");
+					for (String item : packageItem) {
+						if(StrUtil.isEmpty(item)){
+							continue;
+						}
+						String[] pack = item.split(":");
+						Integer packId = Integer.valueOf(pack[0]);
+						Double inDiscount = Double.valueOf(pack[1]);
+						Integer priority = Integer.valueOf(pack[2]);
+						if(packId  == chargeOrder.getPackageId() ){
+							channel.setInDiscount(inDiscount);
+							channel.setPriority(priority);
+							matchChannel.add(channel);
+						}
 					}
 				}
 			}
-		}
-		//根据折扣排序   优先接入折扣较低的通道
+		);
+		
+		//根据优先级排序  
 		Collections.sort(matchChannel,new Comparator<Channel>() {
 			@Override
 			public int compare(Channel o1, Channel o2) {
 				// TODO Auto-generated method stub
-				return o1.getInDiscount().compareTo(o2.getInDiscount());
+				return o2.getPriority().compareTo(o1.getPriority());
 			}
 		});
 		Channel channel = null;
@@ -353,6 +359,7 @@ public class ChargeManager {
 		Channel channel = ChannelCache.getInstance().idMap.get(chargeOrder.getSubmitChannel());
 		ChargeTemplate template = chargeTemplateMap.get(channel.getTemplate());
 		ChargeResponsVO result = template.charge(chargeOrder);
+		chargeOrderService.saveOrUpdate(chargeOrder);
 		if(!result.isSuccess()){
 			if(chargeOrder.getChargeStatus() != 1){
 				BackMoneyVO backMoneyVO = new BackMoneyVO();
@@ -365,10 +372,10 @@ public class ChargeManager {
 				backMoneyVO.setMemo("为订单号"+chargeOrder.getId()+"手机号"+chargeOrder.getMobile()+"失败返还"+chargeOrder.getPayMoney()+"元");
 				PayManager.getInstance().addToPay(backMoneyVO);
 			}
+			CallbackManager.getInstance().addToCallback(chargeOrder);
 		}
-		chargeOrderService.saveOrUpdate(chargeOrder);
 	}
-	private void updateOrderStatus(ChargeOrder chargeOrder, Boolean isSuccess, String msg) {
+	private synchronized void updateOrderStatus(ChargeOrder chargeOrder, Boolean isSuccess, String msg) {
 		chargeOrder.setChargeStatus(isSuccess ? 4 : 5);
 		chargeOrder.setReportContent(msg);
 		chargeOrder.setReportTime(new Date());
@@ -387,8 +394,8 @@ public class ChargeManager {
 			backMoneyVO.setMemo("订单号"+chargeOrder.getId()+"手机号"+chargeOrder.getMobile()+"失败退款"+chargeOrder.getPayMoney());
 			PayManager.getInstance().addToPay(backMoneyVO);
 		}
-		// 回调订单状态
-		if (!StringUtils.isEmpty(chargeOrder.getBackUrl())) {
+		// 回调订单状态     回调地址不为空,且状态有改变过的才回调
+		if (updateChargeStatus > 0 && StrUtil.isNotBlank(chargeOrder.getBackUrl())) {
 			CallbackManager.getInstance().addToCallback(chargeOrder);
 		}
 	}

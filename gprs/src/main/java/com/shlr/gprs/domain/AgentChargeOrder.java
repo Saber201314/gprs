@@ -41,6 +41,8 @@ public class AgentChargeOrder {
 	
 	private Integer chargeStatus;//充值状态  1 未知  2 提交成功  3 提交失败  4 充值成功  5 充值失败
 	
+	private String submitContent;
+	
 	private String reportContent;//报告内容
 	
 	private String agentOrderId;//下游代理商地单号
@@ -126,6 +128,13 @@ public class AgentChargeOrder {
 
 	public void setChargeStatus(Integer chargeStatus) {
 		this.chargeStatus = chargeStatus;
+	}
+	public String getSubmitContent() {
+		return submitContent;
+	}
+
+	public void setSubmitContent(String submitContent) {
+		this.submitContent = submitContent;
 	}
 
 	public String getReportContent() {

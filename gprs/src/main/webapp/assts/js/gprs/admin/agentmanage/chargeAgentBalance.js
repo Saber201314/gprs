@@ -25,7 +25,7 @@ layui.define(['base' ], function(exports) {
 	 */
 	form.on('submit(btn-submit)', function(data) {
 		console.log(data.field)
-			
+		data.field.memo = $('#memo').html();
 		$.ajax({
 			url : '/admin/chargeAgentBalance.action',
 			type : 'post',

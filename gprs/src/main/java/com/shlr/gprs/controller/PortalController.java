@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,7 +48,9 @@ public class PortalController {
 	@Resource
 	UserService userService;
 	
-	private String SESSION_SECURITY_CODE="SESSION_SECURITY_CODE";
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private final String SESSION_SECURITY_CODE="SESSION_SECURITY_CODE";
 	
 	/**
 	 * 获取验证码
@@ -77,12 +81,12 @@ public class PortalController {
 			outputStream.flush();
 			outputStream.close();
 			imageStream.close();
-			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}/**
+	}
+	/**
 	 * 登录
 	 * @param username
 	 * @param password
@@ -95,7 +99,7 @@ public class PortalController {
 	public String login(@RequestParam("username")String username,
 			@RequestParam("password")String password,
 			@RequestParam("securityCode")String securityCode
-			,HttpSession session) {
+			,HttpSession session,HttpServletRequest request) {
 		JSONObject result=new JSONObject();
 		if (StringUtils.isEmpty(username)) {
 			
@@ -126,6 +130,7 @@ public class PortalController {
 			result.put("error_msg", "用户名或密码错误");
 			return result.toJSONString();
 		}
+		logger.info("Login [IP] {} [Account] {}",request.getRemoteAddr(),username);
 		session.setAttribute("user", users);
 		result.put("success", true);
 		result.put("url", "/index.action");

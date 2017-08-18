@@ -412,8 +412,7 @@ public class ChargeOrder {
 	 * @return the channelName
 	 */
 	public String getChannelName() {
-		Channel channel = (Channel) ChannelCache.getInstance().idMap.get(Integer
-				.valueOf(this.submitChannel));
+		Channel channel = (Channel) ChannelCache.getInstance().idMap.get(this.submitChannel);
 		if (channel == null) {
 			return null;
 		}

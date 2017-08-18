@@ -100,19 +100,9 @@ public class PricePaperController {
 			if(StrUtil.isBlank(item)){
 				continue;
 			}
-			JSONObject packObj = new JSONObject();
-			String[] pPack = item.split(":");
-			String packId = pPack[0];
-			String outDiscount = pPack[1];
-			String payBill = pPack[2];
-			GprsPackage gprsPack = gprsPackageService.findById(Integer.valueOf(packId));
 			
-			packObj.put("id", gprsPack.getId());
-			packObj.put("name", gprsPack.getName());
-			packObj.put("outDiscount", outDiscount);
-			packObj.put("payBill", payBill);
-			packObj.put("", "");
 			
+			boolean isExist = false;
 			Collection<Channel> values = ChannelCache.getInstance().idMap.values();
 			for (Channel channel : values) {
 				String packages = channel.getPackages();
@@ -121,6 +111,16 @@ public class PricePaperController {
 					if(StrUtil.isBlank(string)){
 						continue;
 					}
+					JSONObject packObj = new JSONObject();
+					String[] pPack = item.split(":");
+					String packId = pPack[0];
+					String outDiscount = pPack[1];
+					String payBill = pPack[2];
+					GprsPackage gprsPack = gprsPackageService.findById(Integer.valueOf(packId));
+					packObj.put("id", gprsPack.getId());
+					packObj.put("name", gprsPack.getName());
+					packObj.put("outDiscount", outDiscount);
+					packObj.put("payBill", payBill);
 					String[] cItem = string.split(":");
 					String cPackId = cItem[0];
 					String inDiscount = cItem[1];
@@ -128,11 +128,29 @@ public class PricePaperController {
 					if(cPackId.equals(packId)){
 						packObj.put("inDiscount", inDiscount);
 						packObj.put("channelName", channel.getName());
+						packObj.put("priority", priority);
+						priceList.add(packObj);
+						isExist = true;
 					}
+					
 				}
 			}
-			priceList.add(packObj);
+			if(!isExist){
+				JSONObject packObj = new JSONObject();
+				String[] pPack = item.split(":");
+				String packId = pPack[0];
+				String outDiscount = pPack[1];
+				String payBill = pPack[2];
+				GprsPackage gprsPack = gprsPackageService.findById(Integer.valueOf(packId));
+				packObj.put("id", gprsPack.getId());
+				packObj.put("name", gprsPack.getName());
+				packObj.put("outDiscount", outDiscount);
+				packObj.put("payBill", payBill);
+				priceList.add(packObj);
+			}
+			
 		}
+		
 		return JSONUtils.toJsonString(priceList);
 	}
 }

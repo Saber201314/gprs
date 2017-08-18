@@ -39,7 +39,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 		return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
 	})
 	function initChargeOrderList(){
-		index=layer.load();
+		index=top.layer.load();
 		$(".layui-table tbody").html('');	
 		
 		$.ajax({
@@ -49,7 +49,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 			dataType : 'json',
 			cache : false,
 			success : function(data) {
-				layer.close(index);  
+				top.layer.close(index);  
 				fillchargeOrder(data);
 				base.initpage(data,isinitpage,function(isinit){
 					isinitpage = isinit;
@@ -61,7 +61,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 		    	console.log(XMLHttpRequest.readyState);
 		    	console.log(textStatus);
 		    	console.log(errorThrown);
-		    	layer.close(index);  
+		    	top.layer.close(index);  
 				top.layer.msg("连接服务器失败");
 			}
 		})
@@ -121,9 +121,14 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
     				var optionTime = new Date(data.list[i].optionTime);
     				html.push('<td>'+optionTime.Format("yyyy-MM-dd hh:mm:ss")+'</td>');
     			}
+    			if(status == 3){
+    				//回调内容
+        			html.push('<td>'+data.list[i].submitContent+'</td>');
+    			}else{
+    				//回调内容
+        			html.push('<td>'+data.list[i].reportContent+'</td>');
+    			}
     			
-    			//回调内容
-    			html.push('<td>'+data.list[i].reportContent+'</td>');
     			
 				html.push('</tr>')
 			}

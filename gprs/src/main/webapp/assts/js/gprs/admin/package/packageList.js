@@ -74,8 +74,8 @@ layui.define([ 'base', ], function(exports) {
 						html.push('<td>' + item.id + '</td>');
 						html.push('<td>' + item.name + '</td>');
 						html.push('<td>' + item.alias + '</td>');
-						html.push('<td>' + item.amount + '</td>');
-						html.push('<td>' + item.money + 'M</td>');
+						html.push('<td>' + item.amount + 'M</td>');
+						html.push('<td>' + item.money + '</td>');
 						var type=item.type;
 						if(type == 1){
 							html.push('<td>移动</td>');

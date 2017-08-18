@@ -140,7 +140,7 @@ body .ui-tooltip{
 				<tr>
 					<th>编号</th>
 					<th>类别</th>
-					<th>扣费金额</th>
+					<th>金额</th>
 					<th>剩余金额</th>
 					<th>明细</th>
 					<th>扣费时间</th>

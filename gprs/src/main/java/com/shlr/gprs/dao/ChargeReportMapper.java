@@ -3,6 +3,7 @@ package com.shlr.gprs.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.mybatis.spring.annotation.MapperScan;
 
 import com.shlr.gprs.domain.ChargeReport;
@@ -14,5 +15,5 @@ import com.shlr.gprs.domain.ChargeReport;
 */
 @MapperScan
 public interface ChargeReportMapper {
-	List<ChargeReport> queryCurDayList();
+	List<ChargeReport> queryCurDayList(@Param("start")String start,@Param("end")String end);
 }

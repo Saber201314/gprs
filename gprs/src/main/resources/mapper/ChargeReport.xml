@@ -8,7 +8,9 @@
 				from g_pay_log p,g_users u
 				where p.account = u.username
 				and p.type in (2,3)
-				order by resumePrice asc
+				and p.option_time BETWEEN #{start} and #{end}
+				group by p.account
+				order by resumePrice desc
 	</select>
 	
 	

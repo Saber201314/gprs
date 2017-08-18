@@ -88,7 +88,7 @@ public class UserController {
 		if(StrUtil.isNotBlank(user.getWhiteIp())){
 			user.setWhiteIp(user.getWhiteIp().replace("\n", "%0D%0A"));
 		}
-		if(user.getId() != null && user.getId() > 0){
+		if(user.getId() > 0){
 			num = userService.updateUserByPK(user);
 		}else{
 			Users currentUser = userService.getCurrentUser(session);
@@ -113,7 +113,7 @@ public class UserController {
 	public String saveAdmin(HttpSession session, @ModelAttribute Users user){
 		JSONObject result = new JSONObject();
 		Integer num = 0;
-		if(user.getId() != null && user.getId() > 0){
+		if(user.getId() > 0){
 			num = userService.updateUserByPK(user);
 		}else{
 			Users currentUser = userService.getCurrentUser(session);

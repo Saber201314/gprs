@@ -8,11 +8,12 @@
 body{
 	padding: 0 15px;
 }
-
 .layui-table td, .layui-table th{
 	padding: 9px 5px;
 	font-size: 12px;
-
+}
+th{
+	white-space: nowrap;
 }
 td .status{
 	padding: 5px 10px;
@@ -62,40 +63,70 @@ body .ui-tooltip{
     background-color : #2F4056;
   }
 .arrow {
-    width: 70px;
-    height: 16px;
+	width: 70px;
+	height: 16px;
+	overflow: hidden;
+	position: absolute;
+	left: 50%;
+	margin-left: -35px;
+	bottom: -16px;
+}
+.arrow.top {
+	top: -16px;
+	bottom: auto;
+}
+.arrow.left {
+	left: 20%;
+}
+.arrow:after {
+	content: "";
+	position: absolute;
+	left: 20px;
+	top: -20px;
+	width: 25px;
+	height: 25px;
+	box-shadow: 6px 5px 9px -9px black;
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	tranform: rotate(45deg);
+}
+.arrow.top:after {
+	bottom: -20px;
+	top: auto;
+}
+.statistics-info{
+	float: right;
+	margin: 5px;
+}
+.statistics-info li{
+	float: left;
+}
+.label{
+	padding: .1em .3em .1em;
+	border-radius : .25em;
+	text-align : center;
+	color : white;
+}
+.label-success{
+	background-color: #5cb85c;
+}
+.label-danger{
+	background-color: #d9534f;
+}
+.label-primary{
+	background-color: #337ab7;
+}
+.label-value{
+	margin-right: 5px;
+}
+.content{
+	white-space: nowrap;
+    max-width: 50px;
+    text-overflow: ellipsis;
     overflow: hidden;
-    position: absolute;
-    left: 50%;
-    margin-left: -35px;
-    bottom: -16px;
-  }
-  .arrow.top {
-    top: -16px;
-    bottom: auto;
-  }
-  .arrow.left {
-    left: 20%;
-  }
-  .arrow:after {
-    content: "";
-    position: absolute;
-    left: 20px;
-    top: -20px;
-    width: 25px;
-    height: 25px;
-    box-shadow: 6px 5px 9px -9px black;
-    -webkit-transform: rotate(45deg);
-    -moz-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    -o-transform: rotate(45deg);
-    tranform: rotate(45deg);
-  }
-  .arrow.top:after {
-    bottom: -20px;
-    top: auto;
-  }
-
+}
 
 
 
@@ -104,7 +135,7 @@ body .ui-tooltip{
 <body>
 	<fieldset class="layui-elem-field site-demo-button" style="margin-top: 5px;">
 		<legend></legend>
-		<form class="layui-form" action="">
+		<form class="layui-form" action="/admin/exportExcelChargeOrderDatas.action">
 			<div class="layui-form-item">
 				<input type="hidden" id="pageNo" name="pageNo" value="1" class="layui-input">
 				<div class="layui-inline">
@@ -164,13 +195,13 @@ body .ui-tooltip{
 				<div class="layui-inline">
 					<label class="layui-form-label">开始时间</label>
 					<div class="layui-input-inline">
-						<input id="start" name="from" class="layui-input" onclick="">
+						<input id="start" name="start" class="layui-input" onclick="">
 					</div>
 				</div>
 				<div class="layui-inline">
 					<label class="layui-form-label">结束时间</label>
 					<div class="layui-input-inline">
-						<input id="end" name="to" class="layui-input">
+						<input id="end" name="end" class="layui-input">
 					</div>
 				</div>
 				<div class="layui-inline">
@@ -244,6 +275,7 @@ body .ui-tooltip{
 				<div  class="layui-inline">
 					<div class="layui-input-block">
 						<button class="layui-btn" lay-submit="" lay-filter="btn-submit">查询</button>
+						<button class="layui-btn" lay-submit="" lay-filter="export-chargeorder">导出</button>
 					</div>
 				</div>
 
@@ -256,7 +288,27 @@ body .ui-tooltip{
 	<button class="layui-btn layui-btn-mini getallcheck" >停止提交</button>
 	<button class="layui-btn layui-btn-mini getallcheck" >批量失败</button>
 	<button class="layui-btn layui-btn-mini" >导出Excel</button> -->
-	
+	<button class="layui-btn layui-btn-mini callback">推送回调</button>
+	<div class="statistics-info">
+		<ul>
+			<li>
+				<span class="label label-success">充值成功</span>
+				<span id="success-num" class="label-value">0</span>
+			</li>
+			<li>
+				<span class="label label-primary">结算总额</span>
+				<span id="success-total" class="label-value">0</span>
+			</li>
+			<li>
+				<span class="label label-danger">充值失败</span>
+				<span id="fail-num" class="label-value">0</span>
+			</li>
+			<li>
+				<span class="label label-primary">结算总额</span>
+				<span id="fail-total" class="label-value">0</span>
+			</li>
+		</ul>
+	</div>
 	<div class="layui-form">
 		<table class="layui-table">
 			<thead>
@@ -270,7 +322,7 @@ body .ui-tooltip{
 					<th width = "70">流量类型</th>
 					<th>流量值</th>
 					<th>基础价格</th>
-					<th width="70">状态</th>
+					<th style="min-width: 70px;">状态</th>
 					<th style="width: 70px;">订单生成时间</th>
 					<th>提交时间</th>
 					<th>提交返回内容</th>

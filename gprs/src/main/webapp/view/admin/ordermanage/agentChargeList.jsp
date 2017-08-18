@@ -91,6 +91,9 @@ body .ui-tooltip{
     bottom: -20px;
     top: auto;
   }
+  .zoom img{
+  	max-width: 100%;
+  }
 
 
 
@@ -149,10 +152,6 @@ body .ui-tooltip{
 			</div>
 		</form>
 	</fieldset>
-	<button class="layui-btn layui-btn-mini">财务统计</button>
-	<button class="layui-btn layui-btn-mini" >通道消费统计</button>
-	<button class="layui-btn layui-btn-mini" >导出Excel</button>
-	
 	<div class="layui-form">
 		<table class="layui-table">
 			<thead>
@@ -186,6 +185,5 @@ body .ui-tooltip{
 		base: 'base', //如果test.js是在根目录，也可以不用设定别名
 		agentCharge: 'admin/ordermanage/agentCharge' //如果test.js是在根目录，也可以不用设定别名
 	}).use('agentCharge'); //加载入口
-	
 </script>
 </html>

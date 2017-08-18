@@ -44,7 +44,7 @@ public abstract class ChargeTemplate {
 	protected String key;
 	protected String templateName;
 	protected int templateId;
-	private SimpleDateFormat orderidsdf = new SimpleDateFormat("yyyyMMddhhmmssSSS");
+	private SimpleDateFormat orderidsdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 	private Random random = new Random();
 
 	static {
@@ -80,8 +80,8 @@ public abstract class ChargeTemplate {
 				String location = code.getLocation();
 				if ((code.getType() == chargeOrder.getType())
 						&& (code.getRangeType() == chargeOrder.getRangeType())
-						&& (code.getAmount() == chargeOrder.getAmount())) {
-					if (!StringUtils.isEmpty(location)) {
+						&& (code.getAmount().intValue() == chargeOrder.getAmount().intValue())) {
+					if (!"全国".equals(location)) {
 						if (location.equals(chargeOrder.getLocation())) {
 							return code.getCode();
 						}

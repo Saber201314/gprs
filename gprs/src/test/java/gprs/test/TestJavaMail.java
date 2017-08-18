@@ -31,12 +31,7 @@ import okhttp3.Response;
 */
 public class TestJavaMail {
 	public static void main(String[] args) throws IOException {
-			Response execute = OkhttpUtils.getInstance()
-				.post("http://ip.taobao.com/service/getIpInfo.php")
-				.headers("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
-				.params("ip","58.246.140.150")
-				.execute();
-			JSONObject jsonObject = JSON.parseObject(execute.body().string());
-			System.out.println();
+		
+		
 	}
 }

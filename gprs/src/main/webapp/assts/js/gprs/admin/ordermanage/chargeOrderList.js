@@ -24,6 +24,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 		base.initagent();
 		base.initchannel();
 		initChargeOrderList();
+		initStatistics();
 		
 		
 	});
@@ -38,7 +39,28 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 		isinitpage=false;
 		$('#pageNo').val(1);
 		initChargeOrderList();
+		initStatistics();
 		return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+	})
+	form.on('submit(export-chargeorder)', function(data){
+		var start = $('#start').val();
+		var end = $('#end').val();
+		var startDate = new Date(start);
+		var endDate = new Date(end);
+		if(startDate.getFullYear() != endDate.getFullYear() || startDate.getMonth() != endDate.getMonth()){
+			top.layer.msg("不能导出超过一个月的记录！");
+			return false;
+		}
+		index = top.layer.confirm('是否按当前条件导出数据?', {
+			  btn: ['确定','取消'] //按钮
+			}, function(){
+				data.form.submit();
+				top.layer.close(index);
+				return true;
+			}, function(){
+				submit = false;
+			});
+		return false
 	})
 	function initChargeOrderList(){
 		index=top.layer.load();
@@ -59,8 +81,14 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 				})
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
-		    	top.layer.close(index);  
-				top.layer.msg("连接服务器失败");
+		    	top.layer.close(index);
+		    	if(XMLHttpRequest.status == 403){
+		    		top.layer.msg("请登录");
+		    		top.window.location = "/login.jsp";
+		    	}else{
+		    		top.layer.msg("连接服务器失败");
+		    	}
+				
 			}
 		})
 	}
@@ -137,7 +165,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
     				html.push('<td>'+submitTime.Format("yyyy-MM-dd hh:mm:ss")+'</td>');
     			}
     			//提交返回内容
-    			html.push('<td>'+data.list[i].submitContent+'</td>');
+    			html.push('<td class="content" title="'+data.list[i].submitContent+'">'+data.list[i].submitContent+'</td>');
     			
     			//回调时间
     			if(data.list[i].reportTime == undefined || data.list[i].reportTime == null){
@@ -147,7 +175,7 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
     				html.push('<td>'+reportTime.Format("yyyy-MM-dd hh:mm:ss")+'</td>');
     			}
     			//回调内容
-    			html.push('<td>'+data.list[i].reportContent+'</td>');
+    			html.push('<td class="content" title="'+data.list[i].reportContent+'">'+data.list[i].reportContent+'</td>');
     			
     			//充值方式
     			var submitType = data.list[i].submitType;
@@ -206,7 +234,6 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
     			//操作按钮
     			var btnhtml=[];
     			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">详情</button>');
-    			btnhtml.push('<button style="margin-top:2px; " class="layui-btn layui-btn-mini">推送回调</button>');
 				html.push('<td>' +btnhtml.join("")+'</td>');
 				html.push('</tr>')
 			}
@@ -215,7 +242,41 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 			form.render('checkbox');
 		}
 	}
-	
+	function initStatistics(){
+		$.ajax({
+			url :'/admin/statisticsByCondition.action',
+			type :'post',
+			data : $('form').serialize(),
+			dataType :'json',
+			success : function(data){
+				if(data.success){
+					$.each(data.list,function(index,item){
+						if(item.status == "充值成功"){
+							$('#success-num').text(item.num);
+							$('#success-total').text(item.payMoney);
+						}
+						if(item.status == "充值失败"){
+							$('#fail-num').text(item.num);
+							$('#fail-total').text(item.payMoney);
+						}
+					})
+				}else{
+					$('#success-num').text("0");
+					$('#success-total').text("0");
+					$('#fail-num').text("0");
+					$('#fail-total').text("0");
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown,data){
+				if(XMLHttpRequest.status == 403){
+		    		top.layer.msg("请登录");
+		    		top.window.location = "/login.jsp";
+		    	}else{
+		    		top.layer.msg("连接服务器失败");
+		    	}
+			}
+		})
+	}
 	
 	
 	
@@ -235,6 +296,49 @@ layui.define([ 'layer', 'form', 'laydate', 'element', 'laypage','base' ], functi
 
 		});
 		top.layer.msg(JSON.stringify(ids));
+	})
+	/*
+	 * 推送回调
+	 */
+	$('.callback').click(function() {
+		var checklist = $('tbody tr td input[type="checkbox"]');
+		ids = [];
+		checklist.each(function(index, item) {
+			if (item.checked) {
+				ids.push($(this).data("id"));
+			}
+		});
+		if( ids.length > 0){
+			index = top.layer.confirm('确定推送状态吗？',{
+				btn: ['确定','取消']
+			},function(){
+				$.ajax({
+					url :'/admin/callbackTask.action',
+					type : 'post',
+					data : {"ids":ids},
+					dataType : 'json',
+					success : function(data){
+						if(data && data.success){
+							top.layer.msg("操作成功");
+							$('#pageNo').val(1);
+							initChargeOrderList();
+						}else{
+							top.layer.msg("操作失败");
+						}
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown,data){
+						if(XMLHttpRequest.status == 403){
+				    		top.layer.msg("请登录");
+				    		top.window.location = "/login.jsp";
+				    	}else{
+				    		top.layer.msg("连接服务器失败");
+				    	}
+					}
+				})
+			})
+		}else{
+			top.layer.msg('请选择至少一项');
+		}
 	})
 	exports('chargeOrderList'); //注意，这里是模块输出的核心，模块名必须和use时的模块名一致
 });

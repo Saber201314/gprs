@@ -242,7 +242,7 @@ body .ui-tooltip{
 					<th>扣费金额</th>
 					<th width="70">状态</th>
 					<th style="width: 70px;">提单时间</th>
-					<th>回调内容</th>
+					<th>充值结果</th>
 					
 				</tr>
 			</thead>

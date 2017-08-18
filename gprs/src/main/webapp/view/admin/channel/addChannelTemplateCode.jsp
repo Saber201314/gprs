@@ -49,6 +49,7 @@ form{
 					<label class="layui-form-label">区域</label>
 					<div class="layui-input-block">
 						<select id="location" name="location" >
+							<option>全国</option>
 							<option>北京</option>
 							<option>天津</option>
 							<option>河北</option>

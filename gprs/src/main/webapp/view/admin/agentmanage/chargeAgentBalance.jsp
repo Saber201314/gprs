@@ -58,10 +58,13 @@ body{
 			<div class="layui-form-item">
 				<div class="layui-inline">
 					<label class="layui-form-label">备注</label>
-					<div class="layui-input-inline">
-						<textarea name="memo" lay-verify="required" rows="4" cols="50" class="" style="border:1px solid #e6e6e6;background-color: #fff;border-radius:2px;padding:5 10px; " ></textarea>
+					<div class="layui-input-block">
+						<div contenteditable="true" id="memo" name="memo" style="background-color:#f9f9f9;margin-top:50px; border:1px solid #ccc; transition:border linear .2s,box-shadow linear .2s; padding:4px 6px; color:#555;word-wrap: break-word;white-space: pre-wrap;width: 500px;margin-top: 0;margin-right: 5px; height:200px; overflow:auto;"></div>
+						<div >在谷歌和火狐浏览器中可直接粘贴剪贴板图片，QQ截图按ctrl+alt+a</div>
 					</div>
+					
 				</div>
+				
 			</div>
 			<div  class="layui-inline">
 				<div class="layui-input-block">
@@ -79,6 +82,35 @@ body{
 		base: 'base', //如果test.js是在根目录，也可以不用设定别名
 		chargeAgentBalance: 'admin/agentmanage/chargeAgentBalance' //设定别名
 	}).use('chargeAgentBalance'); //加载入口
-	
+</script>
+<script>
+window.addEventListener('load', function (e) {
+		document.body.onpaste = function (e) {
+			var items = e.clipboardData.items;
+			for (var i = 0; i < items.length; ++i) {
+				item = items[i];
+				if (item && item.kind === 'file' && item.type.match(/^image\//i)) {
+					imgReader(item);
+					break;
+				}
+			}
+		};
+	});
+
+	var imgReader = function (item) {
+		var blob = item.getAsFile(),
+        reader = new FileReader();
+
+		reader.onload = function (e) {
+			var img = new Image();
+
+			img.src = e.target.result;
+			var logBox = document.getElementById('memo');
+			logBox.appendChild(img);
+		};
+
+		reader.readAsDataURL(blob);
+	};
+
 </script>
 </html>

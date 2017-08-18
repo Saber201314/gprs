@@ -44,7 +44,7 @@ public class ChannelCache {
 		for (Channel channel : list){
 			idMap.put(channel.getId(), channel);
 			if(channel.getStatus() == -1){
-				cacheCondition.put(channel.getId().toString(), true);
+				cacheCondition.put(String.valueOf(channel.getId()), true);
 			}
 		}
 		long end = System.currentTimeMillis();

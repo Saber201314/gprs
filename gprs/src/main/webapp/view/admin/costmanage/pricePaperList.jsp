@@ -78,6 +78,7 @@ body{
            			<th>接入</th>
            			<th>放出</th>
            			<th>是否带票</th>
+           			<th>优先级</th>
            			<th>通道名称</th>
 				</tr>
 			</thead>

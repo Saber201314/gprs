@@ -39,6 +39,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -75,10 +76,12 @@ import com.shlr.gprs.services.ChargeReportService;
 import com.shlr.gprs.services.PayLogService;
 import com.shlr.gprs.services.UserService;
 import com.shlr.gprs.utils.DecimalUtils;
+import com.shlr.gprs.utils.ExcelUtils;
 import com.shlr.gprs.utils.JSONUtils;
 import com.shlr.gprs.utils.StrUtils;
 import com.shlr.gprs.utils.TimeUtls;
 import com.shlr.gprs.vo.PayLogFmt;
+import com.xiaoleilu.hutool.util.StrUtil;
 import com.shlr.gprs.vo.ChargeResponsVO;
 
 import junit.framework.Assert;
@@ -122,6 +125,7 @@ public class QueryController {
 	 * @throws IOException
 	 */
 	@RequestMapping(value="/layout/home.action")
+	@ResponseBody
 	public String home(HttpServletRequest request,HttpServletResponse response, HttpSession session) throws IOException{
 		Users currentUser = userService.getCurrentUser(session);
 		Map<String, Object> result=new LinkedHashMap<String, Object>();
@@ -138,20 +142,9 @@ public class QueryController {
 			return null;
 		}
 		List<ChargeReport> reportList  = chargeReportService.queryCurDayList();
-		Float resume=0.00F ,remain = 0.00F;
-		for (ChargeReport chargeReport : reportList) {
-			resume +=Float.valueOf(chargeReport.getResumePrice()); 
-			remain +=Float.valueOf(chargeReport.getRemainPrice()); 
-		}
-		ChargeReport total=new ChargeReport();
-		total.setAccount("合计");
-		total.setResumePrice(String.valueOf(resume));
-		total.setRemainPrice(String.valueOf(remain));
-		reportList.add(total);
 		result.put("islogin", "1");
 		result.put("data", reportList);
-		response.getWriter().print(JSON.toJSONString(result));
-		return null;
+		return JSONUtils.toJsonString(result);
 	}
 	
 	/**
@@ -435,113 +428,6 @@ public class QueryController {
 		return JSON.toJSONString(payBillMap);
 	}
 	
-	/**
-	 * 导出消费明细Excel
-	 * @param request
-	 * @param response
-	 * @param session
-	 * @param account
-	 * @param from
-	 * @param to
-	 * @throws UnsupportedEncodingException
-	 */
-	@RequestMapping(value="/query/exportExcelChargeLogDatas.action")
-	public void exportExcelChargeLogDatas(HttpServletRequest request,
-			HttpServletResponse response, HttpSession session,
-			@RequestParam(value = "account", required = false) String account,
-			@RequestParam(value = "from", required = false) String from,
-			@RequestParam(value = "to", required = false) String to) throws UnsupportedEncodingException{
-		Users currentUser = userService.getCurrentUser(session);
-		if(currentUser == null){
-			return;
-		}
-		int type = currentUser.getType();
-		String currentAccount = currentUser.getUsername();
-		if(type != 1 && type != 2){
-			return;
-		}
-		if(from == null || to == null){
-			return;
-		}
-		Example example=new Example(PayLog.class,true,false);
-		Criteria createCriteria = example.createCriteria();
-		if (type != 1 && StringUtils.isEmpty(account)) {
-			createCriteria.andEqualTo("account", currentAccount);
-		}else{
-			createCriteria.andEqualTo("account", account);
-		}
-		createCriteria.andBetween("optionTime", from, to);
-		int pageNo=0;
-		int allPages=0;
-		long start=System.currentTimeMillis();
-		SXSSFWorkbook wb = new SXSSFWorkbook(100); 
-		Sheet sheet = wb.createSheet();     //工作表对象  
-	    Row nRow = sheet.createRow(0);      //行对象  
-	    CellStyle style=wb.createCellStyle();
-	       
-	    initPoiRowStyle(wb, sheet, style);
-	    
-	    String[] titles=new String[]{"代理商","类别","流水号","扣费金额（元）","当前余额（元）","折扣","代理商订单号","手机号","流量值","扣费时间","操作状态"};
-	    for (int i = 0; i < titles.length; i++) {
-	    	Cell c = nRow.createCell(i);
-	    	c.setCellValue(titles[i]);
-	    	c.setCellStyle(style);
-		}
-	    
-		List<PayLog> bufferList=new ArrayList<PayLog>();
-		PayLogFmt fmt=new PayLogFmt();
-		boolean flag=true;
-		do {
-			pageNo++;
-			List<PayLog> listByExample = payLogService.listByExample(example);
-			allPages=((Page<PayLog>)listByExample).getPages();
-			bufferList.addAll(listByExample);
-			int size = bufferList.size();
-			for (int i = 0; i < size ; i++) {
-				PayLog item = bufferList.get(i);
-				Row row = sheet.createRow((pageNo-1)*10000+i+1);        //行对象  
-			    Cell cc0 = row.createCell(0);    
-			    cc0.setCellValue(item.getAccount());
-			    Cell cc1 = row.createCell(1);   
-			    cc1.setCellValue(fmt.typefmt(item.getType()));
-			    Cell cc2 = row.createCell(2);   
-			    Cell cc3 = row.createCell(3);   
-			    cc3.setCellValue(item.getMoney());
-			    Cell cc4 = row.createCell(4);   
-			    cc4.setCellValue(item.getBalance());
-			    Cell cc5 = row.createCell(5);   
-			    Cell cc6 = row.createCell(6);
-			    Cell cc7 = row.createCell(7);  
-			    String[] split = item.getMemo().split("，");
-			    cc7.setCellValue(split[0]);
-			    Cell cc8 = row.createCell(8);   
-			    cc8.setCellValue(split[1]);
-			    Cell cc9 = row.createCell(9); 
-			    cc9.setCellValue(TimeUtls.date2StrByDefault(item.getOptionTime()));
-			    Cell cc10 = row.createCell(10); 
-			    cc10.setCellValue(fmt.statusfmt(item.getStatus()));
-			}
-			bufferList.clear();
-			if (pageNo==allPages) {
-				flag=false;
-			}
-		} while (flag);
-		System.out.println(System.currentTimeMillis()-start);
-		String filename="消费明细记录.xlsx";
-		try {
-	        response.setHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes(),"iso-8859-1")  );  
-	        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charest=UTF-8");  
-	        response.setBufferSize(2048);
-			OutputStream os=response.getOutputStream();
-			wb.write(os);
-			wb.close();
-			os.flush();
-			os.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	
 	/**
@@ -602,7 +488,9 @@ public class QueryController {
 		return JSON.toJSONString(result);
 	}
 	
-	
+	/*
+	 * 回调日志
+	 */
 	@RequestMapping(value="/query/callbackList.action")
 	@ResponseBody
 	public String callbackList(HttpSession session,
@@ -636,22 +524,4 @@ public class QueryController {
 		return result.toJSONString();
 	}
 	
-	
-	/**
-	 * 初始化Excel单元格样式
-	 * @param wb
-	 * @param sheet
-	 * @param style
-	 */
-	private void initPoiRowStyle(SXSSFWorkbook wb,Sheet sheet,CellStyle style){		
-		style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式	
-		Font font = wb.createFont();
-		font.setColor(HSSFFont.COLOR_NORMAL);
-		font.setFontName("黑体"); //字体
-		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD); //宽度		
-		style.setFont(font);
-		style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		style.setFillForegroundColor(HSSFColor.YELLOW.index);
-		
-	}
 }

@@ -77,6 +77,7 @@ public class HttpUtil {
 			sb.append(s);
 		}
 		buff.close();
+		in.close();
 		return sb.toString();
 	}
 

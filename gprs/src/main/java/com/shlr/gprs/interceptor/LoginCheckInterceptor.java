@@ -40,6 +40,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
 				if("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))){
 					
 					response.setStatus(403);
+					response.setHeader("Content-Type", "application/json;charset=UTF-8");
 					PrintWriter writer = response.getWriter();
 					JSONObject result = new JSONObject();
 					result.put("success", false);

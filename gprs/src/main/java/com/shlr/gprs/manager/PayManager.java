@@ -70,7 +70,7 @@ public class PayManager {
 							continue;
 						}
 					} catch (Exception e) {
-						logger.error("PayManager", e);
+						logger.error("扣费队列异常", e);
 					}
 			}
 		});

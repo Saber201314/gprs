@@ -184,7 +184,7 @@ dd a i{
 						<dl class="layui-nav-child">
 							<c:if test="${fn:indexOf(user.limits, '701') != -1 }">
 							<dd>
-								<a href="javascript:;" onclick="tab.add('701','通道统计','view/admin/statistics/channelStatis.jsp')"><i class="layui-icon">&#xe623;</i>通道统计</a>
+								<a href="javascript:;" onclick="tab.add('701','通道统计','view/admin/statistics/home2.jsp')"><i class="layui-icon">&#xe623;</i>通道统计</a>
 							</dd>
 							</c:if>
 							<c:if test="${fn:indexOf(user.limits, '702') != -1 }">
